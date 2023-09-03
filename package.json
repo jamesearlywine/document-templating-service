@@ -4,9 +4,9 @@
   "description": "pdf templating service",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node index.ts",
+    "start": "sam local start-lambda",
     "build": "tsc --outDir build",
-    "build:template": "cdk synth > cfn-template.yml"
+    "build:template": "cdk synth > template.yml"
   },
   "author": "",
   "license": "ISC",
