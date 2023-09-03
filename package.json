@@ -7,9 +7,10 @@
   "name": "pdf-templating-service",
   "version": "0.0.1",
   "description": "pdf templating service",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
   },
   "author": "",
   "license": "ISC"
