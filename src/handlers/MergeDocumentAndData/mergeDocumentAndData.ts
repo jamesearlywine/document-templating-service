@@ -1,3 +1,3 @@
-export const handler = () => {
-    console.log("mergeDocumentAndData");
+export const handler = async (event: Record<string, unknown>) => {
+    console.log("mergeDocumentAndData", {event});
 };
