@@ -7,6 +7,7 @@ export class ApplicationStack {
     lambdaExecutionRole: cdk.aws_iam.Role;
     constructor(app, id: string) {
         this.stack = new cdk.Stack(app, id);
+        
         this.lambdaExecutionRole = new cdk.aws_iam.Role(this.stack, "LambdaExecutionRole", {
             assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
             description: 'Lambda Execution Role',
