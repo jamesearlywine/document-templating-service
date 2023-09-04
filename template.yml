@@ -1,5 +1,5 @@
 Resources:
-  mergeDocumentAndDataServiceRoleD35913AC:
+  LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -9,6 +9,7 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
         Version: "2012-10-17"
+      Description: Lambda Execution Role
       ManagedPolicyArns:
         - Fn::Join:
             - ""
@@ -16,7 +17,7 @@ Resources:
               - Ref: AWS::Partition
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
-      aws:cdk:path: PdfTemplatingService/mergeDocumentAndData/ServiceRole/Resource
+      aws:cdk:path: PdfTemplatingService/LambdaExecutionRole/Resource
   mergeDocumentAndData2658F40D:
     Type: AWS::Lambda::Function
     Properties:
@@ -27,11 +28,11 @@ Resources:
       Handler: mergeDocumentAndData.handler
       Role:
         Fn::GetAtt:
-          - mergeDocumentAndDataServiceRoleD35913AC
+          - LambdaExecutionRoleD5C26073
           - Arn
       Runtime: nodejs18.x
     DependsOn:
-      - mergeDocumentAndDataServiceRoleD35913AC
+      - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: PdfTemplatingService/mergeDocumentAndData/Resource
       aws:asset:path: asset.96d59a83d32f9942a4d3f445a585292c75ea3fbf0d30b1d93bc158854b5d44eb
@@ -40,7 +41,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/zWOSw6DMAxEz9J9cEs/UrssSD0APQAySYrMx5Fw0i4i7t4AYjXjebJmzvC4wumAP8m06bOBGohvj7pXKarjgGNjEOIrsPbkWJUf3v2sCEeIlRvsEi86K7nUKGK9wHORdEMRdG99gZJwZcWFSVu10lTUErfr9w6SLx0b2hrYGQudHL/5HfJbGtoJUTYF9jRaqDb9A1j6rUfEAAAA
+      Analytics: v2:deflate64:H4sIAAAAAAAA/zWOSw6DMAxEz9J9cEs/UrssSD0APQAySYrMx5Fw0i4i7t4AYjVjP3nGZ3hc4XTAn2Ta9NlADcS3R92rtKoj4QixcoNV5YcXndWAY2MQ4iuw9uR4IbuflVxqFLFe4LlImqEIure+QEnHlRUXJm3VSlNRS9yu2TtIvnRsaItjZyx0cvzmd8hv6dFOiLIpsKfRQrXpH8Qr8mfEAAAA
     Metadata:
       aws:cdk:path: PdfTemplatingService/CDKMetadata/Default
     Condition: CDKMetadataAvailable

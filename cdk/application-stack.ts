@@ -1,4 +1,5 @@
 import * as cdk from "aws-cdk-lib";
+import {IRole} from "aws-cdk-lib/aws-iam";
 
 export class ApplicationStack {
     stack: cdk.Stack;
@@ -18,7 +19,7 @@ export class ApplicationStack {
             runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
             handler: "mergeDocumentAndData.handler",
             code: cdk.aws_lambda.Code.fromAsset(`${__dirname}/../build/handlers/mergeDocumentAndData`),
-            role: this.lambdaExecutionRole,
+            role: this.lambdaExecutionRole as IRole,
         });
     }
 }
