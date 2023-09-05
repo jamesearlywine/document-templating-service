@@ -1,7 +1,7 @@
 # processproof-document-templating-service
 
 ## Infrastructural DFD
-https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076
+<a href="https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076" target="_blank">https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076</a>
 
 ## How to run
 - `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-1` (or your preferred aws region)
