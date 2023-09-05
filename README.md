@@ -9,4 +9,4 @@ https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076
 - `npm run build:template`
 - `npm run deploy`
 
-Then go to your aws web console and find the cloudformation stack "DocumentTemplatingService" in your specified region.
+Then go to your aws web console and find the cloudformation stack "DocumentTemplatingService" in your specified aws region.
