@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - export PATH=./node_modules/.bin:$PATH
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm run build
+      - npm run test
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+reports:
+  arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
+    files:
+      - "junit.xml"
+    base-directory: "build"
+    discard-paths: no
+
+artifacts:
+  files:
+    - build/**/*

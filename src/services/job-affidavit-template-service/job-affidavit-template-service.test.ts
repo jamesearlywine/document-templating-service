@@ -7,8 +7,8 @@ import * as JobAffidavitTemplateService from "./job-affidavit-template-service";
 const testAffidavitTemplateFilePath = [
   PROJECT_ROOT,
   "testing",
-  "pdftemplate",
-  "affidavit_of_non_service__template.docs",
+  "test-templates",
+  "affidavit_of_non_service__template.docx",
 ].join(path.sep);
 
 describe("JobAffidavitTemplateService", () => {
