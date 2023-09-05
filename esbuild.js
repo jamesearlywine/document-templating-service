@@ -9,8 +9,8 @@ const sharedConfig = {
 
 const bundles = [
   {
-    in: path.resolve("src/handlers/mergeDocumentAndData/mergeDocumentAndData.ts"),
-    out: path.resolve("build/handlers/mergeDocumentAndData/mergeDocumentAndData.js")
+    in: path.resolve("./src/handlers/mergeDocumentAndData/mergeDocumentAndData.ts"),
+    out: path.resolve("./build/handlers/mergeDocumentAndData/mergeDocumentAndData.js")
   }
 ];
 
