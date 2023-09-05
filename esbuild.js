@@ -1,4 +1,5 @@
 const { build } = require("esbuild");
+const path = require("path");
 
 const sharedConfig = {
   bundle: true,
@@ -8,8 +9,8 @@ const sharedConfig = {
 
 const bundles = [
   {
-    in: "src/handlers/mergeDocumentAndData/mergeDocumentAndData.ts",
-    out: "build/handlers/mergeDocumentAndData/mergeDocumentAndData.js"
+    in: path.resolve("src/handlers/mergeDocumentAndData/mergeDocumentAndData.ts"),
+    out: path.resolve("build/handlers/mergeDocumentAndData/mergeDocumentAndData.js")
   }
 ];
 
