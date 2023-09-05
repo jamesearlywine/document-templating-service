@@ -10,6 +10,9 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
+      - ls -al
+      - ls -al src
+      - ls -al src/handlers
   build:
     commands:
       - echo Build started on `date`
