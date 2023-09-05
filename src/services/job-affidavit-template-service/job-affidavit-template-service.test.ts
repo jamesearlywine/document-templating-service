@@ -24,7 +24,7 @@ describe("JobAffidavitTemplateService", () => {
         data,
       });
 
-      expect(true).toBe(true);
+      expect(affidavit).toBeTruthy;
     });
   });
 });
