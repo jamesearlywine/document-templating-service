@@ -6,17 +6,17 @@ const sharedConfig = {
   platform: "node",
 }
 
-const entryPoints = [
+const bundles = [
   {
     in: "src/handlers/mergeDocumentAndData/mergeDocumentAndData.ts",
     out: "build/handlers/mergeDocumentAndData/mergeDocumentAndData.js"
   }
 ];
 
-entryPoints.forEach(entryPoint => {
+bundles.forEach(bundle => {
   build({
     ...sharedConfig,
-    entryPoints: [entryPoint.in],
-    outfile: entryPoint.out
+    entryPoints: [bundle.in],
+    outfile: bundle.out
   });
 });
