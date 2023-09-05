@@ -1,5 +1,5 @@
 {
-    "ignorePatterns": ["node_modules/**/*", "build/**/*"],
+    "ignorePatterns": ["node_modules/**/*", "build/**/*", "cdk.out/**/*"],
     "env": {
         "browser": true,
         "es2021": true
@@ -18,11 +18,11 @@
     ],
     "rules": {
         "indent": [
-            "error",
-            4
+            "warn",
+            2
         ],
         "linebreak-style": [
-            "error",
+            "warn",
             "unix"
         ],
         "quotes": [
@@ -30,8 +30,14 @@
             "double"
         ],
         "semi": [
-            "error",
+            "warn",
             "always"
+        ],
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            {
+                "argsIgnorePattern": "^_"
+            }
         ]
     }
 }

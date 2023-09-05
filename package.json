@@ -7,7 +7,8 @@
     "start": "sam local start-lambda",
     "build": "rimraf ./build && node esbuild.js",
     "build:template": "cdk synth > template.yml",
-    "deploy": "cdk deploy --require-approval never"
+    "deploy": "cdk deploy --require-approval never",
+    "lint": "eslint . --ext .ts"
   },
   "author": "",
   "license": "ISC",

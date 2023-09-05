@@ -1,10 +1,10 @@
-const { build } = require('esbuild');
+const { build } = require("esbuild");
 
 const sharedConfig = {
   bundle: true,
   minify: true,
   platform: "node",
-}
+};
 
 const bundles = [
   {

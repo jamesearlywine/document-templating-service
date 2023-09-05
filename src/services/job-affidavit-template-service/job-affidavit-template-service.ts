@@ -1,15 +1,17 @@
 import {JobAffidavit} from "src/domain/job-affidavit";
-import {PROJECT_ROOT} from "../../index";
-import * as fs from "fs";
-import * as path from "path";
-import {JobAffidavitTemplate} from "./job-affidavit-template/job-affidavit-template";
+import {JobAffidavitTemplate} from "src/services/job-affidavit-template-service/job-affidavit-template";
+import {JobAffidavitTemplateData} from "./job-affidavit-template-data";
 
-export const generateJobAffidavit = ({
-  data: JobAffidavitTemplateData,
-  template: JobAffidavitTemplate
+export const generateJobAffidavit =
+({data, template}: {
+   data: JobAffidavitTemplateData,
+   template: JobAffidavitTemplate
+ }): JobAffidavit => {
 
-}): JobAffidavit => {
-
+  console.log("JobAffidavitTemplateService.generateJobAffidavit() called with parameters: ", {
+    data,
+    template
+  });
 
   return {
     type: "processproof:JobAffidavit",
@@ -24,4 +26,4 @@ export const generateJobAffidavit = ({
     created: "1234",
     updated: "1234"
   };
-}
+};
