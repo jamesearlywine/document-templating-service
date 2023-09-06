@@ -17,6 +17,10 @@ phases:
       - npm run test
   post_build:
     commands:
+<<<<<<< Updated upstream
+=======
+      - npm run build:template
+>>>>>>> Stashed changes
       - echo Build completed on `date`
 
 reports:
@@ -29,3 +33,4 @@ reports:
 artifacts:
   files:
     - build/**/*
+    - template.yml
