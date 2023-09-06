@@ -1,5 +1,5 @@
 {
-    "ignorePatterns": ["node_modules/**/*", "build/**/*", "cdk.out/**/*"],
+    "ignorePatterns": ["node_modules/**/*", "build/**/*", "cdk.out/**/*", "**/*.js"],
     "env": {
         "browser": true,
         "es2021": true
