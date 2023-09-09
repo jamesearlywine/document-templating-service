@@ -1,4 +1,4 @@
-import {DataSource} from "src/domain/data-source/data-source";
+import {DataSource} from "src/data/domain/data-source/data-source";
 
 export type Job = {
   id: string;

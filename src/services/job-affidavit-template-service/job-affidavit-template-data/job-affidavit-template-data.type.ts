@@ -1,4 +1,4 @@
-import { Job } from "src/domain/job";
+import { Job } from "src/data/domain/job";
 
 export class JobAffidavitTemplateData {
   jobId: string;
@@ -21,7 +21,7 @@ export class JobAffidavitTemplateData {
   jobCourtCaseDefendant?: string;
   jobAccountCompanyName?: string;
 
-  // fromJob(job: Job): JobAffidavitTemplateData {
+  // fromJob(job: Job): JobAffidavitTemplateDataType.ts {
   //   return {
   //     jobId: job.id,
   //     jobClientFullName: job.client.name || job.client.primaryContact.firstName + job.client.primaryContact.lastName,
