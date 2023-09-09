@@ -1,4 +1,4 @@
-import {JobAffidavit} from "src/domain/job-affidavit";
+import {JobAffidavit} from "src/data/domain/job-affidavit";
 import {JobAffidavitTemplate} from "src/services/job-affidavit-template-service/job-affidavit-template";
 import {JobAffidavitTemplateData} from "./job-affidavit-template-data";
 

@@ -14,6 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.4",
+    "@types/word-extractor": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
     "aws-cdk": "^2.94.0",
@@ -26,9 +27,13 @@
     "prettier": "^3.0.3",
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "word-extractor": "^1.0.4"
   },
   "dependencies": {
-    "mammoth": "^1.6.0"
+    "docxtemplater": "^3.39.1",
+    "mammoth": "^1.6.0",
+    "pizzip": "^3.1.4",
+    "uuid": "^9.0.0"
   }
 }
