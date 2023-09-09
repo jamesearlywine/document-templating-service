@@ -17,7 +17,6 @@ describe("JobAffidavitTemplateService", () => {
       const template = JobAffidavitTemplate.from({
         fileLocation: testAffidavitTemplateFilePath,
       });
-      const templateRawContent = await template.getTemplateRawContent();
 
       const data = validJobAffidavitTemplateData();
 
