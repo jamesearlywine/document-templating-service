@@ -1,5 +1,5 @@
 {
-  "name": "pdf-templating-service",
+  "name": "processproof-document-templating-service",
   "version": "0.0.1",
   "description": "pdf templating service",
   "scripts": {
