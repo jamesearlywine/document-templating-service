@@ -137,3 +137,5 @@ cdk.out
 
 # build
 build
+
+.DS_Store

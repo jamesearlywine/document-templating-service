@@ -13,13 +13,15 @@ const testAffidavitTemplateFilePath = [
 
 describe("JobAffidavitTemplateService", () => {
   describe("generateJobAffidavit", () => {
-    it("should be true", () => {
+    it("should be true", async () => {
       const template = JobAffidavitTemplate.from({
         fileLocation: testAffidavitTemplateFilePath,
       });
+      const templateRawContent = await template.getTemplateRawContent();
+
       const data = validJobAffidavitTemplateData();
 
-      const affidavit = JobAffidavitTemplateService.generateJobAffidavit({
+      const affidavit = await JobAffidavitTemplateService.generateJobAffidavit({
         template,
         data,
       });
