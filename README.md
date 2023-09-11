@@ -4,10 +4,16 @@
 ## Infrastructural DFD
 https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076
 
-## How to run
+## How to run on aws
 - `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-1` (or your preferred aws region)
 - `npm run build`
 - `npm run build:template`
 - `npm run deploy`
 
 Then go to your aws web console and find the cloudformation stack "DocumentTemplatingService" in your specified aws region.
+
+## @TODO 
+    - Document setup for local development
+    - Document setup for local testing
+    - Document config injection
+        - Gotenberg (local vs. hosted)
