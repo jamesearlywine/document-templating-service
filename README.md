@@ -4,7 +4,14 @@
 ## Infrastructural DFD
 https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076
 
-## How to run
+## Confluence
+https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Document+Templating+Service
+
+## How to run locally
+- `npm run test:integration`
+  - watch `testing/test-generated-files/*` for test-generated files
+
+## How to deploy
 - `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-1` (or your preferred aws region)
 - `npm run build`
 - `npm run build:template`
