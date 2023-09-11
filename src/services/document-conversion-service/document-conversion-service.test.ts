@@ -1,4 +1,4 @@
-import * as DocxToPdfService from "./docx-to-pdf-service";
+import * as DocumentConversionService from "./document-conversion-service";
 import path from "path";
 
 const INPUT_FILE_PATH = path.resolve(
@@ -9,14 +9,14 @@ const OUTPUT_FILE_PATH = path.resolve(
   `testing/test-generated-files/${OUTPUT_FILE_NAME}`,
 );
 
-describe("DocxToPdfService", () => {
+describe("DocumentConversionService", () => {
   describe("docxToPdf()", () => {
     it("should exist", () => {
-      expect(DocxToPdfService).toBeTruthy();
+      expect(DocumentConversionService.docxToPdf).toBeTruthy();
     });
 
     it.skip("should convert a docx file to pdf content", async () => {
-      const output = await DocxToPdfService.docxToPdf({
+      const output = await DocumentConversionService.docxToPdf({
         inputLocation: INPUT_FILE_PATH,
         outputLocation: OUTPUT_FILE_PATH,
       });
