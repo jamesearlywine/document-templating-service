@@ -11,7 +11,6 @@
     "lint": "eslint . --ext .ts",
     "start:gotenberg": "docker run --name gotenberg --detach --rm -p 3000:3000 gotenberg/gotenberg:7.9 &",
     "stop:gotenberg": "docker kill gotenberg",
-
     "pretest:integration": "npm run build && npm run start:gotenberg",
     "test:integration": "jest --config ./testing/integration/jest.config.ts --passWithNoTests",
     "posttest:integration": "npm run stop:gotenberg"
@@ -38,6 +37,7 @@
   },
   "dependencies": {
     "docxtemplater": "^3.39.1",
+    "gotenberg-js-client": "^0.7.4",
     "mammoth": "^1.6.0",
     "pizzip": "^3.1.4",
     "uuid": "^9.0.0"
