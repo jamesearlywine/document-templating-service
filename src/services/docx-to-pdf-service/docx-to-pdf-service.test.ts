@@ -2,9 +2,9 @@ import * as DocxToPdfService from "./docx-to-pdf-service";
 import path from "path";
 
 const INPUT_FILE_PATH = path.resolve(
-  "testing/test-generated-files/output--c3ee7719-db96-42c0-8186-ac99498c37d2.docx",
+  "testing/test-generated-files/output--2db568d7-ccce-4806-9abf-fc070792a603.docx",
 );
-const OUTPUT_FILE_NAME = "output--c3ee7719-db96-42c0-8186-ac99498c37d2.pdf";
+const OUTPUT_FILE_NAME = "output--2db568d7-ccce-4806-9abf-fc070792a603.pdf";
 const OUTPUT_FILE_PATH = path.resolve(
   `testing/test-generated-files/${OUTPUT_FILE_NAME}`,
 );
