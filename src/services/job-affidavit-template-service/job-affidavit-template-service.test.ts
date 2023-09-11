@@ -8,7 +8,7 @@ const testAffidavitTemplateFilePath = [
   PROJECT_ROOT,
   "testing",
   "test-templates",
-  "affidavit_of_non_service__template.docx",
+  "AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx",
 ].join(path.sep);
 
 describe("JobAffidavitTemplateService", () => {
