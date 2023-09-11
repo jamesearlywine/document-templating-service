@@ -17,7 +17,7 @@ describe("DocxTemplaterService", () => {
   describe("generateTemplatedContent()", () => {
     afterAll(() => {
       // Delete the output file
-      fs.unlinkSync(OUTPUT_FILE_PATH);
+      //fs.unlinkSync(OUTPUT_FILE_PATH);
     });
 
     it("should do stuff", async () => {

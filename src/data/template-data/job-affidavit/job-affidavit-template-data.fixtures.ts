@@ -18,4 +18,5 @@ export const validJobAffidavitTemplateData = {
   jobNewLineDelimitedListOfServiceAttempts: "Attempt 1: 2020-01-01",
   jobTotalFees: "100.00",
   jobAccountPrimaryPhone: "123-456-7890",
+  jobAccountCompanyName: "Serious Law Firm, LLC",
 };
