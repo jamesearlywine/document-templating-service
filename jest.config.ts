@@ -8,20 +8,20 @@ const config: Config.InitialOptions = {
   collectCoverage: true,
   coverageReporters: ["lcov", "text-summary"],
   moduleDirectories: ["node_modules", "src"],
-  testPathIgnorePatterns: ["./aws-sam", "./cdk", "./node_modules"],
+  testPathIgnorePatterns: ["./aws-sam", "./cdk", "./node_modules", "./testing"],
   testTimeout: 60000,
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/*.fixtures.ts",
-    "!src/**/*.config.ts"
+    "!src/**/*.config.ts",
   ],
   coverageThreshold: {
     global: {
       statements: 0,
       branches: 0,
       functions: 0,
-      lines: 0
-    }
+      lines: 0,
+    },
   },
   reporters: [
     "default",
@@ -29,10 +29,10 @@ const config: Config.InitialOptions = {
       "jest-junit",
       {
         outputDirectory: "./build",
-        outputName: "junit.xml"
-      }
-    ]
-  ]
+        outputName: "junit.xml",
+      },
+    ],
+  ],
 };
 
 export default config;
