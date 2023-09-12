@@ -7,7 +7,8 @@ const config: Config.InitialOptions = {
   clearMocks: true,
   collectCoverage: true,
   coverageReporters: ["lcov", "text-summary"],
-  moduleDirectories: ["node_modules", "src"],
+  rootDir: ".",
+  moduleDirectories: ["node_modules", "<rootDir>"],
   testPathIgnorePatterns: ["./aws-sam", "./cdk", "./node_modules", "./testing"],
   testTimeout: 60000,
   collectCoverageFrom: [
