@@ -1,7 +1,7 @@
 import path from "path";
 import { validJobAffidavitTemplateData } from "../../src/data/template-data/job-affidavit/job-affidavit-template-data.fixtures";
 import { v4 as uuid } from "uuid";
-import * as DocxTemplaterService from "../../src/services/docxtemplater-service";
+import * as DocxTemplater from "../../src/services/document-templating-service/docxtemplater";
 import * as DocumentConversionService from "../../src/services/document-conversion-service";
 //@todo figure out absolute-path module resolution when running jest in a subfolder
 
@@ -20,7 +20,7 @@ const OUTPUT_PDF_FILE_PATH = path.resolve(
 describe("local end-to-end - docxtemplater->gotenberg", () => {
   describe("docxtemplater->gotenberg", () => {
     it("should generate a pdf from a docx template and data", async () => {
-      DocxTemplaterService.generateTemplatedContent({
+      DocxTemplater.generateTemplatedContent({
         templateFilepath: TEMPLATE_FILE_PATH,
         data: TEST_AFFIDAVIT_TEMPLATE_DATA,
         outputFilepath: OUTPUT_DOCX_FILE_PATH,

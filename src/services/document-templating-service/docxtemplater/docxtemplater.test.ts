@@ -1,6 +1,6 @@
-import * as DocxtemplaterService from "./docxtemplater-service";
+import * as DocxTemplater from "./docxtemplater";
 import path from "path";
-import { validJobAffidavitTemplateData } from "../../data/template-data/job-affidavit/job-affidavit-template-data.fixtures";
+import { validJobAffidavitTemplateData } from "src/data/template-data/job-affidavit/job-affidavit-template-data.fixtures";
 import WordExtractor from "word-extractor";
 import fs from "fs";
 import { v4 as uuid } from "uuid";
@@ -21,7 +21,7 @@ describe("DocxTemplaterService", () => {
     });
 
     it("should do stuff", async () => {
-      DocxtemplaterService.generateTemplatedContent({
+      DocxTemplater.generateTemplatedContent({
         templateFilepath: TEMPLATE_FILE_PATH,
         data: validJobAffidavitTemplateData,
         outputFilepath: OUTPUT_FILE_PATH,
