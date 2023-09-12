@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "pdf templating service",
   "scripts": {
-    "test": "jest . --passWithNoTests",
+    "test": "jest . --config ./jest.config.ts --passWithNoTests",
     "start": "sam local start-lambda",
     "build": "rimraf ./build && node esbuild.js",
     "build:template": "cdk synth > template.yml",
