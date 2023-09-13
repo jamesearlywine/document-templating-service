@@ -1,3 +1,4 @@
+import fs from "fs";
 import {
   pipe,
   gotenberg,
@@ -6,7 +7,8 @@ import {
   adjust,
   please,
 } from "gotenberg-js-client";
-import fs from "fs";
+import DocumentConversionServiceConfig from "src/services/document-conversion-service/document-conversion-service.config";
+
 export const docxToPdf = async ({
   inputLocation,
   outputLocation,
@@ -14,14 +16,12 @@ export const docxToPdf = async ({
   inputLocation: string;
   outputLocation: string;
 }) => {
-  const gotenbergEndpoint = "http://localhost:3000";
-
   const toPDF = pipe(
-    gotenberg(gotenbergEndpoint),
+    gotenberg(DocumentConversionServiceConfig.GOTENBERG_BASE_URL),
     convert,
     office,
     adjust({
-      url: `${gotenbergEndpoint}/forms/libreoffice/convert`,
+      url: `${DocumentConversionServiceConfig.GOTENBERG_BASE_URL}/forms/libreoffice/convert`,
     }),
     please,
   );
