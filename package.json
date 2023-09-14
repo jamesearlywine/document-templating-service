@@ -33,13 +33,13 @@
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
+    "wait-for-expect": "^3.0.2",
     "word-extractor": "^1.0.4"
   },
   "dependencies": {
     "docxtemplater": "^3.39.1",
     "dotenv": "^16.3.1",
     "gotenberg-js-client": "^0.7.4",
-    "mammoth": "^1.6.0",
     "pizzip": "^3.1.4",
     "uuid": "^9.0.0"
   }
