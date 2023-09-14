@@ -1,4 +1,4 @@
-import { ConfigFetcherEnv } from "src/config/config-fetcher-env";
+import { ConfigFetcherEnv } from "src/config/config-fetcher-env/config-fetcher-env";
 
 const getMultipleSpy = jest.spyOn(ConfigFetcherEnv, "getMultiple");
 
