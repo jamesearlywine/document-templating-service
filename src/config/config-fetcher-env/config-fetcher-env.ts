@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { ConfigFetcher } from "src/config/lib";
 
 export class ConfigFetcherEnv extends ConfigFetcher {

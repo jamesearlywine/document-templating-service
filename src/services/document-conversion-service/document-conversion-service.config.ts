@@ -22,8 +22,7 @@ export default class DocumentConversionServiceConfig extends ServiceConfig {
       ConfigFetcherEnv.get(ConfigKeys.GOTENBERG_BASE_URL),
     ]).then((results) => {
       this.set({
-        [ConfigKeys.GOTENBERG_BASE_URL]:
-          results[0] || this.DEFAULT_VALUES[ConfigKeys.GOTENBERG_BASE_URL],
+        [ConfigKeys.GOTENBERG_BASE_URL]: results[0],
       });
     });
 
