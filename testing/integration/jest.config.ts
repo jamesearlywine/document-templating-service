@@ -1,14 +1,14 @@
 import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
-  rootDir: "../../",
+  rootDir: "../..",
   testMatch: ["<rootDir>/testing/integration/**/*.test.ts"],
   preset: "ts-jest",
   testEnvironment: "node",
   clearMocks: true,
   collectCoverage: true,
   coverageReporters: ["lcov", "text-summary"],
-  moduleDirectories: ["node_modules", "src"],
+  moduleDirectories: ["node_modules", "<rootDir>"],
   testTimeout: 180000,
 };
 
