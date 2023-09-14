@@ -40,7 +40,7 @@ export const docxToPdf = async ({
   await initialize();
 
   const pdf = await toPdf(`file://${inputLocation}`);
-  pdf.pipe(fs.createWriteStream(outputLocation));
+  await pdf.pipe(fs.createWriteStream(outputLocation));
 
   return pdf;
 };
