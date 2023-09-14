@@ -1,6 +1,7 @@
 import { ServiceConfig } from "src/config/lib/service-config";
 import { ConfigFetcherEnv } from "src/config/config-fetcher-env";
 
+//@todo - come up with something more config-schema-driven
 export const ConfigKeys = {
   GOTENBERG_BASE_URL: "GOTENBERG_BASE_URL",
 };
