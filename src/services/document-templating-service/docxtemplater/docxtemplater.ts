@@ -14,7 +14,6 @@ export const generateTemplatedContent = ({
 }): Buffer => {
   const templateFileContent = fs.readFileSync(templateFilepath, "binary");
   const zip = new PizZip(templateFileContent);
-
   const doc = new Docxtemplater(zip, {
     paragraphLoop: true,
     linebreaks: true,
@@ -29,7 +28,7 @@ export const generateTemplatedContent = ({
     // compression: "DEFLATE"
   });
 
-  // buf is a nodejs Buffer, you can either write it to a
+  // outputBuffer is a nodejs Buffer, you can either write it to a
   // file or res.send it with express for example.
   if (outputFilepath) {
     fs.writeFileSync(outputFilepath, outputBuffer);
