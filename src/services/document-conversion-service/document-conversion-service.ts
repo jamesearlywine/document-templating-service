@@ -14,17 +14,19 @@ export let toPdf: (url: string) => Promise<NodeJS.ReadableStream>;
 export let initialized: Promise<void>;
 export const initialize = async () => {
   if (!initialized) {
+    const url = `${DocumentConversionServiceConfig.GOTENBERG_BASE_URL}/forms/libreoffice/convert`;
     initialized = DocumentConversionServiceConfig.initialize().then(() => {
       toPdf = pipe(
         gotenberg(DocumentConversionServiceConfig.GOTENBERG_BASE_URL),
         convert,
         office,
         adjust({
-          url: `${DocumentConversionServiceConfig.GOTENBERG_BASE_URL}/forms/libreoffice/convert`,
+          url,
         }),
         please,
       );
     });
+    console.log("test");
   }
 
   return initialized;
