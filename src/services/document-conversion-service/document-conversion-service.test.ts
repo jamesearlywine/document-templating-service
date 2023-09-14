@@ -1,4 +1,6 @@
 import path from "path";
+import Stream from "stream";
+
 import * as DocumentConversionService from "./document-conversion-service";
 
 const INPUT_FILE_PATH = path.resolve(
@@ -14,22 +16,17 @@ describe("DocumentConversionService", () => {
     it("should call the Gotenberg client", async () => {
       await DocumentConversionService.initialize();
 
-      jest.mock("./document-conversion-service", () => ({
-        ...jest.requireActual("./document-conversion-service"),
-        toPdf: jest.fn(),
-      }));
-      const mockedDocumentConversionService = jest.mocked(
-        DocumentConversionService,
-      );
+      const mockedToPdf = jest.fn().mockReturnValue(Stream.Readable.from([]));
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      DocumentConversionService.toPdf = mockedToPdf;
 
       const output = await DocumentConversionService.docxToPdf({
         inputLocation: INPUT_FILE_PATH,
         outputLocation: OUTPUT_FILE_PATH,
       });
 
-      expect(mockedDocumentConversionService.toPdf).toHaveBeenCalledWith(
-        `file://${INPUT_FILE_PATH}`,
-      );
+      expect(mockedToPdf).toHaveBeenCalledWith(`file://${INPUT_FILE_PATH}`);
     });
   });
 });
