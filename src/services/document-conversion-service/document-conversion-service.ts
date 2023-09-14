@@ -7,7 +7,12 @@ import {
   adjust,
   please,
 } from "gotenberg-js-client";
-import DocumentConversionServiceConfig from "src/services/document-conversion-service/document-conversion-service.config";
+import DocumentConversionServiceConfig from "./document-conversion-service.config";
+
+let initialized: Promise<void>;
+export const initialize = async () => {
+  initialized = DocumentConversionServiceConfig.initialize();
+};
 
 export const docxToPdf = async ({
   inputLocation,
@@ -15,8 +20,13 @@ export const docxToPdf = async ({
 }: {
   inputLocation: string;
   outputLocation: string;
-}) => {
-  const toPDF = pipe(
+}): Promise<NodeJS.ReadableStream> => {
+  if (!initialized) {
+    initialize();
+  }
+  await initialized;
+
+  const pdf = await pipe(
     gotenberg(DocumentConversionServiceConfig.GOTENBERG_BASE_URL),
     convert,
     office,
@@ -24,8 +34,7 @@ export const docxToPdf = async ({
       url: `${DocumentConversionServiceConfig.GOTENBERG_BASE_URL}/forms/libreoffice/convert`,
     }),
     please,
-  );
-  const pdf = await toPDF(`file://${inputLocation}`);
+  )(`file://${inputLocation}`);
 
   pdf.pipe(fs.createWriteStream(outputLocation));
 
