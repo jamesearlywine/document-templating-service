@@ -16,6 +16,7 @@ export default class DocumentConversionServiceConfig extends ServiceConfig {
     ];
 
   static initialize = async () => {
+    this.reset();
     const resultsPromise = Promise.all([
       ConfigFetcherEnv.get(ConfigKeys.GOTENBERG_BASE_URL),
     ]).then((results) => {
