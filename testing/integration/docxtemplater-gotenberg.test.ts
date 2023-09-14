@@ -6,6 +6,9 @@ import { validJobAffidavitTemplateData } from "src/data/template-data/job-affida
 import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
 
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
+
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
 );
