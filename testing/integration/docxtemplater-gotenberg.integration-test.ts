@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs";
 import waitForExpect from "wait-for-expect";
 import { v4 as uuid } from "uuid";
-import { validJobAffidavitTemplateData } from "src/data/template-data/job-affidavit/job-affidavit-template-data.fixtures";
+import { validJobAffidavitTemplateData } from "src/data/document-templates/job-affidavit/job-affidavit-template-data.fixtures";
 import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
 
