@@ -9,6 +9,8 @@ import * as DocumentConversionService from "src/services/document-conversion-ser
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
 
+const REMOVE_GENERATED_TEST_FILES = true;
+
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
 );
@@ -21,6 +23,7 @@ const OUTPUT_PDF_FILE_PATH = path.resolve(
   `${__dirname}/../test-generated-files/output--${UUID}.pdf`,
 );
 
+// to run the integration tests from IDE, first run `npm run start:gotenberg` from the command line
 describe("local end-to-end - docxtemplater->gotenberg", () => {
   describe("docxtemplater->gotenberg", () => {
     it("should generate a .docx and .pdf output from template .docx and data", async () => {
@@ -38,14 +41,18 @@ describe("local end-to-end - docxtemplater->gotenberg", () => {
       waitForExpect(() => {
         expect(fs.existsSync(OUTPUT_DOCX_FILE_PATH)).toBe(true);
 
-        // Delete the output files (comment-out to view the outputs testing/test-generated-files/*)
-        fs.unlinkSync(OUTPUT_DOCX_FILE_PATH);
+        // Delete the output .docx file
+        if (REMOVE_GENERATED_TEST_FILES) {
+          fs.unlinkSync(OUTPUT_DOCX_FILE_PATH);
+        }
       }, 5000);
       waitForExpect(() => {
         expect(fs.existsSync(OUTPUT_PDF_FILE_PATH)).toBe(true);
 
-        // Delete the output files (comment-out to view the outputs testing/test-generated-files/*)
-        fs.unlinkSync(OUTPUT_PDF_FILE_PATH);
+        // Delete the output .pdf file
+        if (REMOVE_GENERATED_TEST_FILES) {
+          fs.unlinkSync(OUTPUT_PDF_FILE_PATH);
+        }
       }, 5000);
     });
   });
