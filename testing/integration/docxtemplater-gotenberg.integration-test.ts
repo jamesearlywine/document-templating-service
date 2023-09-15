@@ -9,7 +9,7 @@ import * as DocumentConversionService from "src/services/document-conversion-ser
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
 
-const REMOVE_GENERATED_TEST_FILES = true;
+const REMOVE_TEST_GENERATED_FILES = true;
 
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
@@ -42,7 +42,7 @@ describe("local end-to-end - docxtemplater->gotenberg", () => {
         expect(fs.existsSync(OUTPUT_DOCX_FILE_PATH)).toBe(true);
 
         // Delete the output .docx file
-        if (REMOVE_GENERATED_TEST_FILES) {
+        if (REMOVE_TEST_GENERATED_FILES) {
           fs.unlinkSync(OUTPUT_DOCX_FILE_PATH);
         }
       }, 5000);
@@ -50,7 +50,7 @@ describe("local end-to-end - docxtemplater->gotenberg", () => {
         expect(fs.existsSync(OUTPUT_PDF_FILE_PATH)).toBe(true);
 
         // Delete the output .pdf file
-        if (REMOVE_GENERATED_TEST_FILES) {
+        if (REMOVE_TEST_GENERATED_FILES) {
           fs.unlinkSync(OUTPUT_PDF_FILE_PATH);
         }
       }, 5000);
