@@ -26,7 +26,6 @@ export const initialize = async () => {
         please,
       );
     });
-    console.log("test");
   }
 
   return initialized;

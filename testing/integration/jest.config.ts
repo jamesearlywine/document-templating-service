@@ -2,7 +2,7 @@ import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   rootDir: "../..",
-  testMatch: ["<rootDir>/testing/integration/**/*.test.ts"],
+  testMatch: ["<rootDir>/testing/integration/**/*.integration-test.ts"],
   preset: "ts-jest",
   testEnvironment: "node",
   clearMocks: true,
