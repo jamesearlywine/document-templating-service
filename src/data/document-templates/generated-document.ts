@@ -8,12 +8,13 @@ export const GeneratedDocumentType = {
 export type GeneratedDocumentType =
   (typeof GeneratedDocumentType)[keyof typeof GeneratedDocumentType];
 
-export class GeneratedDocument {
+export type GeneratedDocument = {
   documentId: string;
-  s3Location: string;
+  s3LocationDocx: string;
+  s3LocationPdf: string;
   s3PublicUrl: string;
   documentType: GeneratedDocumentType;
   templateType: DocumentTemplateType;
   templateId: string;
   serializedTemplateData: JsonStringified<TemplateData>;
-}
+};
