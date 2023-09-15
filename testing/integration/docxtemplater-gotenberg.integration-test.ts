@@ -7,6 +7,7 @@ import * as DocxTemplater from "src/services/document-templating-service/docxtem
 import * as DocumentConversionService from "src/services/document-conversion-service";
 
 import dotenv from "dotenv";
+import { JobAffidavitTemplateData } from "src/data/template-data";
 dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
 
 const REMOVE_TEST_GENERATED_FILES = true;
@@ -14,7 +15,9 @@ const REMOVE_TEST_GENERATED_FILES = true;
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
 );
-const TEST_AFFIDAVIT_TEMPLATE_DATA = validJobAffidavitTemplateData;
+const TEST_AFFIDAVIT_TEMPLATE_DATA: JobAffidavitTemplateData =
+  validJobAffidavitTemplateData;
+
 const UUID = `${uuid()}`;
 const OUTPUT_DOCX_FILE_PATH = path.resolve(
   `${__dirname}/../test-generated-files/output--${UUID}.docx`,
