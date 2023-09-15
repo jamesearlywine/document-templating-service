@@ -9,11 +9,11 @@ export type GeneratedDocumentType =
   (typeof GeneratedDocumentType)[keyof typeof GeneratedDocumentType];
 
 export class GeneratedDocument {
-  documentUuid: string;
+  documentId: string;
   s3Location: string;
   s3PublicUrl: string;
   documentType: GeneratedDocumentType;
   templateType: DocumentTemplateType;
-  templateUuid: string;
+  templateId: string;
   serializedTemplateData: JsonStringified<TemplateData>;
 }
