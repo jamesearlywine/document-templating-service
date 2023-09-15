@@ -45,3 +45,8 @@ export const docxToPdf = async ({
 
   return pdf;
 };
+
+export const DocumentConversionService = {
+  initialize,
+  docxToPdf,
+};
