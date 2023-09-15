@@ -1,7 +1,7 @@
 import PizZip from "pizzip";
 import fs from "fs";
 import Docxtemplater from "docxtemplater";
-import { TemplateData } from "src/data/template-data";
+import { TemplateData } from "src/data/document-templates/document-template-data";
 
 export const generateTemplatedContent = ({
   templateFilepath,

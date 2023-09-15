@@ -2,19 +2,22 @@ import path from "path";
 import fs from "fs";
 import waitForExpect from "wait-for-expect";
 import { v4 as uuid } from "uuid";
-import { validJobAffidavitTemplateData } from "src/data/template-data/job-affidavit/job-affidavit-template-data.fixtures";
+import { validJobAffidavitTemplateData } from "src/data/document-templates/job-affidavit/job-affidavit-template-data.fixtures";
 import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
+import { JobAffidavitTemplateData } from "src/data/document-templates/job-affidavit";
 
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
 
-const REMOVE_GENERATED_TEST_FILES = true;
+const REMOVE_TEST_GENERATED_FILES = true;
 
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
 );
-const TEST_AFFIDAVIT_TEMPLATE_DATA = validJobAffidavitTemplateData;
+const TEST_AFFIDAVIT_TEMPLATE_DATA: JobAffidavitTemplateData =
+  validJobAffidavitTemplateData;
+
 const UUID = `${uuid()}`;
 const OUTPUT_DOCX_FILE_PATH = path.resolve(
   `${__dirname}/../test-generated-files/output--${UUID}.docx`,
@@ -42,7 +45,7 @@ describe("local end-to-end - docxtemplater->gotenberg", () => {
         expect(fs.existsSync(OUTPUT_DOCX_FILE_PATH)).toBe(true);
 
         // Delete the output .docx file
-        if (REMOVE_GENERATED_TEST_FILES) {
+        if (REMOVE_TEST_GENERATED_FILES) {
           fs.unlinkSync(OUTPUT_DOCX_FILE_PATH);
         }
       }, 5000);
@@ -50,7 +53,7 @@ describe("local end-to-end - docxtemplater->gotenberg", () => {
         expect(fs.existsSync(OUTPUT_PDF_FILE_PATH)).toBe(true);
 
         // Delete the output .pdf file
-        if (REMOVE_GENERATED_TEST_FILES) {
+        if (REMOVE_TEST_GENERATED_FILES) {
           fs.unlinkSync(OUTPUT_PDF_FILE_PATH);
         }
       }, 5000);

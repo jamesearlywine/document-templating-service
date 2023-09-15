@@ -1,6 +1,6 @@
 import * as DocxTemplater from "./docxtemplater";
 import path from "path";
-import { validJobAffidavitTemplateData } from "src/data/template-data/job-affidavit/job-affidavit-template-data.fixtures";
+import { validJobAffidavitTemplateData } from "src/data/document-templates/job-affidavit/job-affidavit-template-data.fixtures";
 import WordExtractor from "word-extractor";
 import fs from "fs";
 import { v4 as uuid } from "uuid";
