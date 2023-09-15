@@ -5,9 +5,9 @@ import { v4 as uuid } from "uuid";
 import { validJobAffidavitTemplateData } from "src/data/document-templates/job-affidavit/job-affidavit-template-data.fixtures";
 import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
+import { JobAffidavitTemplateData } from "src/data/document-templates/job-affidavit";
 
 import dotenv from "dotenv";
-import { JobAffidavitTemplateData } from "src/data/template-data";
 dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
 
 const REMOVE_TEST_GENERATED_FILES = true;
