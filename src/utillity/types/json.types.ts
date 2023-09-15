@@ -1,6 +1,6 @@
 export type JsonStringified<T> = string;
 
-// this type borrowed from Ben Rosen. :)
+// this recursive type borrowed from Ben Rosen. :)
 export type JsonSerializable =
   | string
   | number
