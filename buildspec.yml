@@ -26,7 +26,7 @@ phases:
       - npm run build:template
       - |
         if [[$CODEBUILD_SOURCE_VERSION == "pr/"*]]; then
-          cdk bootstrap aws://546515125053/us-east-2 --bootstrap-bucket-name $S3_BUCKET
+          cdk bootstrap aws://546515125053/us-east-2
           cdk synth > $TEMPLATE_FILENAME
           cdk-assets -p cdk.out/*assets.json publish --verbose
         else 
