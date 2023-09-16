@@ -39,3 +39,4 @@ artifacts:
   files:
     - build/**/*
     - $TEMPLATE_FILENAME
+    - $TEMPLATE_PACKAGED_FILENAME
