@@ -21,7 +21,7 @@ describe("DocumentConversionService", () => {
       // @ts-ignore
       DocumentConversionService.toPdf = mockedToPdf;
 
-      const output = await DocumentConversionService.docxToPdf({
+      await DocumentConversionService.docxToPdf({
         inputLocation: INPUT_FILE_PATH,
         outputLocation: OUTPUT_FILE_PATH,
       });

@@ -29,7 +29,7 @@ describe("ConfigFetcherEnv", () => {
     it("should call getMultiple to return multiple environment config values", async () => {
       const testConfigKeys = ["NODE_ENV", "BIG_TEST_VALUE"];
 
-      const values = await ConfigFetcherEnv.get(testConfigKeys);
+      await ConfigFetcherEnv.get(testConfigKeys);
 
       expect(getMultipleSpy).toHaveBeenCalledWith(testConfigKeys);
     });
