@@ -33,7 +33,7 @@ phases:
           echo "Not a deployment, so not publishing cdk assets"
         fi
       - echo "CODEBUILD_SOURCE_VERSION: $CODEBUILD_SOURCE_VERSION"
-      - echo Build completed on `date`
+      - echo "Build completed"
 
 reports:
   arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
