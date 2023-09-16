@@ -40,20 +40,29 @@ export const generateDocumentFromTemplateAndData = async ({
   const presignedTemplateUrl =
     "https://some-bucket.s3.amazonaws.com/docxtemplater-templates/abc-123.docx?AWSAccessKeyId=123&Expires=123&Signature=123";
 
-  const outputDocxFilepath = `/tmp/${uuid()}.docx`;
+  const documentBaseFilename = uuid();
+  const outputDocxFilepath = `/tmp/${documentBaseFilename}.docx`;
+  const outputPdfFilepath = `/tmp/${documentBaseFilename}.pdf`;
 
   // route data+template to appropriate templating service/method
-  template.templateType =
+  const templateType =
     template.templateType ??
     DocumentTemplatingServiceConfig.DEFAULT_TEMPLATE_TYPE;
 
-  switch (template.templateType) {
+  switch (templateType) {
     case "DocxTemplater":
       DocxTemplater.generateTemplatedContent({
         templateFilepath: presignedTemplateUrl,
         data: templateData,
         outputFilepath: outputDocxFilepath,
       });
+
+      // need to deploy an instance of Gotenberg first
+      // await DocumentConversionService.docxToPdf({
+      //   inputLocation: outputDocxFilepath,
+      //   outputLocation: outputPdfFilepath,
+      // });
+
       break;
     default:
       throw new Error(
@@ -61,32 +70,21 @@ export const generateDocumentFromTemplateAndData = async ({
       );
   }
 
-  // convert .docx to .pdf
-  const outputPdfFilepath = `/tmp/${uuid()}.pdf`;
-  const pdfConversionParams = {
-    inputLocation: outputDocxFilepath,
-    outputLocation: outputPdfFilepath,
-  };
-
-  await DocumentConversionService.docxToPdf(pdfConversionParams);
-
   // upload generated document files to S3, .docx and .pdf
-
-  // generate presigned url for .pdf
 
   // create entry in data store for generated document
   const generatedDocument: GeneratedDocument = {
     documentId: uuid(),
     s3LocationDocx: "s3LocationDocx",
-    s3LocationPdf: "s3LocationPdf",
-    s3PublicUrl: "s3PublicUrl",
+    s3LocationPdf: "none",
+    s3PublicUrl: "none", // .pdf
     documentType: template.documentType,
     templateType: template.templateType,
     templateId: template.id,
     serializedTemplateData: JSON.stringify(templateData),
   };
 
-  return Promise.resolve(generatedDocument);
+  return generatedDocument;
 };
 
 export const DocumentTemplatingService: Service & {
