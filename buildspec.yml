@@ -18,6 +18,8 @@ phases:
   post_build:
     commands:
       - npm run build:template
+      - aws cloudformation package --template-file template.yaml --s3-bucket $S3_BUCKET \
+        --s3-prefix $S3_BUILDS_PREFIX --output-template-file $TEMPLATE_FILE_NAME
       - echo Build completed on `date`
 
 reports:
