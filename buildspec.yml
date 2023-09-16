@@ -24,17 +24,9 @@ phases:
     commands:
       - env
       - npm run build:template
-      - |
-        if [[$CODEBUILD_SOURCE_VERSION == "pr/"*]]; then
-          cdk bootstrap aws://546515125053/us-east-2
-          cdk synth > $TEMPLATE_FILENAME
-          cdk-assets -p cdk.out/*assets.json publish --verbose
-        else 
-          echo "Not a deployment, so not publishing cdk assets"
-        fi
-
-      - echo "Build completed"
-      - echo "CODEBUILD_SOURCE_VERSION = $CODEBUILD_SOURCE_VERSION"
+      - cdk bootstrap aws://546515125053/us-east-2
+      - cdk synth > $TEMPLATE_FILENAME
+      - cdk-assets -p cdk.out/*assets.json publish --verbose
 
 reports:
   arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
