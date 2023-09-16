@@ -32,7 +32,7 @@ phases:
         else 
           echo "Not a deployment, so not publishing cdk assets"
         fi
-      - echo CODEBUILD_SOURCE_VERSION: `$CODEBUILD_SOURCE_VERSION`
+      - echo CODEBUILD_SOURCE_VERSION: $CODEBUILD_SOURCE_VERSION
       - echo Build completed on `date`
 
 reports:
