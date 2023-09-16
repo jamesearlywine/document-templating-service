@@ -23,9 +23,12 @@ phases:
       - npm run test
   post_build:
     commands:
-      ## - env
+      - env
       - npm run build:template
-      - cdk-assets -p cdk.out/*assets.json publish
+      - if [[$CODEBUILD_WEBHOOK_TRIGGER == "pr/"* || $CODEBUILD_WEBHOOK_TRIGGER == ""]]; then
+          cdk-assets -p cdk.out/*assets.json publish --verbose;
+        fi
+      - echo "$CODEBUILD_WEBHOOK_TRIGGER: $CODEBUILD_WEBHOOK_TRIGGER"
       - echo Build completed on `date`
 
 reports:
