@@ -26,6 +26,8 @@ phases:
       - env
       - npm run build:template
       - aws cloudformation package --template-file $TEMPLATE_FILENAME --s3-bucket $S3_BUCKET --s3-prefix $S3_PREFIX --output-template-file $TEMPLATE_PACKAGED_FILENAME
+      - ls .
+      - ls ./build
       - echo Build completed on `date`
 
 reports:
