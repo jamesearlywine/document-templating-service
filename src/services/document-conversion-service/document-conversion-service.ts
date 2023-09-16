@@ -8,6 +8,7 @@ import {
   please,
 } from "gotenberg-js-client";
 import DocumentConversionServiceConfig from "./document-conversion-service.config";
+import { Service } from "src/services/service.type";
 
 export let toPdf: (url: string) => Promise<NodeJS.ReadableStream>;
 
@@ -46,7 +47,9 @@ export const docxToPdf = async ({
   return pdf;
 };
 
-export const DocumentConversionService = {
+export const DocumentConversionService: Service & {
+  docxToPdf;
+} = {
   initialize,
   docxToPdf,
 };
