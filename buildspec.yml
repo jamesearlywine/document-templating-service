@@ -3,8 +3,7 @@ env:
   variables:
     TEMPLATE_FILENAME: template.yml
     TEMPLATE_PACKAGED_FILENAME: template.packaged.yml
-    S3_BUCKET: arn:aws:s3:::cdk-hnb659fds-assets-546515125053-us-east-2
-    S3_PREFIX: processproof-documen/BuildArtif/
+    S3_BUCKET: arn:aws:s3:::processproof-document-templating-service-codebuild-artifacts
 
 phases:
   install:
@@ -25,10 +24,15 @@ phases:
     commands:
       - env
       - npm run build:template
-      - if [[$CODEBUILD_WEBHOOK_TRIGGER == "pr/"* || $CODEBUILD_WEBHOOK_TRIGGER == ""]]; then
-          cdk-assets -p cdk.out/*assets.json publish --verbose;
+      - |
+        if [[$CODEBUILD_SOURCE_VERSION == "pr/"*]]; then
+          cdk bootstrap aws://546515125053/us-east-2 --bootstrap-bucket-name $S3_BUCKET
+          cdk synth > $TEMPLATE_FILENAME
+          cdk-assets -p cdk.out/*assets.json publish --verbose
+        else 
+          echo "Not a deployment, so not publishing cdk assets"
         fi
-      - echo "$CODEBUILD_WEBHOOK_TRIGGER: $CODEBUILD_WEBHOOK_TRIGGER"
+      - echo CODEBUILD_SOURCE_VERSION: `$CODEBUILD_SOURCE_VERSION`
       - echo Build completed on `date`
 
 reports:
@@ -42,4 +46,3 @@ artifacts:
   files:
     - build/**/*
     - $TEMPLATE_FILENAME
-    - $TEMPLATE_PACKAGED_FILENAME
