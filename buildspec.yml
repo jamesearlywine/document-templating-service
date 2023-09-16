@@ -2,6 +2,7 @@ version: 0.2
 env:
   variables:
     TEMPLATE_FILENAME: template.yml
+    TEMPLATE_PACKAGED_FILENAME: template.packaged.yml
     S3_BUCKET: arn:aws:s3:::cdk-hnb659fds-assets-546515125053-us-east-2
     S3_PREFIX: process-proof-codepipeline-builds
 
@@ -24,7 +25,7 @@ phases:
     commands:
       - env
       - npm run build:template
-      - aws cloudformation package --template-file $TEMPLATE_FILENAME --s3-bucket $S3_BUCKET --s3-prefix $S3_PREFIX --output-template-file $TEMPLATE_FILENAME
+      - aws cloudformation package --template-file $TEMPLATE_FILENAME --s3-bucket $S3_BUCKET --s3-prefix $S3_PREFIX --output-template-file $TEMPLATE_PACKAGED_FILENAME
       - echo Build completed on `date`
 
 reports:
