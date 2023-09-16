@@ -12,3 +12,11 @@ export const initializeAllServices = async () => {
     Object.values(AllServices).map((service) => service.initialize()),
   );
 };
+
+export const ServiceRegistry: {
+  AllServices: { [k: string]: Service };
+  initializeAllServices: () => Promise<void[]>;
+} = {
+  AllServices,
+  initializeAllServices,
+};
