@@ -22,7 +22,7 @@ phases:
 #      - npm run test
   post_build:
     commands:
-      - "echo $(git symbolic-ref HEAD --short)"
+      - "echo $(git rev-parse --abbrev-ref HEAD)"
       - env
 #      - npm run build:template
 #      - cdk bootstrap aws://546515125053/us-east-2
