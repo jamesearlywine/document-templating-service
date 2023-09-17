@@ -31,6 +31,7 @@ phases:
           export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r .SecretAccessKey)
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
           export AWS_SDK_LOAD_CONFIG=1
+          export AWS_DEFAULT_REGION=us-east-2
           echo "[default]" > ~/.aws/config
           echo "region = us-east-2" >> ~/.aws/config
           echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/config
