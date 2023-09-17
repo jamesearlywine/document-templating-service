@@ -32,7 +32,7 @@ phases:
           export AWS_DEFAULT_REGION=us-east-2
 
           export AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --query Account --output text)
-          cdk bootstrap aws://$AWS_ACCOUNT_NUMBER/us-east-1
+          cdk bootstrap aws://$AWS_ACCOUNT_NUMBER/us-east-2
           npm run build:template
           npm run cdk:publish:assets
         else 
