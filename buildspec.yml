@@ -19,14 +19,12 @@ phases:
     commands:
       - echo Build started on `date`
       - npm run build
-  test:
-    commands:
       - npm run test
-  package:
+  post_build:
     commands:
       - npm run build:template
-      - |- 
-        if [["$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/* ]; then
+      - |-
+        if [["$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/* ]]; then
           echo "Skipping deployment for PR builds"
           exit 0
         else
