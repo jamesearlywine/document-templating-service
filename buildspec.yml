@@ -28,11 +28,7 @@ phases:
       - |
         if [[ "$CODEBUILD_INITIATOR" =~ ^codepipeline* ]]; then
           source ./pipeline/pull-env-aws-credentials.from-aws.sh
-          source ./pipeline/build-aws-credentials-file-from-env.sh
-          export AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials
-        
-          echo "AWS_SHARED_CREDENTIALS_FILE: $AWS_SHARED_CREDENTIALS_FILE"
-          cat $(echo $AWS_SHARED_CREDENTIALS_FILE);
+          source ./pipeline/build-aws-credentials-config-file-from-env.sh
           npm run cdk:publish
         else 
           echo "Not running in CodePipeline, skipping CDK assets publishing"
