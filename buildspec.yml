@@ -22,7 +22,7 @@ phases:
       - npm run test
   post_build:
     commands:
-      - "export CODEBUILD_GIT_BRANCH=`git symbolic-ref HEAD --short 2>/dev/null`"
+      - "export CODEBUILD_GIT_BRANCH=$(git symbolic-ref HEAD --short 2>/dev/null)"
       - env
       - npm run build:template
       - cdk bootstrap aws://546515125053/us-east-2
