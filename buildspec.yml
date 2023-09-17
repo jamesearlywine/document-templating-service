@@ -29,6 +29,8 @@ phases:
         if [[ "$CODEBUILD_INITIATOR" =~ ^codepipeline* ]]; then
           source ./pipeline/pull-env-aws-credentials-from-aws.sh
           source ./pipeline/build-aws-credentials-config-file-from-env.sh
+          cat ~/.aws/credentials
+          cat ~/.aws/config
           npm run cdk:publish
         else 
           echo "Not running in CodePipeline, skipping CDK assets publishing"
