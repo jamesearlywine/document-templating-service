@@ -31,6 +31,7 @@ phases:
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
           export AWS_DEFAULT_REGION=us-east-2
 
+          cdk bootstrap aws://546515125053/us-east-2
           npm run build:template
           npm run cdk:publish:assets
         else 
