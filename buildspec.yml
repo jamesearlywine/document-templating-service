@@ -14,20 +14,20 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies...
-      - npm install
+#      - npm install
   build:
     commands:
       - echo Build started on `date`
-      - npm run build
-      - npm run test
+#      - npm run build
+#      - npm run test
   post_build:
     commands:
       - "echo $(git symbolic-ref HEAD --short)"
       - env
-      - npm run build:template
-      - cdk bootstrap aws://546515125053/us-east-2
-      - cdk synth > $TEMPLATE_FILENAME
-      - cdk-assets -p cdk.out/*assets.json publish --verbose
+#      - npm run build:template
+#      - cdk bootstrap aws://546515125053/us-east-2
+#      - cdk synth > $TEMPLATE_FILENAME
+#      - cdk-assets -p cdk.out/*assets.json publish --verbose
 
 reports:
   arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
