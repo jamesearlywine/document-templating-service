@@ -31,7 +31,8 @@ phases:
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
           export AWS_DEFAULT_REGION=us-east-2
 
-          cdk bootstrap aws://546515125053/us-east-2
+          export AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --query Account --output text)
+          cdk bootstrap aws://$AWS_ACCOUNT_NUMBER/us-east-1
           npm run build:template
           npm run cdk:publish:assets
         else 
