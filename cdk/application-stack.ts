@@ -43,7 +43,7 @@ export class ApplicationStack {
         ),
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-          GOTENBERG_URL: cdk.Fn.sub(
+          GOTENBERG_BASE_URL: cdk.Fn.sub(
             "{{resolve:ssm:/${AWS_ENV}/document-templating-service/gotenberg-base-url:1}}",
             {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
