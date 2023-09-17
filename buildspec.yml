@@ -39,7 +39,7 @@ phases:
           echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/config
           echo "region = us-east-2" >> ~/.aws/config
           echo "output = json" >> ~/.aws/config
-          cat ./.aws/config
+          cat ~/.aws/config
         
           npm run cdk:publish
         else 
