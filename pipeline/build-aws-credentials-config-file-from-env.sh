@@ -11,3 +11,8 @@ echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
 echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
 echo "region = us-east-2" >> ~/.aws/credentials
 echo "output = json" >> ~/.aws/credentials
+
+export AWS_PROFILE=default
+export AWS_SDK_LOAD_CONFIG=1
+export AWS_CONFIG_FILE=~/.aws/config
+```
