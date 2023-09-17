@@ -15,12 +15,12 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
-  build:
+  build:sd
     commands:
       - echo Build started on `date`
       - npm run build
       - npm run test
-        
+
   post_build:
     commands:
       - env
@@ -33,13 +33,18 @@ phases:
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
           
           export AWS_CONFIG_FILE=$(pwd)/.aws-config
+          export AWS_SHARED_CREDENTIALS_FILE=$(pwd)/.aws-credentials
           export AWS_SDK_LOAD_CONFIG=1
           export AWS_DEFAULT_REGION=us-east-2
           
+          echo "[default]" > $(pwd)/.aws-credentials
+          echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> $(pwd)/.aws-credentials
+          echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> $(pwd)/.aws-credentials
+          echo "region = us-east-2" > $(pwd)/.aws-credentials
+          echo "output = json" >> $(pwd)/.aws-credentials
+                  
           echo "[default]" > $(pwd)/.aws-config
-          echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> $(pwd)/.aws-config
-          echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> $(pwd)/.aws-config
-          echo "region = us-east-2" >> $(pwd)/.aws-config
+          echo "region = us-east-2" > $(pwd)/.aws-config
           echo "output = json" >> $(pwd)/.aws-config
           cat ./.aws-config
           cdk-assets -p cdk.out/*assets.json publish --verbose
