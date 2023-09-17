@@ -18,13 +18,9 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - |
-        if [[ "$CODEBUILD_INITIATOR" =~ ^codepipeline* ]]; then
-            echo "Running in CodePipeline, skipping build and test"
-        else
-          npm run build
-          npm run test
-        fi
+      - npm run build
+      - npm run test
+        
   post_build:
     commands:
       - env
@@ -35,9 +31,11 @@ phases:
           export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r .AccessKeyId)
           export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r .SecretAccessKey)
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
+          
           export AWS_CONFIG_FILE=$(pwd)/.aws-config
           export AWS_SDK_LOAD_CONFIG=1
           export AWS_DEFAULT_REGION=us-east-2
+          
           echo "[default]" > $(pwd)/.aws-config
           echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> $(pwd)/.aws-config
           echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> $(pwd)/.aws-config
