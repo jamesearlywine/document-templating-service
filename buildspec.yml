@@ -27,7 +27,7 @@ phases:
       - npm run build:template
       - |
         if [[ "$CODEBUILD_INITIATOR" =~ ^codepipeline* ]]; then
-          source ./pipeline/pull-env-aws-credentials.from-aws.sh
+          source ./pipeline/pull-env-aws-credentials-from-aws.sh
           source ./pipeline/build-aws-credentials-config-file-from-env.sh
           npm run cdk:publish
         else 
