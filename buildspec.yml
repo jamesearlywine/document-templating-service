@@ -41,7 +41,7 @@ phases:
           echo "output = json" >> ~/.aws/config
           cat ./.aws/config
         
-          cdk-assets -p cdk.out/*assets.json publish --verbose
+          npm run cdk:publish
         else 
           echo "Not running in CodePipeline, skipping CDK assets publishing"
         fi
