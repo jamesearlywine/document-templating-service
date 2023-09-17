@@ -23,15 +23,20 @@ phases:
 
   post_build:
     commands:
-      - npm run build:template
       - |
         if [[ "$CODEBUILD_INITIATOR" =~ ^codepipeline* ]]; then
+          export AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --query Account --output text)
+          cdk bootstrap aws://$AWS_ACCOUNT_NUMBER/us-east-1
+          npm run build:template
           export CREDS=$(curl 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
+        
           export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r .AccessKeyId)
           export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r .SecretAccessKey)
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
           export AWS_DEFAULT_REGION=us-east-2
-          npm run cdk:publish
+        
+          npm run cdk:publish:assets
+        
         else 
           echo "Not running in CodePipeline, skipping CDK assets publishing"
         fi
