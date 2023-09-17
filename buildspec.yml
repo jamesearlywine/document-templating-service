@@ -15,7 +15,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
-  build:sd
+  build:
     commands:
       - echo Build started on `date`
       - npm run build
@@ -39,9 +39,9 @@ phases:
           echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/config
           echo "region = us-east-2" >> ~/.aws/config
           echo "output = json" >> ~/.aws/config
-          cat ./.aws/config
+          cat ~/.aws/config
         
-          cdk-assets -p cdk.out/*assets.json publish --verbose
+          npm run cdk:publish
         else 
           echo "Not running in CodePipeline, skipping CDK assets publishing"
         fi
