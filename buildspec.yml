@@ -42,11 +42,13 @@ phases:
           echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> $(pwd)/.aws-credentials
           echo "region = us-east-2" > $(pwd)/.aws-credentials
           echo "output = json" >> $(pwd)/.aws-credentials
-                  
+          cat ./.aws-credentials
+          
           echo "[default]" > $(pwd)/.aws-config
           echo "region = us-east-2" > $(pwd)/.aws-config
           echo "output = json" >> $(pwd)/.aws-config
           cat ./.aws-config
+        
           cdk-assets -p cdk.out/*assets.json publish --verbose
         else 
           echo "Not running in CodePipeline, skipping CDK assets publishing"
