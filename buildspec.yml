@@ -32,6 +32,10 @@ phases:
           export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r .AccessKeyId)
           export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r .SecretAccessKey)
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
+          echo "[default]" > ~/.aws/config
+          echo "region = us-east-2" >> ~/.aws/config
+          echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/config
+          echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/config
           cdk bootstrap aws://546515125053/us-east-2
           cdk synth > $TEMPLATE_FILENAME
           cdk-assets -p cdk.out/*assets.json publish --verbose
