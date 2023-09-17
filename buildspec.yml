@@ -25,17 +25,25 @@ phases:
       - env
       - npm run build:template
       - |
-        if [[$CODEBUILD_SOURCE_VERSION == "pr/"*]]; then
+        if [[ "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/* ]]; then
+          echo "Skipping deployment for PR builds"
+          exit 0
+        else
+          export CREDS=$(curl 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
+          export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r .AccessKeyId)
+          export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r .SecretAccessKey)
+          export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
+          export AWS_SDK_LOAD_CONFIG=1
+          echo "[default]" > ~/.aws/config
+          echo "region = us-east-2" >> ~/.aws/config
+          echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/config
+          echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/config
           cdk bootstrap aws://546515125053/us-east-2
           cdk synth > $TEMPLATE_FILENAME
           cdk-assets -p cdk.out/*assets.json publish --verbose
-        else 
-          echo "Not a deployment, so not publishing cdk assets"
         fi
 
-      - echo "Build completed"
-      - echo "CODEBUILD_SOURCE_VERSION = $CODEBUILD_SOURCE_VERSION"
-
+      - echo Build completed on `date`
 reports:
   arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
     files:
