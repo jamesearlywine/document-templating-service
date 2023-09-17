@@ -14,7 +14,7 @@
     "test:integration": "jest --config ./testing/integration/jest.config.ts --passWithNoTests",
     "posttest:integration": "npm run stop:gotenberg",
     "cdk:publish": "cdk-assets -p cdk.out/*assets.json publish --verbose",
-    "cdk:deploy": "cdk deploy --require-approval never",
+    "cdk:deploy": "cdk deploy --require-approval never"
   },
   "author": "",
   "license": "ISC",
