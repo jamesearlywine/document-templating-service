@@ -49,6 +49,18 @@ export class ApplicationStack {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
             },
           ),
+          PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
+            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
+            {
+              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+            },
+          ),
+          PROCESSPROOF_PUBLIC_DOCUMENTS_BUCKET_ARN: cdk.Fn.sub(
+            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/public-documents-bucket-arn}}",
+            {
+              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+            },
+          ),
         },
         role: this.lambdaExecutionRole as IRole,
       },
