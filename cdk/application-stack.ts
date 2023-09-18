@@ -43,13 +43,11 @@ export class ApplicationStack {
     /*********************
      * Gotenberg Service
      */
-    const gotenbergServiceSecurityGroupName = "GotenbergServiceSecurityGroup";
     this.gotenbergServiceSecurityGroup = new cdk.aws_ec2.SecurityGroup(
       this.stack,
       "GotenbergServiceSecurityGroup",
       {
         vpc: this.vpc,
-        securityGroupName: gotenbergServiceSecurityGroupName,
       } as SecurityGroupProps,
     );
     this.gotenbergServiceSecurityGroupIngress =

@@ -32,6 +32,10 @@ Resources:
     Properties:
       CidrIp: 0.0.0.0/0
       IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - GotenbergServiceSecurityGroup7A6A64AC
+          - GroupId
       ToPort: 3000
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroupIngress
