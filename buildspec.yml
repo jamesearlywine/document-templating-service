@@ -1,9 +1,4 @@
 version: 0.2
-env:
-  variables:
-    TEMPLATE_FILENAME: template.yml
-    TEMPLATE_PACKAGED_FILENAME: template.packaged.yml
-    S3_BUCKET: arn:aws:s3:::processproof-document-templating-service-codebuild-artifacts
 
 phases:
   install:
@@ -50,4 +45,4 @@ reports:
 artifacts:
   files:
     - build/**/*
-    - $TEMPLATE_FILENAME
+    - template.yml
