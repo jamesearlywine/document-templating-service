@@ -101,6 +101,11 @@ export class ApplicationStack {
         code: cdk.aws_lambda.Code.fromAsset(
           "build/handlers/mergeDocumentAndData",
         ),
+        userData: cdk.aws_ec2.UserData.forLinux().addCommands(
+          "yum install -y docker",
+          "service docker start",
+          "docker run -p 3000:3000 thecodingmachine/gotenberg:7",
+        ),
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           GOTENBERG_BASE_URL: cdk.Fn.sub(
