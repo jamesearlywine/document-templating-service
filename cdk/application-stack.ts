@@ -43,11 +43,13 @@ export class ApplicationStack {
     /*********************
      * Gotenberg Service
      */
+    const gotenbergServiceSecurityGroupName = "GotenbergServiceSecurityGroup";
     this.gotenbergServiceSecurityGroup = new cdk.aws_ec2.SecurityGroup(
       this.stack,
       "GotenbergServiceSecurityGroup",
       {
         vpc: this.vpc,
+        securityGroupName: gotenbergServiceSecurityGroupName,
       } as SecurityGroupProps,
     );
     this.gotenbergServiceSecurityGroupIngress =
@@ -58,6 +60,9 @@ export class ApplicationStack {
           cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
           ipProtocol: "tcp",
           toPort: 3000,
+          sourceSecurityGroupId:
+            this.gotenbergServiceSecurityGroup.securityGroupId,
+          sourceSecurityGroupName: gotenbergServiceSecurityGroupName,
         },
       );
 
