@@ -71,7 +71,9 @@ export class ApplicationStack {
           cdk.aws_ec2.InstanceClass.C6GD,
           cdk.aws_ec2.InstanceSize.MEDIUM,
         ),
-        machineImage: cdk.aws_ec2.MachineImage.latestAmazonLinux2023(),
+        machineImage: cdk.aws_ec2.MachineImage.latestAmazonLinux2023({
+          cpuType: cdk.aws_ec2.AmazonLinuxCpuType.ARM_64,
+        }),
         vpc: this.vpc,
         securityGroup: this.gotenbergServiceSecurityGroup,
       } as InstanceProps,

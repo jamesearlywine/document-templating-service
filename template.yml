@@ -8,9 +8,9 @@ Parameters:
       - STAGING
       - PROD
     Description: The AWS environment deployed to
-  SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter:
+  SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-arm64
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -69,7 +69,7 @@ Resources:
       IamInstanceProfile:
         Ref: GotenbergServiceInstanceInstanceProfile2AB77017
       ImageId:
-        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter
       InstanceType: c6gd.medium
       SecurityGroupIds:
         - Fn::GetAtt:
