@@ -32,6 +32,10 @@ Resources:
     Properties:
       CidrIp: 0.0.0.0/0
       FromPort: 3000
+      GroupId:
+        Fn::GetAtt:
+          - GotenbergServiceSecurityGroup7A6A64AC
+          - GroupId
       IpProtocol: tcp
       ToPort: 3000
     Metadata:

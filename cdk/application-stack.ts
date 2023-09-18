@@ -59,6 +59,7 @@ export class ApplicationStack {
           ipProtocol: "tcp",
           toPort: 3000,
           fromPort: 3000,
+          groupId: this.gotenbergServiceSecurityGroup.securityGroupId,
         },
       );
 
