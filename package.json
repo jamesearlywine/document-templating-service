@@ -7,13 +7,11 @@
     "start": "sam local start-lambda",
     "build": "rimraf ./build && node esbuild.js",
     "lint": "eslint . --ext .ts",
-
     "start:gotenberg": "docker run --name gotenberg --detach --rm -p 3000:3000 gotenberg/gotenberg:7.9 &",
     "stop:gotenberg": "docker kill gotenberg",
     "pretest:integration": "npm run build && npm run start:gotenberg",
     "test:integration": "jest --config ./testing/integration/jest.config.ts --passWithNoTests",
     "posttest:integration": "npm run stop:gotenberg",
-
     "build:template": "cdk synth > template.yml",
     "cdk:publish:assets": "cdk-assets -p cdk.out/*assets.json publish --verbose",
     "cdk:deploy:stack": "cdk deploy --require-approval never"
@@ -22,6 +20,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.4",
+    "@types/node": "^20.6.2",
     "@types/word-extractor": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
