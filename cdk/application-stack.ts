@@ -62,7 +62,6 @@ export class ApplicationStack {
           toPort: 3000,
           sourceSecurityGroupId:
             this.gotenbergServiceSecurityGroup.securityGroupId,
-          sourceSecurityGroupName: gotenbergServiceSecurityGroupName,
         },
       );
 
