@@ -1,4 +1,85 @@
+Parameters:
+  AWSENV:
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - TEST
+      - STAGING
+      - PROD
+    Description: The AWS environment deployed to
+  SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Resources:
+  GotenbergServiceSecurityGroup7A6A64AC:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: DocumentTemplatingService/GotenbergServiceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-55c2b13c
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroup/Resource
+  GotenbergServiceSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      ToPort: 3000
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroupIngress
+  GotenbergServiceInstanceInstanceRoleF036C99D:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      Tags:
+        - Key: Name
+          Value: DocumentTemplatingService/GotenbergServiceInstance
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/InstanceRole/Resource
+  GotenbergServiceInstanceInstanceProfile2AB77017:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: GotenbergServiceInstanceInstanceRoleF036C99D
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/InstanceProfile
+  GotenbergServiceInstanceA66C5FDB:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-2a
+      IamInstanceProfile:
+        Ref: GotenbergServiceInstanceInstanceProfile2AB77017
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: c6gd.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - GotenbergServiceSecurityGroup7A6A64AC
+            - GroupId
+      SubnetId: subnet-db2c6cb2
+      Tags:
+        - Key: Name
+          Value: DocumentTemplatingService/GotenbergServiceInstance
+      UserData:
+        Fn::Base64: "#!/bin/bash"
+    DependsOn:
+      - GotenbergServiceInstanceInstanceRoleF036C99D
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/Resource
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
     Properties:
@@ -22,9 +103,27 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket:
-          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
         S3Key: a35a6dc2567bd55b9c2973be011ac635201fea92e16c67ec59fa396e13395188.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AWSENV
+          GOTENBERG_BASE_URL:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/document-templating-service/gotenberg-base-url}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          PROCESSPROOF_PUBLIC_DOCUMENTS_BUCKET_ARN:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/public-documents-bucket-arn}}"
+              - AWS_ENV:
+                  Ref: AWSENV
       Handler: mergeDocumentAndData.handler
       Role:
         Fn::GetAtt:
@@ -41,93 +140,9 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/zWOSw6DMAxEz9J9cEs/UrssSD0APQAySYrMx5Fw0i4i7t4AYjVjP3nGZ3hc4XTAn2Ta9NlADcS3R92rtKoj4QixcoNV5YcXndWAY2MQ4iuw9uR4IbuflVxqFLFe4LlImqEIure+QEnHlRUXJm3VSlNRS9yu2TtIvnRsaItjZyx0cvzmd8hv6dFOiLIpsKfRQrXpH8Qr8mfEAAAA
+      Analytics: v2:deflate64:H4sIAAAAAAAA/32QTW7CQAyFz9L9xPy0lWBZkFqxQ+kBkJmYyCTxVOOZIhTl7jih2Xb17OfPtuw1bN9g+YI3LXzVFC2fof9O6Bu3v8gRI3aUKLqSNOToyRl46smvjSKfI6f7Vwz5Z6T/Nw5SR1J1B9GEYpMMmOPBMXbQl6Gd7Fnn8jGGC7dGtdidK4T+M4tPHGSE5nhw+npCVUoKH6NYDrvsG0o7VGueTDutZqmnLX8nDU5CRXDVxe9qA6t3+8ZVmYuYJXFHUD71ATcs1sApAQAA
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
-    Condition: CDKMetadataAvailable
-Conditions:
-  CDKMetadataAvailable:
-    Fn::Or:
-      - Fn::Or:
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - af-south-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-east-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-northeast-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-northeast-2
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-south-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-southeast-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-southeast-2
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ap-southeast-4
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - ca-central-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - cn-north-1
-      - Fn::Or:
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - cn-northwest-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - eu-central-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - eu-north-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - eu-south-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - eu-west-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - eu-west-2
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - eu-west-3
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - il-central-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - me-south-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - sa-east-1
-      - Fn::Or:
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - us-east-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - us-east-2
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - us-west-1
-          - Fn::Equals:
-              - Ref: AWS::Region
-              - us-west-2
-Parameters:
-  BootstrapVersion:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /cdk-bootstrap/hnb659fds/version
-    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Rules:
   CheckBootstrapVersion:
     Assertions:

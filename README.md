@@ -9,10 +9,11 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
 
 ## How to run locally
 - `npm run test:integration`
+  - You can edit the docxtemplater template in `testing/test-templates`
   - to view test-generated-files: 
     - edit `*.integration-test.ts` to `REMOVE_TEST_GENERATED_FILES=false`
     - watch `testing/test-generated-files/*` for test-generated files
-
+    
 ## How to deploy
 - `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-1` (or your preferred aws region)
 - `npm run build`
