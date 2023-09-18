@@ -58,8 +58,7 @@ export class ApplicationStack {
           cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
           ipProtocol: "tcp",
           toPort: 3000,
-          sourceSecurityGroupId:
-            this.gotenbergServiceSecurityGroup.securityGroupId,
+          fromPort: 3000,
         },
       );
 
