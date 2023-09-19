@@ -70,8 +70,8 @@ export class ApplicationStack {
         {
           cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
           ipProtocol: "tcp",
-          toPort: 23,
-          fromPort: 23,
+          toPort: 22,
+          fromPort: 22,
           groupId: this.gotenbergServiceSecurityGroup.securityGroupId,
         },
       );
