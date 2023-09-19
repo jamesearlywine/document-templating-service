@@ -76,6 +76,12 @@ export class ApplicationStack {
         },
       );
 
+    const userData = cdk.aws_ec2.UserData.forLinux();
+    userData.addCommands(
+      "yum install -y docker",
+      "service docker start",
+      "docker run -p 3000:3000 thecodingmachine/gotenberg:7",
+    );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
       this.stack,
       "GotenbergServiceInstance",
@@ -90,6 +96,7 @@ export class ApplicationStack {
         vpc: this.vpc,
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
+        userData: userData,
       } as InstanceProps,
     );
 
@@ -120,11 +127,6 @@ export class ApplicationStack {
         handler: "mergeDocumentAndData.handler",
         code: cdk.aws_lambda.Code.fromAsset(
           "build/handlers/mergeDocumentAndData",
-        ),
-        userData: cdk.aws_ec2.UserData.forLinux().addCommands(
-          "yum install -y docker",
-          "service docker start",
-          "docker run -p 3000:3000 thecodingmachine/gotenberg:7",
         ),
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
