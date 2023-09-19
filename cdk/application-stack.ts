@@ -54,7 +54,7 @@ export class ApplicationStack {
     this.gotenbergServiceSecurityGroupHttpIngress =
       new cdk.aws_ec2.CfnSecurityGroupIngress(
         this.stack,
-        "GotenbergServiceSecurityGroupIngress",
+        "GotenbergServiceSecurityGroupHttpIngress",
         {
           cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
           ipProtocol: "tcp",
@@ -66,7 +66,7 @@ export class ApplicationStack {
     this.gotenbergServiceSecurityGroupSshIngress =
       new cdk.aws_ec2.CfnSecurityGroupIngress(
         this.stack,
-        "GotenbergServiceSecurityGroupIngress",
+        "GotenbergServiceSecurityGroupSshIngress",
         {
           cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
           ipProtocol: "tcp",
