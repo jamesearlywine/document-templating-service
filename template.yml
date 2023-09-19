@@ -44,13 +44,13 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       CidrIp: 0.0.0.0/0
-      FromPort: 23
+      FromPort: 22
       GroupId:
         Fn::GetAtt:
           - GotenbergServiceSecurityGroup7A6A64AC
           - GroupId
       IpProtocol: tcp
-      ToPort: 23
+      ToPort: 22
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroupSshIngress
   GotenbergServiceInstanceInstanceRoleF036C99D:
@@ -94,7 +94,12 @@ Resources:
         - Key: Name
           Value: DocumentTemplatingService/GotenbergServiceInstance
       UserData:
-        Fn::Base64: "#!/bin/bash"
+        Fn::Base64: |-
+          #!/bin/bash
+          yum install -y docker
+          service docker start
+          docker run -p 3000:3000 thecodingmachine/gotenberg:7
+          touch /tmp/file2.txt
     DependsOn:
       - GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:

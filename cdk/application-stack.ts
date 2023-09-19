@@ -78,6 +78,7 @@ export class ApplicationStack {
 
     const userData = cdk.aws_ec2.UserData.forLinux();
     userData.addCommands(
+      "#!/usr/bin/env bash",
       "yum install -y docker",
       "service docker start",
       "docker run -p 3000:3000 thecodingmachine/gotenberg:7",
