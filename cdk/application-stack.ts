@@ -11,7 +11,8 @@ export class ApplicationStack {
   lambdaExecutionRole: cdk.aws_iam.Role;
   mergeDocumentAndDataLambda: cdk.aws_lambda.Function;
   gotenbergServiceSecurityGroup: cdk.aws_ec2.SecurityGroup;
-  gotenbergServiceSecurityGroupIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
+  gotenbergServiceSecurityGroupHttpIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
+  gotenbergServiceSecurityGroupSshIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
   gotenbergServiceInstance: cdk.aws_ec2.Instance;
 
   constructor(app, id: string) {
@@ -50,7 +51,7 @@ export class ApplicationStack {
         vpc: this.vpc,
       } as SecurityGroupProps,
     );
-    this.gotenbergServiceSecurityGroupIngress =
+    this.gotenbergServiceSecurityGroupHttpIngress =
       new cdk.aws_ec2.CfnSecurityGroupIngress(
         this.stack,
         "GotenbergServiceSecurityGroupIngress",
@@ -59,6 +60,18 @@ export class ApplicationStack {
           ipProtocol: "tcp",
           toPort: 3000,
           fromPort: 3000,
+          groupId: this.gotenbergServiceSecurityGroup.securityGroupId,
+        },
+      );
+    this.gotenbergServiceSecurityGroupSshIngress =
+      new cdk.aws_ec2.CfnSecurityGroupIngress(
+        this.stack,
+        "GotenbergServiceSecurityGroupIngress",
+        {
+          cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
+          ipProtocol: "tcp",
+          toPort: 23,
+          fromPort: 23,
           groupId: this.gotenbergServiceSecurityGroup.securityGroupId,
         },
       );
@@ -76,8 +89,11 @@ export class ApplicationStack {
         }),
         vpc: this.vpc,
         securityGroup: this.gotenbergServiceSecurityGroup,
+        keyName: "TempKeypair",
       } as InstanceProps,
     );
+
+    // @TODO - Gotenberg Service Registration
 
     /******************
      * mergeDocumentAndData Lambda
