@@ -96,10 +96,13 @@ Resources:
       UserData:
         Fn::Base64: |-
           #!/bin/bash
-          yum install -y docker
+          #! /bin/sh
+          yum update -y
+          amazon-linux-extras install docker
           service docker start
-          docker run -p 3000:3000 thecodingmachine/gotenberg:7
-          touch /tmp/file2.txt
+          usermod -a -G docker ec2-user
+          chkconfig docker on
+          docker run --name gotenberg --detach --rm -p 3000:3000 gotenberg/gotenberg:7.9 &
     DependsOn:
       - GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
