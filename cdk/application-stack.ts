@@ -81,6 +81,7 @@ export class ApplicationStack {
       "yum install -y docker",
       "service docker start",
       "docker run -p 3000:3000 thecodingmachine/gotenberg:7",
+      "touch /tmp/file2.txt",
     );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
       this.stack,
