@@ -78,9 +78,10 @@ export class ApplicationStack {
 
     const userData = cdk.aws_ec2.UserData.forLinux();
     userData.addCommands(
+      "#!/usr/bin/env bash",
       "yum install -y docker",
       "service docker start",
-      "docker run -p 3000:3000 thecodingmachine/gotenberg:7",
+      "docker run --name gotenberg --detach --rm -p 3000:3000 gotenberg/gotenberg:7.9 &",
       "touch /tmp/file2.txt",
     );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
