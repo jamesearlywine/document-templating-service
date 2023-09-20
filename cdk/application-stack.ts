@@ -79,7 +79,7 @@ export class ApplicationStack {
     const userData = cdk.aws_ec2.UserData.forLinux();
     userData.addCommands(
       "yum update -y",
-      "amazon-linux-extras install docker",
+      "yum -y install docker",
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
