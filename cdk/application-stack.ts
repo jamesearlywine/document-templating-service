@@ -14,6 +14,9 @@ export class ApplicationStack {
   gotenbergServiceSecurityGroupHttpIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
   gotenbergServiceSecurityGroupSshIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
   gotenbergServiceInstance: cdk.aws_ec2.Instance;
+  gotenbergServiceInstanceEnableSshCondition: cdk.CfnCondition;
+  gotenbergServiceInstanceEnableSshParam: CfnParameter;
+  gotenbergServiceInstanceBaseUrl: cdk.aws_ssm.StringParameter;
 
   constructor(app, id: string) {
     this.stack = new cdk.Stack(app, id, {
@@ -76,6 +79,30 @@ export class ApplicationStack {
         },
       );
 
+    this.gotenbergServiceInstanceEnableSshParam = new CfnParameter(
+      this.stack,
+      "GotenbergServiceInstanceEnableSsh",
+      {
+        type: "String",
+        description:
+          "Whether to enable SSH access to the Gotenberg service instance",
+        default: "false",
+        allowedValues: ["true", "false"],
+      },
+    );
+    this.gotenbergServiceInstanceEnableSshCondition = new cdk.CfnCondition(
+      this.stack,
+      "GotenbergServiceInstanceEnableSshCondition",
+      {
+        expression: cdk.Fn.conditionEquals(
+          "true",
+          this.gotenbergServiceInstanceEnableSshParam.valueAsString,
+        ),
+      },
+    );
+    this.gotenbergServiceSecurityGroupSshIngress.cfnOptions.condition =
+      this.gotenbergServiceInstanceEnableSshCondition;
+
     const userData = cdk.aws_ec2.UserData.forLinux();
     userData.addCommands(
       "yum update -y",
@@ -102,8 +129,15 @@ export class ApplicationStack {
         userData: userData,
       } as InstanceProps,
     );
-
-    // @TODO - Gotenberg Service Registration
+    this.gotenbergServiceInstanceBaseUrl = new cdk.aws_ssm.StringParameter(
+      this.stack,
+      "GotenbergServiceInstanceBaseUrl",
+      {
+        parameterName:
+          "/${AWS_ENV}/document-templating-service/gotenberg-base-url",
+        stringValue: this.gotenbergServiceInstance.instancePublicIp,
+      },
+    );
 
     /******************
      * mergeDocumentAndData Lambda
