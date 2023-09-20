@@ -8,6 +8,13 @@ Parameters:
       - STAGING
       - PROD
     Description: The AWS environment deployed to
+  GotenbergServiceInstanceEnableSsh:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Whether to enable SSH access to the Gotenberg service instance
   SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-arm64
@@ -53,6 +60,7 @@ Resources:
       ToPort: 22
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroupSshIngress
+    Condition: GotenbergServiceInstanceEnableSshCondition
   GotenbergServiceInstanceInstanceRoleF036C99D:
     Type: AWS::IAM::Role
     Properties:
@@ -101,14 +109,26 @@ Resources:
           service docker start
           usermod -a -G docker ec2-user
           chkconfig docker on
-          docker pull gotenberg/gotenberg:7.9
           docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9
-          docker container start gotenbergInstance
-          echo 'Hello' > /tmp/hello.txt
     DependsOn:
       - GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/Resource
+  GotenbergServiceInstanceBaseUrlA0BD3E86:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name:
+        Fn::Sub:
+          - /${AWS_ENV}/document-templating-service/gotenberg-base-url
+          - AWS_ENV:
+              Ref: AWSENV
+      Type: String
+      Value:
+        Fn::GetAtt:
+          - GotenbergServiceInstanceA66C5FDB
+          - PublicIp
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
     Properties:
@@ -169,9 +189,14 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/32QTW7CQAyFz9L9xPy0lWBZkFqxQ+kBkJmYyCTxVOOZIhTl7jih2Xb17OfPtuw1bN9g+YI3LXzVFC2fof9O6Bu3v8gRI3aUKLqSNOToyRl46smvjSKfI6f7Vwz5Z6T/Nw5SR1J1B9GEYpMMmOPBMXbQl6Gd7Fnn8jGGC7dGtdidK4T+M4tPHGSE5nhw+npCVUoKH6NYDrvsG0o7VGueTDutZqmnLX8nDU5CRXDVxe9qA6t3+8ZVmYuYJXFHUD71ATcs1sApAQAA
+      Analytics: v2:deflate64:H4sIAAAAAAAA/32QwU7DMAyGn4V7atgYEhzZJNBuU3mAyUu9ymvjoDgZQlXfHbdQwYnT79hffv/yGp42cHeDH1r5pqt6PsHwltF3bneWAyYMlCm5mjSW5MkZeBzIr40iXxLnz9cUy/tE/9/YS5tI1e1FM4o5GbDUo2MMMNSxn9uLLuNDimfujVINU7rE0v5G+5tzdD2GU4MwvBTxmaNM46U2g/sjqlJWeJ7E3rAtvqO8RTV/Y3dRGp4/zoSdorVtc6qfE4xOYkNw0dvr6hFWD3a9izJXqUjmQFB/6xcdjYHBWQEAAA==
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
+Conditions:
+  GotenbergServiceInstanceEnableSshCondition:
+    Fn::Equals:
+      - "true"
+      - Ref: GotenbergServiceInstanceEnableSsh
 Rules:
   CheckBootstrapVersion:
     Assertions:
