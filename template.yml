@@ -96,7 +96,6 @@ Resources:
       UserData:
         Fn::Base64: |-
           #!/bin/bash
-          #!/bin/sh
           yum update -y
           amazon-linux-extras install docker
           service docker start
@@ -105,6 +104,7 @@ Resources:
           docker pull gotenberg/gotenberg:7.9
           docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9
           docker container start gotenbergInstance
+          echo 'Hello' > /tmp/hello.txt
     DependsOn:
       - GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
