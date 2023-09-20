@@ -84,6 +84,7 @@ export class ApplicationStack {
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
+      "docker pull gotenberg/gotenberg:7.9",
       "docker run --name gotenberg --detach --rm -p 3000:3000 gotenberg/gotenberg:7.9",
     );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
