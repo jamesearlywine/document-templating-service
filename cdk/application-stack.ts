@@ -87,6 +87,7 @@ export class ApplicationStack {
       "docker pull gotenberg/gotenberg:7.9",
       "docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9",
       "docker container start gotenbergInstance",
+      "echo 'Hello' > /tmp/hello.txt",
     );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
       this.stack,
