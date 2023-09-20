@@ -162,10 +162,9 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           GOTENBERG_BASE_URL:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/document-templating-service/gotenberg-base-url}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Fn::GetAtt:
+              - GotenbergServiceInstanceBaseUrlA0BD3E86
+              - Value
           PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN:
             Fn::Sub:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
