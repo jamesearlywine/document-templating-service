@@ -133,9 +133,14 @@ export class ApplicationStack {
       this.stack,
       "GotenbergServiceInstanceBaseUrl",
       {
-        parameterName:
+        parameterName: cdk.Fn.sub(
           "/${AWS_ENV}/document-templating-service/gotenberg-base-url",
+          {
+            AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+          },
+        ),
         stringValue: this.gotenbergServiceInstance.instancePublicIp,
+        simpleName: false,
       },
     );
 
