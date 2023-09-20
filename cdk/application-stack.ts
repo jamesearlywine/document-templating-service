@@ -139,7 +139,9 @@ export class ApplicationStack {
             AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           },
         ),
-        stringValue: this.gotenbergServiceInstance.instancePublicIp,
+        stringValue: cdk.Fn.sub("http://${GOTENBERG_PUBLIC_IP}:3000", {
+          GOTENBERG_PUBLIC_IP: this.gotenbergServiceInstance.instancePublicIp,
+        }),
         simpleName: false,
       },
     );
@@ -172,12 +174,7 @@ export class ApplicationStack {
         ),
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-          GOTENBERG_BASE_URL: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/document-templating-service/gotenberg-base-url}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
+          GOTENBERG_BASE_URL: this.gotenbergServiceInstanceBaseUrl.stringValue,
           PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
             "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
             {
