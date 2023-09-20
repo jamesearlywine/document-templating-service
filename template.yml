@@ -124,9 +124,12 @@ Resources:
               Ref: AWSENV
       Type: String
       Value:
-        Fn::GetAtt:
-          - GotenbergServiceInstanceA66C5FDB
-          - PublicIp
+        Fn::Sub:
+          - http://${GOTENBERG_PUBLIC_IP}:3000
+          - GOTENBERG_PUBLIC_IP:
+              Fn::GetAtt:
+                - GotenbergServiceInstanceA66C5FDB
+                - PublicIp
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
   LambdaExecutionRoleD5C26073:

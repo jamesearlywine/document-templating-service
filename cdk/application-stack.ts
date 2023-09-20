@@ -139,7 +139,9 @@ export class ApplicationStack {
             AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           },
         ),
-        stringValue: this.gotenbergServiceInstance.instancePublicIp,
+        stringValue: cdk.Fn.sub("http://${GOTENBERG_PUBLIC_IP}:3000", {
+          GOTENBERG_PUBLIC_IP: this.gotenbergServiceInstance.instancePublicIp,
+        }),
         simpleName: false,
       },
     );
