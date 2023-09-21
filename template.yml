@@ -23,6 +23,36 @@ Parameters:
     Default: /cdk-bootstrap/hnb659fds/version
     Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Resources:
+  PrivateSubnetUsEast2ASubnet374C74EF:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2a
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: DocumentTemplatingService/PrivateSubnetUsEast2A
+      VpcId: vpc-55c2b13c
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/Subnet
+  PrivateSubnetUsEast2ARouteTable24F3AAF9:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: DocumentTemplatingService/PrivateSubnetUsEast2A
+      VpcId: vpc-55c2b13c
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/RouteTable
+  PrivateSubnetUsEast2ARouteTableAssociation2034DD60:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: PrivateSubnetUsEast2ARouteTable24F3AAF9
+      SubnetId:
+        Ref: PrivateSubnetUsEast2ASubnet374C74EF
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/RouteTableAssociation
   GotenbergServiceSecurityGroup7A6A64AC:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -83,7 +113,7 @@ Resources:
         - Ref: GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/InstanceProfile
-  GotenbergServiceInstanceA66C5FDB:
+  GotenbergServiceInstanceA66C5FDB582147246eb5ebdb:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2a
@@ -93,11 +123,15 @@ Resources:
         Ref: SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter
       InstanceType: c6gd.medium
       KeyName: TempKeypair
-      SecurityGroupIds:
-        - Fn::GetAtt:
-            - GotenbergServiceSecurityGroup7A6A64AC
-            - GroupId
-      SubnetId: subnet-db2c6cb2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: false
+          DeviceIndex: "0"
+          GroupSet:
+            - Fn::GetAtt:
+                - GotenbergServiceSecurityGroup7A6A64AC
+                - GroupId
+          SubnetId:
+            Ref: PrivateSubnetUsEast2ASubnet374C74EF
       Tags:
         - Key: Name
           Value: DocumentTemplatingService/GotenbergServiceInstance
@@ -109,7 +143,7 @@ Resources:
           service docker start
           usermod -a -G docker ec2-user
           chkconfig docker on
-          docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9
+          docker container run --name gotenbergInstance -p 3000:3000 public.ecr.aws/citizensadvice/gotenberg:latest
     DependsOn:
       - GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
@@ -125,11 +159,11 @@ Resources:
       Type: String
       Value:
         Fn::Sub:
-          - http://${GOTENBERG_PUBLIC_IP}:3000
-          - GOTENBERG_PUBLIC_IP:
+          - http://${GOTENBERG_IP}:3000
+          - GOTENBERG_IP:
               Fn::GetAtt:
-                - GotenbergServiceInstanceA66C5FDB
-                - PublicIp
+                - GotenbergServiceInstanceA66C5FDB582147246eb5ebdb
+                - PrivateIp
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
   LambdaExecutionRoleD5C26073:
@@ -191,7 +225,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/32QwU7DMAyGn4V7atgYEhzZJNBuU3mAyUu9ymvjoDgZQlXfHbdQwYnT79hffv/yGp42cHeDH1r5pqt6PsHwltF3bneWAyYMlCm5mjSW5MkZeBzIr40iXxLnz9cUy/tE/9/YS5tI1e1FM4o5GbDUo2MMMNSxn9uLLuNDimfujVINU7rE0v5G+5tzdD2GU4MwvBTxmaNM46U2g/sjqlJWeJ7E3rAtvqO8RTV/Y3dRGp4/zoSdorVtc6qfE4xOYkNw0dvr6hFWD3a9izJXqUjmQFB/6xcdjYHBWQEAAA==
+      Analytics: v2:deflate64:H4sIAAAAAAAA/31RwU7DMAz9Fu5pYAMkOG6TQLtVLffJTb3Ka+OgOBlCVf+dNKMqJ07PsV+e/eytfn3SD3fwJYVp+2KgRo91ANOrw5lL8GAxoFcVioveoErE04hmq8fS0xUC1rFhDDN7jSoXA35AM+CaX3M7EWcIAjlWNZroKXy/exc/M/nfxJE7jyLqyBKATZZf4kkRWD1W7tZ1waVcenemIbFE7GzRE3erv79mJzWAbVrQ41tkk8dM5SVOAo8nEMEgejdDeut9ND2GPUjST9yD45byx8xI++xStzzV7x4nxa5FfZH76+ZFb57TCS5CVPjIgSzq6oY/EHPVY54BAAA=
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
 Conditions:
