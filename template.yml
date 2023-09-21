@@ -130,6 +130,7 @@ Resources:
             - Fn::GetAtt:
                 - GotenbergServiceSecurityGroup7A6A64AC
                 - GroupId
+          PrivateIpAddress: 10.0.0.1
           SubnetId:
             Ref: PrivateSubnetUsEast2ASubnet374C74EF
       Tags:

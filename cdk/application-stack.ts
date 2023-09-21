@@ -142,6 +142,7 @@ export class ApplicationStack {
         vpcSubnets: {
           subnets: [this.privateSubnetUsEast2A],
         },
+        privateIpAddress: "10.0.0.1",
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
         userData: userData,
