@@ -7,6 +7,7 @@ import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 export class ApplicationStack {
   stack: cdk.Stack;
   vpc: cdk.aws_ec2.IVpc;
+  privateSubnetUsEast2A: cdk.aws_ec2.ISubnet;
   AWS_ENV_Parameter: CfnParameter;
   lambdaExecutionRole: cdk.aws_iam.Role;
   mergeDocumentAndDataLambda: cdk.aws_lambda.Function;
@@ -43,6 +44,20 @@ export class ApplicationStack {
     this.vpc = cdk.aws_ec2.Vpc.fromLookup(this.stack, "VPC", {
       vpcId: "vpc-55c2b13c",
     });
+
+    /*********************
+     * Private Subnet
+     */
+    this.privateSubnetUsEast2A = new cdk.aws_ec2.PrivateSubnet(
+      this.stack,
+      "PrivateSubnetUsEast2A",
+      {
+        availabilityZone: "us-east-2a",
+        cidrBlock: "10.0.0.0/24",
+        vpcId: this.vpc.vpcId,
+        mapPublicIpOnLaunch: false,
+      },
+    );
 
     /*********************
      * Gotenberg Service
@@ -110,7 +125,7 @@ export class ApplicationStack {
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
-      "docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9",
+      "docker container run --name gotenbergInstance -p 3000:3000 public.ecr.aws/citizensadvice/gotenberg:latest",
     );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
       this.stack,
@@ -124,9 +139,14 @@ export class ApplicationStack {
           cpuType: cdk.aws_ec2.AmazonLinuxCpuType.ARM_64,
         }),
         vpc: this.vpc,
+        vpcSubnets: {
+          subnets: [this.privateSubnetUsEast2A],
+        },
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
         userData: userData,
+        userDataCausesReplacement: true,
+        associatePublicIpAddress: false,
       } as InstanceProps,
     );
     this.gotenbergServiceInstanceBaseUrl = new cdk.aws_ssm.StringParameter(
@@ -139,8 +159,8 @@ export class ApplicationStack {
             AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           },
         ),
-        stringValue: cdk.Fn.sub("http://${GOTENBERG_PUBLIC_IP}:3000", {
-          GOTENBERG_PUBLIC_IP: this.gotenbergServiceInstance.instancePublicIp,
+        stringValue: cdk.Fn.sub("http://${GOTENBERG_IP}:3000", {
+          GOTENBERG_IP: this.gotenbergServiceInstance.instancePrivateIp,
         }),
         simpleName: false,
       },
