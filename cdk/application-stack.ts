@@ -52,8 +52,8 @@ export class ApplicationStack {
       this.stack,
       "PrivateSubnetUsEast2A",
       {
-        availabilityZone: "us-east-2a",
-        cidrBlock: "10.0.0.0/24",
+        availabilityZone: "us-east-2b",
+        cidrBlock: "172.31.1.0/24",
         vpcId: this.vpc.vpcId,
         mapPublicIpOnLaunch: false,
       },
@@ -142,7 +142,6 @@ export class ApplicationStack {
         vpcSubnets: {
           subnets: [this.privateSubnetUsEast2A],
         },
-        privateIpAddress: "10.0.0.1",
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
         userData: userData,
