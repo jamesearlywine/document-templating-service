@@ -53,7 +53,7 @@ export class ApplicationStack {
       "PrivateSubnetUsEast2A",
       {
         availabilityZone: "us-east-2b",
-        cidrBlock: "172.31.1.0/24",
+        cidrBlock: "172.31.48.0/24",
         vpcId: this.vpc.vpcId,
         mapPublicIpOnLaunch: false,
       },

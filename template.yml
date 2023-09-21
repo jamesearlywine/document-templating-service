@@ -26,8 +26,8 @@ Resources:
   PrivateSubnetUsEast2ASubnet374C74EF:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: us-east-2a
-      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: us-east-2b
+      CidrBlock: 172.31.48.0/24
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -116,7 +116,7 @@ Resources:
   GotenbergServiceInstanceA66C5FDB582147246eb5ebdb:
     Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: us-east-2a
+      AvailabilityZone: us-east-2b
       IamInstanceProfile:
         Ref: GotenbergServiceInstanceInstanceProfile2AB77017
       ImageId:
@@ -130,7 +130,6 @@ Resources:
             - Fn::GetAtt:
                 - GotenbergServiceSecurityGroup7A6A64AC
                 - GroupId
-          PrivateIpAddress: 10.0.0.1
           SubnetId:
             Ref: PrivateSubnetUsEast2ASubnet374C74EF
       Tags:
@@ -191,7 +190,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: a35a6dc2567bd55b9c2973be011ac635201fea92e16c67ec59fa396e13395188.zip
+        S3Key: cb69319e3de270be44b4313631f69bbc9add6a40be742d7f294de93a67a69e7f.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -220,7 +219,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: DocumentTemplatingService/mergeDocumentAndData/Resource
-      aws:asset:path: asset.a35a6dc2567bd55b9c2973be011ac635201fea92e16c67ec59fa396e13395188
+      aws:asset:path: asset.cb69319e3de270be44b4313631f69bbc9add6a40be742d7f294de93a67a69e7f
       aws:asset:is-bundled: false
       aws:asset:property: Code
   CDKMetadata:
