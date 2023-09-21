@@ -120,12 +120,10 @@ export class ApplicationStack {
 
     const userData = cdk.aws_ec2.UserData.forLinux();
     userData.addCommands(
-      "yum update -y",
-      "yum -y install docker",
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
-      "docker container run --name gotenbergInstance -p 3000:3000 public.ecr.aws/citizensadvice/gotenberg:latest",
+      "docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9",
     );
     this.gotenbergServiceInstance = new cdk.aws_ec2.Instance(
       this.stack,
@@ -135,16 +133,18 @@ export class ApplicationStack {
           cdk.aws_ec2.InstanceClass.C6GD,
           cdk.aws_ec2.InstanceSize.MEDIUM,
         ),
-        machineImage: cdk.aws_ec2.MachineImage.latestAmazonLinux2023({
-          cpuType: cdk.aws_ec2.AmazonLinuxCpuType.ARM_64,
-        }),
+        machineImage: cdk.aws_ec2.MachineImage.fromSsmParameter(
+          "/us-east-2/processproof-gotenberg-ami",
+          {
+            userData: userData,
+          },
+        ),
         vpc: this.vpc,
         vpcSubnets: {
           subnets: [this.privateSubnetUsEast2A],
         },
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
-        userData: userData,
         userDataCausesReplacement: true,
         associatePublicIpAddress: false,
       } as InstanceProps,
