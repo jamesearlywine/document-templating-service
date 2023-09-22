@@ -42,7 +42,7 @@ export class ApplicationStack {
      * VPC
      */
     this.vpc = cdk.aws_ec2.Vpc.fromLookup(this.stack, "VPC", {
-      vpcId: "vpc-55c2b13c",
+      vpcId: "{{resolve:ssm:/us-east-2/default-vpc-id}}",
     });
 
     /*********************
