@@ -7,8 +7,15 @@ import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 export class ApplicationStack {
   stack: cdk.Stack;
   vpcId = "vpc-058c5ee1e09681197"; // consider refactor to parameter passed in from pipeline
+  subnetAttributes = {
+    usEast2A_private: {
+      subnetId: "subnet-036f5f2f9c607cf2a",
+      availabilityZone: "us-east-2a",
+      routeTableId: "rtb-00b7d5ea4cdb82c73",
+    },
+  };
   vpc: cdk.aws_ec2.IVpc;
-  privateSubnetUsEast2A: cdk.aws_ec2.ISubnet;
+  privateSubnetUsEast2B: cdk.aws_ec2.ISubnet;
   AWS_ENV_Parameter: CfnParameter;
   lambdaExecutionRole: cdk.aws_iam.Role;
   mergeDocumentAndDataLambda: cdk.aws_lambda.Function;
@@ -49,15 +56,10 @@ export class ApplicationStack {
     /*********************
      * Private Subnet
      */
-    this.privateSubnetUsEast2A = new cdk.aws_ec2.PrivateSubnet(
+    this.privateSubnetUsEast2B = cdk.aws_ec2.Subnet.fromSubnetAttributes(
       this.stack,
-      "PrivateSubnetUsEast2A",
-      {
-        availabilityZone: "us-east-2b",
-        cidrBlock: "172.31.48.0/24",
-        vpcId: this.vpc.vpcId,
-        mapPublicIpOnLaunch: false,
-      },
+      "PrivateSubnetUsEast2B",
+      this.subnetAttributes.usEast2A_private,
     );
 
     /*********************
@@ -142,7 +144,7 @@ export class ApplicationStack {
         ),
         vpc: this.vpc,
         vpcSubnets: {
-          subnets: [this.privateSubnetUsEast2A],
+          subnets: [this.privateSubnetUsEast2B],
         },
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
