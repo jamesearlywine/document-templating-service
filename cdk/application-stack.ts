@@ -148,6 +148,7 @@ export class ApplicationStack {
         },
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
+        userData,
         userDataCausesReplacement: true,
         associatePublicIpAddress: false,
       } as InstanceProps,
