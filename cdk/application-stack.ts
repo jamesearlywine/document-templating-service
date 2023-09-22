@@ -6,7 +6,7 @@ import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 
 export class ApplicationStack {
   stack: cdk.Stack;
-  vpcId = "vpc-058c5ee1e09681197"; // consider refactor to parameter passed in from pipeline
+  vpcId = "vpc-058c5ee1e09681197"; // consider refactor to parameters passed in from pipeline
   subnetAttributes = {
     usEast2A_private: {
       subnetId: "subnet-036f5f2f9c607cf2a",
@@ -29,6 +29,7 @@ export class ApplicationStack {
 
   constructor(app, id: string) {
     this.stack = new cdk.Stack(app, id, {
+      // consider refactor to parameters passed in from pipeline
       env: {
         account: "546515125053",
         region: "us-east-2",
@@ -77,7 +78,7 @@ export class ApplicationStack {
         this.stack,
         "GotenbergServiceSecurityGroupHttpIngress",
         {
-          cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
+          cidrIp: "0.0.0.0/0", // this security group is applied to an EC2 in a private subnet
           ipProtocol: "tcp",
           toPort: 3000,
           fromPort: 3000,
@@ -89,7 +90,7 @@ export class ApplicationStack {
         this.stack,
         "GotenbergServiceSecurityGroupSshIngress",
         {
-          cidrIp: "0.0.0.0/0", // temporary until I have time to do the networking properly
+          cidrIp: "0.0.0.0/0", // temporary to allow SSH access from bastion host in public subnet
           ipProtocol: "tcp",
           toPort: 22,
           fromPort: 22,
