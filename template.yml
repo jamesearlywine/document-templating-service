@@ -15,9 +15,9 @@ Parameters:
       - "true"
       - "false"
     Description: Whether to enable SSH access to the Gotenberg service instance
-  SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter:
+  SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-arm64
+    Default: /us-east-2/processproof-gotenberg-ami
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -32,7 +32,7 @@ Resources:
       Tags:
         - Key: Name
           Value: DocumentTemplatingService/PrivateSubnetUsEast2A
-      VpcId: vpc-55c2b13c
+      VpcId: vpc-058c5ee1e09681197
     Metadata:
       aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/Subnet
   PrivateSubnetUsEast2ARouteTable24F3AAF9:
@@ -41,7 +41,7 @@ Resources:
       Tags:
         - Key: Name
           Value: DocumentTemplatingService/PrivateSubnetUsEast2A
-      VpcId: vpc-55c2b13c
+      VpcId: vpc-058c5ee1e09681197
     Metadata:
       aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/RouteTable
   PrivateSubnetUsEast2ARouteTableAssociation2034DD60:
@@ -61,7 +61,7 @@ Resources:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
-      VpcId: vpc-55c2b13c
+      VpcId: vpc-058c5ee1e09681197
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroup/Resource
   GotenbergServiceSecurityGroupHttpIngress:
@@ -113,14 +113,14 @@ Resources:
         - Ref: GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/InstanceProfile
-  GotenbergServiceInstanceA66C5FDB582147246eb5ebdb:
+  GotenbergServiceInstanceA66C5FDBb0f955a9fcb6487c:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2b
       IamInstanceProfile:
         Ref: GotenbergServiceInstanceInstanceProfile2AB77017
       ImageId:
-        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter
+        Ref: SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter
       InstanceType: c6gd.medium
       KeyName: TempKeypair
       NetworkInterfaces:
@@ -138,12 +138,10 @@ Resources:
       UserData:
         Fn::Base64: |-
           #!/bin/bash
-          yum update -y
-          yum -y install docker
           service docker start
           usermod -a -G docker ec2-user
           chkconfig docker on
-          docker container run --name gotenbergInstance -p 3000:3000 public.ecr.aws/citizensadvice/gotenberg:latest
+          docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9
     DependsOn:
       - GotenbergServiceInstanceInstanceRoleF036C99D
     Metadata:
@@ -162,7 +160,7 @@ Resources:
           - http://${GOTENBERG_IP}:3000
           - GOTENBERG_IP:
               Fn::GetAtt:
-                - GotenbergServiceInstanceA66C5FDB582147246eb5ebdb
+                - GotenbergServiceInstanceA66C5FDBb0f955a9fcb6487c
                 - PrivateIp
     Metadata:
       aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
