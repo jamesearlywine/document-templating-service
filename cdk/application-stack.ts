@@ -6,6 +6,7 @@ import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 
 export class ApplicationStack {
   stack: cdk.Stack;
+  vpcId = "vpc-058c5ee1e09681197"; // consider refactor to parameter passed in from pipeline
   vpc: cdk.aws_ec2.IVpc;
   privateSubnetUsEast2A: cdk.aws_ec2.ISubnet;
   AWS_ENV_Parameter: CfnParameter;
@@ -42,7 +43,7 @@ export class ApplicationStack {
      * VPC
      */
     this.vpc = cdk.aws_ec2.Vpc.fromLookup(this.stack, "VPC", {
-      vpcId: "{{resolve:ssm:/us-east-2/default-vpc-id}}",
+      vpcId: this.vpcId,
     });
 
     /*********************
