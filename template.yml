@@ -23,36 +23,6 @@ Parameters:
     Default: /cdk-bootstrap/hnb659fds/version
     Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Resources:
-  PrivateSubnetUsEast2ASubnet374C74EF:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: us-east-2b
-      CidrBlock: 172.31.48.0/24
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: DocumentTemplatingService/PrivateSubnetUsEast2A
-      VpcId: vpc-058c5ee1e09681197
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/Subnet
-  PrivateSubnetUsEast2ARouteTable24F3AAF9:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      Tags:
-        - Key: Name
-          Value: DocumentTemplatingService/PrivateSubnetUsEast2A
-      VpcId: vpc-058c5ee1e09681197
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/RouteTable
-  PrivateSubnetUsEast2ARouteTableAssociation2034DD60:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId:
-        Ref: PrivateSubnetUsEast2ARouteTable24F3AAF9
-      SubnetId:
-        Ref: PrivateSubnetUsEast2ASubnet374C74EF
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/PrivateSubnetUsEast2A/RouteTableAssociation
   GotenbergServiceSecurityGroup7A6A64AC:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -116,7 +86,7 @@ Resources:
   GotenbergServiceInstanceA66C5FDBb0f955a9fcb6487c:
     Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: us-east-2b
+      AvailabilityZone: us-east-2a
       IamInstanceProfile:
         Ref: GotenbergServiceInstanceInstanceProfile2AB77017
       ImageId:
@@ -130,8 +100,7 @@ Resources:
             - Fn::GetAtt:
                 - GotenbergServiceSecurityGroup7A6A64AC
                 - GroupId
-          SubnetId:
-            Ref: PrivateSubnetUsEast2ASubnet374C74EF
+          SubnetId: subnet-036f5f2f9c607cf2a
       Tags:
         - Key: Name
           Value: DocumentTemplatingService/GotenbergServiceInstance
@@ -223,7 +192,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/31RwU7DMAz9Fu5pYAMkOG6TQLtVLffJTb3Ka+OgOBlCVf+dNKMqJ07PsV+e/eytfn3SD3fwJYVp+2KgRo91ANOrw5lL8GAxoFcVioveoErE04hmq8fS0xUC1rFhDDN7jSoXA35AM+CaX3M7EWcIAjlWNZroKXy/exc/M/nfxJE7jyLqyBKATZZf4kkRWD1W7tZ1waVcenemIbFE7GzRE3erv79mJzWAbVrQ41tkk8dM5SVOAo8nEMEgejdDeut9ND2GPUjST9yD45byx8xI++xStzzV7x4nxa5FfZH76+ZFb57TCS5CVPjIgSzq6oY/EHPVY54BAAA=
+      Analytics: v2:deflate64:H4sIAAAAAAAA/32QwU7DMAyGn4V7atgYEhzZJNBuU3mAyUu9ymvjoDgZQlXfHbdQwYnT79hffv/yGp42cHeDH1r5pqt6PsHwltF3bneWAyYMlCm5mjSW5MkZeBzIr40iXxLnz9cUy/tE/9/YS5tI1e1FM4o5GbDUo2MMMNSxn9uLLuNDimfujVINU7rE0v5G+5tzdD2GU4MwvBTxmaNM46U2g/sjqlJWeJ7E3rAtvqO8RTV/Y3dRGp4/zoSdorVtc6qfE4xOYkNw0dvr6hFWD3a9izJXqUjmQFB/6xcdjYHBWQEAAA==
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
 Conditions:
