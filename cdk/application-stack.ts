@@ -190,7 +190,7 @@ export class ApplicationStack {
             "service-role/AWSLambdaBasicExecutionRole",
           ),
           cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
-            "policy/LambdaPrivateSubnetExecutionRolePolicy",
+            "LambdaPrivateSubnetExecutionRolePolicy",
           ),
         ],
       },
