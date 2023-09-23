@@ -32,4 +32,10 @@ export const handler = async (event: Record<string, unknown>) => {
   }
 
   console.log("responseFromGotenberg", responseFromGotenberg.data);
+
+  return {
+    event,
+    env: process.env,
+    responseFromGotenberg: responseFromGotenberg.data,
+  };
 };
