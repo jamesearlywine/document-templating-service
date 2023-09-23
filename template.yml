@@ -218,7 +218,7 @@ Resources:
   ApiF70053CD:
     Type: AWS::ApiGatewayV2::Api
     Properties:
-      Name: Api
+      Name: document-templating-service
       ProtocolType: HTTP
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Resource

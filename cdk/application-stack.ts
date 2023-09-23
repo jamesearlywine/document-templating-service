@@ -237,7 +237,9 @@ export class ApplicationStack {
     /******************
      * API Gateway
      */
-    this.api = new HttpApi(this.stack, "Api", {});
+    this.api = new HttpApi(this.stack, "Api", {
+      apiName: "document-templating-service",
+    });
     this.api.addRoutes({
       path: "/mergeDocumentAndData",
       methods: [HttpMethod.GET],
