@@ -6,7 +6,9 @@ import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 
 export class ApplicationStack {
   stack: cdk.Stack;
-  vpcId = "vpc-058c5ee1e09681197"; // consider refactor to parameters passed in from pipeline
+
+  // consider refactor to parameters passed in from pipeline
+  vpcId = "vpc-058c5ee1e09681197";
   subnetAttributes = {
     usEast2A_private: {
       subnetId: "subnet-036f5f2f9c607cf2a",
