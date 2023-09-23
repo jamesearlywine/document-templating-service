@@ -28,8 +28,6 @@ export const handler = async (event: Record<string, unknown>) => {
   }
 
   return {
-    event,
-    env: process.env,
-    responseFromGotenberg: responseFromGotenberg?.data,
+    responseFromGotenberg: responseFromGotenberg?.data ?? "",
   };
 };
