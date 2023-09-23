@@ -155,7 +155,7 @@ Resources:
             - ""
             - - "arn:"
               - Ref: AWS::Partition
-              - :iam::aws:policy/LambdaPrivateSubnetExecutionRolePolicy
+              - :iam::546515125053:policy/LambdaPrivateSubnetExecutionRolePolicy
     Metadata:
       aws:cdk:path: DocumentTemplatingService/LambdaExecutionRole/Resource
   mergeDocumentAndDataSecurityGroupC5DDAC4B:
