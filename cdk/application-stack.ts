@@ -2,6 +2,8 @@ import * as cdk from "aws-cdk-lib";
 import { IRole } from "aws-cdk-lib/aws-iam";
 import { CfnParameter } from "aws-cdk-lib";
 import { FunctionProps } from "aws-cdk-lib/aws-lambda";
+import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
+import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 
 export class ApplicationStack {
@@ -30,6 +32,8 @@ export class ApplicationStack {
   gotenbergServiceInstanceEnableSshCondition: cdk.CfnCondition;
   gotenbergServiceInstanceEnableSshParam: CfnParameter;
   gotenbergServiceInstanceBaseUrl: cdk.aws_ssm.StringParameter;
+
+  api: HttpApi;
 
   constructor(app, id: string) {
     this.stack = new cdk.Stack(app, id, {
@@ -229,5 +233,20 @@ export class ApplicationStack {
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
     );
+
+    /******************
+     * API Gateway
+     */
+    this.api = new HttpApi(this.stack, "Api", {
+      apiName: "document-templating-service",
+    });
+    this.api.addRoutes({
+      path: "/mergeDocumentAndData",
+      methods: [HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "mergeDocumentAndDataHttpIntegration",
+        this.mergeDocumentAndDataLambda,
+      ),
+    });
   }
 }

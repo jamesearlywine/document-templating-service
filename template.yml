@@ -215,10 +215,72 @@ Resources:
       aws:asset:path: asset.4361334c727463a0040751fcb357af91bc7dc9ce72b7d6024bd4378c95698df3
       aws:asset:is-bundled: false
       aws:asset:property: Code
+  ApiF70053CD:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: document-templating-service
+      ProtocolType: HTTP
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Resource
+  ApiDefaultStage189A7074:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      AutoDeploy: true
+      StageName: $default
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/DefaultStage/Resource
+  ApiGETmergeDocumentAndDatamergeDocumentAndDataHttpIntegrationB75CA1E6:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - mergeDocumentAndData2658F40D
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/GET--mergeDocumentAndData/mergeDocumentAndDataHttpIntegration/Resource
+  ApiGETmergeDocumentAndDatamergeDocumentAndDataHttpIntegrationPermission237B225F:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - mergeDocumentAndData2658F40D
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /*/*/mergeDocumentAndData
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/GET--mergeDocumentAndData/mergeDocumentAndDataHttpIntegration-Permission
+  ApiGETmergeDocumentAndData9F3B468B:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      AuthorizationType: NONE
+      RouteKey: GET /mergeDocumentAndData
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: ApiGETmergeDocumentAndDatamergeDocumentAndDataHttpIntegrationB75CA1E6
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/GET--mergeDocumentAndData/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/32QwU7DMAyGn4V7atgYEhzZJNBuU3mAyUu9ymvjoDgZQlXfHbdQwYnT79hffv/yGp42cHeDH1r5pqt6PsHwltF3bneWAyYMlCm5mjSW5MkZeBzIr40iXxLnz9cUy/tE/9/YS5tI1e1FM4o5GbDUo2MMMNSxn9uLLuNDimfujVINU7rE0v5G+5tzdD2GU4MwvBTxmaNM46U2g/sjqlJWeJ7E3rAtvqO8RTV/Y3dRGp4/zoSdorVtc6qfE4xOYkNw0dvr6hFWD3a9izJXqUjmQFB/6xcdjYHBWQEAAA==
+      Analytics: v2:deflate64:H4sIAAAAAAAA/31Qy27CMBD8Fu6OeVRV21sBqS03lH4AWpwlNSR25N2AUJR/79okak49zXg9npn1Sr+96G4xgxtlprhklT3q7pvBXNT25PYQoEbGoHIk3waDSoSHDs1KVGjaYPn+GXzbRPX/g50rAxKpnSMGJ04iGHmvLNS6y32VxiOO1/vgT7YSFVEd2wXryr9q0569qqA+FqC7j9YZtt7F6ynfY6gtkZzE7ukARMik1xHkrDetuSBvgGTTxpbAeIP7VbaVp+vGpq0YyqEeYxlgdM59y9j3kW69K2yaJ+P4Qion0fCPvVpkUDU/oBez9+Hz5xGnqYOi+2JuYnjER3pkKS+xSRHJd75Afab5dfmql8/ifyZrs9A6tjXq/IG/QOxWh/gBAAA=
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
 Conditions:
