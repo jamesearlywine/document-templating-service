@@ -195,21 +195,6 @@ export class ApplicationStack {
             "LambdaPrivateSubnetExecutionRolePolicy",
           ),
         ],
-        // inlinePolicies: {
-        //   privateSubnetNetworkingPolicy: new cdk.aws_iam.PolicyDocument({
-        //     statements: [
-        //       new cdk.aws_iam.PolicyStatement({
-        //         effect: cdk.aws_iam.Effect.ALLOW,
-        //         actions: [
-        //           "ec2:CreateNetworkInterface",
-        //           "ec2:DescribeNetworkInterfaces",
-        //           "ec2:DeleteNetworkInterface",
-        //         ],
-        //         resources: ["*"],
-        //       }),
-        //     ],
-        //   }),
-        // },
       },
     );
 
