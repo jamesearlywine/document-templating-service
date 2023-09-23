@@ -153,6 +153,17 @@ Resources:
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
       aws:cdk:path: DocumentTemplatingService/LambdaExecutionRole/Resource
+  mergeDocumentAndDataSecurityGroupC5DDAC4B:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicemergeDocumentAndData1F8BC772
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/mergeDocumentAndData/SecurityGroup/Resource
   mergeDocumentAndData2658F40D:
     Type: AWS::Lambda::Function
     Properties:
@@ -177,12 +188,21 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/public-documents-bucket-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
+          S3_VPC_ENDPOINT_USEAST2: vpce-0e24695c3398ce129
       Handler: mergeDocumentAndData.handler
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
           - Arn
       Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - mergeDocumentAndDataSecurityGroupC5DDAC4B
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
