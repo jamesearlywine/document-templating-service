@@ -151,6 +151,11 @@ Resources:
             - - "arn:"
               - Ref: AWS::Partition
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/policy/LambdaPrivateSubnetExecutionRolePolicy
     Metadata:
       aws:cdk:path: DocumentTemplatingService/LambdaExecutionRole/Resource
   mergeDocumentAndDataSecurityGroupC5DDAC4B:
