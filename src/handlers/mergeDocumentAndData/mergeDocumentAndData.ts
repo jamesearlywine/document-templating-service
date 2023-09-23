@@ -5,8 +5,6 @@ const documentConversionServiceConfigInitialized =
   DocumentConversionServiceConfig.initialize();
 
 export const handler = async (event: Record<string, unknown>) => {
-  console.log("mergeDocumentAndData", { event, env: process.env });
-
   await documentConversionServiceConfigInitialized;
 
   console.log(
@@ -21,17 +19,13 @@ export const handler = async (event: Record<string, unknown>) => {
     );
   } catch (error) {
     console.error(
-      "mergeDocumentAndData.handler, could not fetchf rom GOTENBERG_BASE_URL error",
+      "mergeDocumentAndData.handler, could not fetch rom GOTENBERG_BASE_URL error",
       {
         error,
         GOTENBERG_BASE_URL: DocumentConversionServiceConfig.GOTENBERG_BASE_URL,
       },
     );
-
-    return;
   }
-
-  console.log("responseFromGotenberg", responseFromGotenberg.data);
 
   return {
     event,

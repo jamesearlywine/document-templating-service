@@ -174,7 +174,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 4361334c727463a0040751fcb357af91bc7dc9ce72b7d6024bd4378c95698df3.zip
+        S3Key: 6ae974f6140e2cf1318099158011d880e5990144edea1ffdf3d65a82b4626650.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -212,7 +212,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: DocumentTemplatingService/mergeDocumentAndData/Resource
-      aws:asset:path: asset.4361334c727463a0040751fcb357af91bc7dc9ce72b7d6024bd4378c95698df3
+      aws:asset:path: asset.6ae974f6140e2cf1318099158011d880e5990144edea1ffdf3d65a82b4626650
       aws:asset:is-bundled: false
       aws:asset:property: Code
   ApiF70053CD:
