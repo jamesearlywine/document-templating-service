@@ -6,7 +6,9 @@ import { InstanceProps, SecurityGroupProps } from "aws-cdk-lib/aws-ec2";
 
 export class ApplicationStack {
   stack: cdk.Stack;
-  vpcId = "vpc-058c5ee1e09681197"; // consider refactor to parameters passed in from pipeline
+
+  // consider refactor to parameters passed in from pipeline
+  vpcId = "vpc-058c5ee1e09681197";
   subnetAttributes = {
     usEast2A_private: {
       subnetId: "subnet-036f5f2f9c607cf2a",
@@ -14,6 +16,8 @@ export class ApplicationStack {
       routeTableId: "rtb-00b7d5ea4cdb82c73",
     },
   };
+  s3VpceUsEast2 = "vpce-0e24695c3398ce129";
+
   vpc: cdk.aws_ec2.IVpc;
   privateSubnetUsEast2B: cdk.aws_ec2.ISubnet;
   AWS_ENV_Parameter: CfnParameter;
@@ -198,6 +202,8 @@ export class ApplicationStack {
         code: cdk.aws_lambda.Code.fromAsset(
           "build/handlers/mergeDocumentAndData",
         ),
+        vpc: this.vpc,
+        vpcSubnets: [this.privateSubnetUsEast2B],
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           GOTENBERG_BASE_URL: this.gotenbergServiceInstanceBaseUrl.stringValue,
@@ -213,6 +219,7 @@ export class ApplicationStack {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
             },
           ),
+          S3_VPC_ENDPOINT_USEAST2: this.s3VpceUsEast2,
         },
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
