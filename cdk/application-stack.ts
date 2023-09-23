@@ -191,7 +191,7 @@ export class ApplicationStack {
           ),
           cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
             this.stack,
-            "LambdaPrivateSubnetExecitionRolePolicyReference",
+            "LambdaPrivateSubnetExecutionRolePolicyReference",
             "LambdaPrivateSubnetExecutionRolePolicy",
           ),
         ],
