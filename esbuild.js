@@ -9,15 +9,15 @@ const sharedConfig = {
 
 const bundles = [
   {
-    in: path.resolve("./src/handlers/mergeDocumentAndData/mergeDocumentAndData.ts"),
-    out: path.resolve("./build/handlers/mergeDocumentAndData/mergeDocumentAndData.js")
-  }
+    in: path.resolve("./src/handlers/generateDocument/generateDocument.ts"),
+    out: path.resolve("./build/handlers/generateDocument/generateDocument.js"),
+  },
 ];
 
-bundles.forEach(bundle => {
+bundles.forEach((bundle) => {
   build({
     ...sharedConfig,
     entryPoints: [bundle.in],
-    outfile: bundle.out
+    outfile: bundle.out,
   });
 });
