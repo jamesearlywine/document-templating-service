@@ -9,7 +9,7 @@ const mockAxios = jest.mocked(axios);
 
 describe("mergeDocumentAndData", () => {
   describe("handler", () => {
-    it("should return a response)", async () => {
+    it("should return a response", async () => {
       const event = { mock: "event" };
 
       const response = await handler(event);

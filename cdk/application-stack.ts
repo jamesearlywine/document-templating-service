@@ -238,7 +238,12 @@ export class ApplicationStack {
      * API Gateway
      */
     this.api = new HttpApi(this.stack, "Api", {
-      apiName: "document-templating-service",
+      apiName: cdk.Fn.sub(
+        "processproof-{AWS_ENV}-document-templating-service",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
     });
     this.api.addRoutes({
       path: "/mergeDocumentAndData",
