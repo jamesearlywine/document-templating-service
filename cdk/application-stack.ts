@@ -24,7 +24,7 @@ export class ApplicationStack {
   privateSubnetUsEast2B: cdk.aws_ec2.ISubnet;
   AWS_ENV_Parameter: CfnParameter;
   lambdaExecutionRole: cdk.aws_iam.Role;
-  mergeDocumentAndDataLambda: cdk.aws_lambda.Function;
+  generateDocumentLambda: cdk.aws_lambda.Function;
   gotenbergServiceSecurityGroup: cdk.aws_ec2.SecurityGroup;
   gotenbergServiceSecurityGroupHttpIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
   gotenbergServiceSecurityGroupSshIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
@@ -181,7 +181,7 @@ export class ApplicationStack {
     );
 
     /******************
-     * mergeDocumentAndData Lambda
+     * generateDocument Lambda
      */
     this.lambdaExecutionRole = new cdk.aws_iam.Role(
       this.stack,
@@ -202,15 +202,13 @@ export class ApplicationStack {
       },
     );
 
-    this.mergeDocumentAndDataLambda = new cdk.aws_lambda.Function(
+    this.generateDocumentLambda = new cdk.aws_lambda.Function(
       this.stack,
-      "mergeDocumentAndData",
+      "generatedDocument",
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "mergeDocumentAndData.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/mergeDocumentAndData",
-        ),
+        handler: "generateDocument.handler",
+        code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnetUsEast2B],
         environment: {
@@ -239,18 +237,18 @@ export class ApplicationStack {
      */
     this.api = new HttpApi(this.stack, "Api", {
       apiName: cdk.Fn.sub(
-        "processproof-{AWS_ENV}-document-templating-service",
+        "processproof-${AWS_ENV}-document-templating-service",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
     });
     this.api.addRoutes({
-      path: "/mergeDocumentAndData",
+      path: "/generateDocument",
       methods: [HttpMethod.GET],
       integration: new HttpLambdaIntegration(
-        "mergeDocumentAndDataHttpIntegration",
-        this.mergeDocumentAndDataLambda,
+        "generateDocumentLambdaHttpIntegration",
+        this.generateDocumentLambda,
       ),
     });
   }

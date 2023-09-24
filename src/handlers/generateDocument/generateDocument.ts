@@ -4,6 +4,7 @@ import DocumentConversionServiceConfig from "src/services/document-conversion-se
 const documentConversionServiceConfigInitialized =
   DocumentConversionServiceConfig.initialize();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler = async (event: Record<string, unknown>) => {
   await documentConversionServiceConfigInitialized;
 

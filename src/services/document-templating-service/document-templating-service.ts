@@ -57,11 +57,10 @@ export const generateDocumentFromTemplateAndData = async ({
         outputFilepath: outputDocxFilepath,
       });
 
-      // need to deploy an instance of Gotenberg first
-      // await DocumentConversionService.docxToPdf({
-      //   inputLocation: outputDocxFilepath,
-      //   outputLocation: outputPdfFilepath,
-      // });
+      await DocumentConversionService.docxToPdf({
+        inputLocation: outputDocxFilepath,
+        outputLocation: outputPdfFilepath,
+      });
 
       break;
     default:
