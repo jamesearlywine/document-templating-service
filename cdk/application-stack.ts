@@ -237,7 +237,7 @@ export class ApplicationStack {
      */
     this.api = new HttpApi(this.stack, "Api", {
       apiName: cdk.Fn.sub(
-        "processproof-{AWS_ENV}-document-templating-service",
+        "processproof-${AWS_ENV}-document-templating-service",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },

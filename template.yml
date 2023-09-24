@@ -220,7 +220,7 @@ Resources:
     Properties:
       Name:
         Fn::Sub:
-          - processproof-{AWS_ENV}-document-templating-service
+          - processproof-${AWS_ENV}-document-templating-service
           - AWS_ENV:
               Ref: AWSENV
       ProtocolType: HTTP
