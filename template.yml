@@ -23,6 +23,23 @@ Parameters:
     Default: /cdk-bootstrap/hnb659fds/version
     Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Resources:
+  VPCDynamoDbEndpoint800BFC36:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      RouteTableIds:
+        - rtb-066f67d60ea7e7570
+        - rtb-00b7d5ea4cdb82c73
+        - rtb-016a67076e30cffdd
+      ServiceName:
+        Fn::Join:
+          - ""
+          - - com.amazonaws.
+            - Ref: AWS::Region
+            - .dynamodb
+      VpcEndpointType: Gateway
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/VPC/DynamoDbEndpoint/Resource
   GotenbergServiceSecurityGroup7A6A64AC:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -284,7 +301,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/31Qy27CMBD8Fu6OeVRV21sBqS03lH4AWpwlNSR25N2AUJR/79okak49zXg9npn1Sr+96G4xgxtlprhklT3q7pvBXNT25PYQoEbGoHIk3waDSoSHDs1KVGjaYPn+GXzbRPX/g50rAxKpnSMGJ04iGHmvLNS6y32VxiOO1/vgT7YSFVEd2wXryr9q0569qqA+FqC7j9YZtt7F6ynfY6gtkZzE7ukARMik1xHkrDetuSBvgGTTxpbAeIP7VbaVp+vGpq0YyqEeYxlgdM59y9j3kW69K2yaJ+P4Qion0fCPvVpkUDU/oBez9+Hz5xGnqYOi+2JuYnjER3pkKS+xSRHJd75Afab5dfmql8/ifyZrs9A6tjXq/IG/QOxWh/gBAAA=
+      Analytics: v2:deflate64:H4sIAAAAAAAA/31RTW/CMAz9LdzT8DFN224DtDFuVZG4IpOaLtAmUeyCUNX/vqS0W087vWf72c9xFvLtRTazCdwoUfklKfVRNjsGdRHrk0nBQ4WMXmRItvYKRRAeGlQL2WyA8Qb3vVMfJndWG44t+3T9G+5Q1V7zfeNt7WLx/8TWFB6JxNYQgwleQTDwVmioZJPZsksPOJRTb0+6DCqiKu7vtSn+lh+/pBUlVMccZPNZG8Xamlge8xR9pYlCFMY9HYAImeQyQojlqlYX5BVQuIXTxeMI13CP0Lp0unsVQ9Gvx1h4GCZntmZs20jX1uS6y3eDY0dYuRP1l27FLIHSfYOcTd7775lGHLv2iuaL2UXziA/3yDq/jo0WCf7G5ijPNL3OX+X8Ocw/k9aJrw3rCmX2wB97sQelGgIAAA==
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
 Conditions:

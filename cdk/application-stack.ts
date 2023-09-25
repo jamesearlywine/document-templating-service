@@ -21,7 +21,8 @@ export class ApplicationStack {
   s3VpceUsEast2 = "vpce-0e24695c3398ce129";
 
   vpc: cdk.aws_ec2.IVpc;
-  privateSubnetUsEast2B: cdk.aws_ec2.ISubnet;
+  vpcEndpointDynamoDb: cdk.aws_ec2.IVpcEndpoint;
+  privateSubnetUsEast2A: cdk.aws_ec2.ISubnet;
   AWS_ENV_Parameter: CfnParameter;
   lambdaExecutionRole: cdk.aws_iam.Role;
   generateDocumentLambda: cdk.aws_lambda.Function;
@@ -65,11 +66,18 @@ export class ApplicationStack {
     /*********************
      * Private Subnet
      */
-    this.privateSubnetUsEast2B = cdk.aws_ec2.Subnet.fromSubnetAttributes(
+    this.privateSubnetUsEast2A = cdk.aws_ec2.Subnet.fromSubnetAttributes(
       this.stack,
-      "PrivateSubnetUsEast2B",
+      "PrivateSubnetUsEast2A",
       this.subnetAttributes.usEast2A_private,
     );
+
+    /*********************
+     * VPC Endpoint - DynamoDB
+     */
+    this.vpcEndpointDynamoDb = this.vpc.addGatewayEndpoint("DynamoDbEndpoint", {
+      service: cdk.aws_ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+    });
 
     /*********************
      * Gotenberg Service
@@ -154,7 +162,7 @@ export class ApplicationStack {
         ),
         vpc: this.vpc,
         vpcSubnets: {
-          subnets: [this.privateSubnetUsEast2B],
+          subnets: [this.privateSubnetUsEast2A],
         },
         securityGroup: this.gotenbergServiceSecurityGroup,
         keyName: "TempKeypair",
@@ -210,7 +218,7 @@ export class ApplicationStack {
         handler: "generateDocument.handler",
         code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
         vpc: this.vpc,
-        vpcSubnets: [this.privateSubnetUsEast2B],
+        vpcSubnets: [this.privateSubnetUsEast2A],
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           GOTENBERG_BASE_URL: this.gotenbergServiceInstanceBaseUrl.stringValue,
@@ -226,7 +234,8 @@ export class ApplicationStack {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
             },
           ),
-          S3_VPC_ENDPOINT_USEAST2: this.s3VpceUsEast2,
+          S3_VPC_ENDPOINT_ID: this.s3VpceUsEast2,
+          DYNAMODB_VPC_ENDPOINT_ID: this.vpcEndpointDynamoDb.vpcEndpointId,
         },
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
