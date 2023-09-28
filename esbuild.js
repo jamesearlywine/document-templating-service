@@ -13,11 +13,9 @@ const bundles = [
     out: path.resolve("./build/handlers/generateDocument/generateDocument.js"),
   },
   {
-    in: path.resolve(
-      "./src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.ts",
-    ),
+    in: path.resolve("./src/handlers/createOrUpdateDocumentTemplate/index.ts"),
     out: path.resolve(
-      "./build/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.js",
+      "./build/handlers/createOrUpdateDocumentTemplate/index.js",
     ),
   },
 ];

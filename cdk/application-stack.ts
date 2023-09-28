@@ -117,7 +117,7 @@ export class ApplicationStack extends cdk.Stack {
       "generatedDocumentLambda",
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "generateDocument.handler",
+        handler: "index.handler",
         code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnetUsEast2A],
@@ -153,7 +153,7 @@ export class ApplicationStack extends cdk.Stack {
       "createOrUpdateDocumentTemplateLambda",
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "createOrUpdateDocumentTemplate.handler",
+        handler: "index.handler",
         code: cdk.aws_lambda.Code.fromAsset(
           "build/handlers/createOrUpdateDocumentTemplate",
         ),

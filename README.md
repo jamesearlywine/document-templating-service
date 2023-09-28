@@ -15,9 +15,16 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
     - watch `testing/test-generated-files/*` for test-generated files
     
 ## How to deploy
+- edit `ephemeralPrefix` and hard-coded config values in: 
+  - `cdk/cdk.json`
+  - `cdk/application-stack.cdk.ts`
 - `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-1` (or your preferred aws region)
 - `npm run build`
+  - `npm run watch:build` (if you want to watch for changes)
 - `npm run build:template`
-- `npm run deploy`
+- `npm run deploy` 
+  - `cdk watch` (if you want to watch for changes)
 
-Then go to your aws web console and find the cloudformation stack "DocumentTemplatingService" in your specified aws region.
+
+
+Then go to your aws web console and find the cloudformation stack "{ephemeralPrefix}DocumentTemplatingService" in your specified aws region.

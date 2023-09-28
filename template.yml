@@ -181,7 +181,7 @@ Resources:
                   Ref: AWSENV
           S3_VPC_ENDPOINT_ID: vpce-0e24695c3398ce129
           DYNAMODB_VPC_ENDPOINT_ID: vpce-087efa9bb6c018a41
-      Handler: generateDocument.handler
+      Handler: index.handler
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
@@ -218,7 +218,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 94d3dd83bd7f31c55a3318f30b69cc350fc1e954809ef9a190fea13958c52612.zip
+        S3Key: 58a356f1e03d44898d4f5f47343713c7fc1077538b9e199e23f548497e96909d.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -235,7 +235,7 @@ Resources:
                   Ref: AWSENV
           S3_VPC_ENDPOINT_ID: vpce-0e24695c3398ce129
           DYNAMODB_VPC_ENDPOINT_ID: vpce-087efa9bb6c018a41
-      Handler: createOrUpdateDocumentTemplate.handler
+      Handler: index.handler
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
@@ -253,7 +253,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.94d3dd83bd7f31c55a3318f30b69cc350fc1e954809ef9a190fea13958c52612
+      aws:asset:path: asset.58a356f1e03d44898d4f5f47343713c7fc1077538b9e199e23f548497e96909d
       aws:asset:is-bundled: false
       aws:asset:property: Code
   ApiF70053CD:

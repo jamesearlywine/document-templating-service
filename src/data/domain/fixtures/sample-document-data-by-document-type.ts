@@ -1,4 +1,4 @@
-export const dummyDataByDocumentType = {
+export const sampleDocumentDataByDocumentType = {
   jobaffidavit: {
     jobId: "abc-123",
     jobClientJobNumber: "12345",
