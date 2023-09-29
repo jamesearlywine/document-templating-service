@@ -179,8 +179,6 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/public-documents-bucket-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
-          S3_VPC_ENDPOINT_ID: vpce-0e24695c3398ce129
-          DYNAMODB_VPC_ENDPOINT_ID: vpce-087efa9bb6c018a41
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -218,7 +216,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 58a356f1e03d44898d4f5f47343713c7fc1077538b9e199e23f548497e96909d.zip
+        S3Key: 27d1d92ba560a80ad2985cde082ec5ec771c659b4b3ea3ed1b31dab0d63279ff.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -233,8 +231,6 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
-          S3_VPC_ENDPOINT_ID: vpce-0e24695c3398ce129
-          DYNAMODB_VPC_ENDPOINT_ID: vpce-087efa9bb6c018a41
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -253,7 +249,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.58a356f1e03d44898d4f5f47343713c7fc1077538b9e199e23f548497e96909d
+      aws:asset:path: asset.27d1d92ba560a80ad2985cde082ec5ec771c659b4b3ea3ed1b31dab0d63279ff
       aws:asset:is-bundled: false
       aws:asset:property: Code
   ApiF70053CD:

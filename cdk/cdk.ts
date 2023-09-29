@@ -3,7 +3,17 @@ import { ApplicationStack } from "./application-stack";
 
 const ephemeralPrefix = "JLE-Ephemeral-";
 export const app: cdk.App = new cdk.App();
-export const application = new ApplicationStack(
+
+export type ApplicationConfig = {
+  vpcId: string;
+  privateSubnetAttributes: {
+    subnetId: string;
+    availabilityZone: string;
+    routeTableId: string;
+  };
+};
+
+export const applicationStack = new ApplicationStack(
   app,
   `${ephemeralPrefix}DocumentTemplatingService`,
   {
@@ -12,5 +22,13 @@ export const application = new ApplicationStack(
       region: "us-east-2",
     },
     ephemeralPrefix,
+    config: {
+      vpcId: "vpc-058c5ee1e09681197",
+      privateSubnetAttributes: {
+        subnetId: "subnet-036f5f2f9c607cf2a",
+        availabilityZone: "us-east-2a",
+        routeTableId: "rtb-00b7d5ea4cdb82c73",
+      },
+    } as ApplicationConfig,
   },
 );

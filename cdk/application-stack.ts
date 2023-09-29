@@ -4,25 +4,17 @@ import { FunctionProps } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { GotenbergServiceInstance } from "./GotenbergServiceInstance.cdk";
+import { ApplicationConfig } from "cdk/cdk";
 
 export class ApplicationStack extends cdk.Stack {
   AWS_ENV_Parameter: cdk.CfnParameter;
   gotenbergServiceInstanceEnableSshParam: cdk.CfnParameter;
 
   // consider refactor to parameters passed in from pipeline
-  vpcId = "vpc-058c5ee1e09681197";
-  subnetAttributes = {
-    usEast2A_private: {
-      subnetId: "subnet-036f5f2f9c607cf2a",
-      availabilityZone: "us-east-2a",
-      routeTableId: "rtb-00b7d5ea4cdb82c73",
-    },
-  };
-  s3VpceId_UsEast2 = "vpce-0e24695c3398ce129";
-  dynamodbVpceId_UsEast2 = "vpce-087efa9bb6c018a41";
+  config: ApplicationConfig;
 
   vpc: cdk.aws_ec2.IVpc;
-  privateSubnetUsEast2A: cdk.aws_ec2.ISubnet;
+  privateSubnet: cdk.aws_ec2.ISubnet;
 
   lambdaExecutionRole: cdk.aws_iam.Role;
 
@@ -35,6 +27,8 @@ export class ApplicationStack extends cdk.Stack {
 
   constructor(app, id: string, props) {
     super(app, id, props);
+
+    this.config = props.config;
 
     /*********************
      * Pipeline-Provided Parameters
@@ -61,16 +55,16 @@ export class ApplicationStack extends cdk.Stack {
      * VPC
      */
     this.vpc = cdk.aws_ec2.Vpc.fromLookup(this, "VPC", {
-      vpcId: this.vpcId,
+      vpcId: this.config.vpcId,
     });
 
     /*********************
      * Private Subnet
      */
-    this.privateSubnetUsEast2A = cdk.aws_ec2.Subnet.fromSubnetAttributes(
+    this.privateSubnet = cdk.aws_ec2.Subnet.fromSubnetAttributes(
       this,
-      "PrivateSubnetUsEast2A",
-      this.subnetAttributes.usEast2A_private,
+      "PrivateSubnet",
+      this.config.privateSubnetAttributes,
     );
 
     /******************
@@ -82,7 +76,7 @@ export class ApplicationStack extends cdk.Stack {
       {
         AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         vpc: this.vpc,
-        subnet: this.privateSubnetUsEast2A,
+        subnet: this.privateSubnet,
         registerResources: !!props.ephemeralPrefix,
       },
     );
@@ -120,7 +114,7 @@ export class ApplicationStack extends cdk.Stack {
         handler: "index.handler",
         code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
         vpc: this.vpc,
-        vpcSubnets: [this.privateSubnetUsEast2A],
+        vpcSubnets: [this.privateSubnet],
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           GOTENBERG_BASE_URL:
@@ -138,8 +132,6 @@ export class ApplicationStack extends cdk.Stack {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
             },
           ),
-          S3_VPC_ENDPOINT_ID: this.s3VpceId_UsEast2,
-          DYNAMODB_VPC_ENDPOINT_ID: this.dynamodbVpceId_UsEast2,
         },
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
@@ -158,7 +150,7 @@ export class ApplicationStack extends cdk.Stack {
           "build/handlers/createOrUpdateDocumentTemplate",
         ),
         vpc: this.vpc,
-        vpcSubnets: [this.privateSubnetUsEast2A],
+        vpcSubnets: [this.privateSubnet],
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
           PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
@@ -173,8 +165,6 @@ export class ApplicationStack extends cdk.Stack {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
             },
           ),
-          S3_VPC_ENDPOINT_ID: this.s3VpceId_UsEast2,
-          DYNAMODB_VPC_ENDPOINT_ID: this.dynamodbVpceId_UsEast2,
         },
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
