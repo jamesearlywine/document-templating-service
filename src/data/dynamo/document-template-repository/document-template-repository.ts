@@ -2,6 +2,7 @@ import DocumentTemplateRepositoryConfig from "src/data/dynamo/document-template-
 import {
   DynamoDBClient,
   PutItemCommand,
+  PutItemCommandOutput,
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";

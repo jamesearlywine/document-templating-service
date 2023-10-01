@@ -1,9 +1,12 @@
 import * as DocxTemplater from "./docxtemplater";
 import path from "path";
-import { validJobAffidavitTemplateData } from "src/data/document-templates/job-affidavit/job-affidavit-template-data.fixtures";
+import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 import WordExtractor from "word-extractor";
 import fs from "fs";
 import { v4 as uuid } from "uuid";
+
+const validJobAffidavitTemplateData =
+  sampleDocumentDataByDocumentType.jobaffidavit;
 
 const TEMPLATE_FILE_PATH = path.resolve(
   "testing/test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx",
