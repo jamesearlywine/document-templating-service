@@ -11,19 +11,19 @@ export const PROCESSPROOF_DOCUMENT_TEMPLATE_TYPE =
 export const DOCUMENT_TEMPLATE_LATEST_SCHEMA_VERSION = "V1";
 
 export type DocumentTemplateV1 = {
+  id: string;
   type: "processproof:DocumentTemplate";
   schemaVersion: "V1";
-  id: string;
   docType: string;
   templateName: string;
   description: string;
+  templateKeyDescriptions?: Record<string, string>;
+  sampleDocumentData?: Record<string, string>;
+  sampleGeneratedDocumentUrl?: string;
   storageType?: string;
   storageLocation?: string;
   filepath?: string;
   fileExtension?: string;
-  templateKeyDescriptions?: Record<string, string>;
-  sampleDocumentData?: Record<string, string>;
-  sampleGeneratedDocumentUrl?: string;
   documentTemplateFileUploadedAt?: string;
   documentTemplateFileHash?: string;
   created?: string;
