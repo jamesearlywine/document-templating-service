@@ -4,14 +4,17 @@ import {
   PutItemCommand,
   PutItemCommandOutput,
   QueryCommand,
+  UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoRepositoryQueryResponse } from "src/data/dynamo/dynamo-respository-query-response.type";
 import { DocumentTemplate } from "src/data/domain/document-template.type";
-import { composePartitionKey } from "src/data/dynamo/document-template-repository/document-template-dynamo-record";
-import { createPresignedUrl } from "src/utility/s3/presigned-url";
-import { ONE_HOUR_SECONDS } from "src/utility/datetime";
-import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
+import {
+  composePartitionKey,
+  createDynamoKeysForDocumentTemplate,
+  DocumentTemplateDynamoRecord,
+} from "src/data/dynamo/document-template-repository/document-template-dynamo-record";
+import { generateUpdateExpression } from "src/utility/dynamodb/generate-update-expression";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -76,27 +79,8 @@ export const getDocumentTemplateRecordsByDocType = async (
   };
 };
 
-export const getDocumentTemplateFilePresignedUploadUrl = async (
-  id: string,
-  options?: RequestPresigningArguments,
-): Promise<string> => {
-  return await createPresignedUrl({
-    bucket:
-      DocumentTemplateRepositoryConfig.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME,
-    key: `${DocumentTemplateRepositoryConfig.PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX}/${id}/template.docx`,
-    region:
-      DocumentTemplateRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
-    options: {
-      expiresIn: ONE_HOUR_SECONDS,
-      ...options,
-    },
-  });
-};
-
-export const getDocumentTemplateFileById = async (id: string) => {};
-
 export const putDocumentTemplate = async (
-  documentTemplate: DocumentTemplate,
+  documentTemplate: DocumentTemplateDynamoRecord,
 ): Promise<PutItemCommandOutput> => {
   await DocumentTemplateRepositoryConfig.initialize();
 
@@ -111,11 +95,34 @@ export const putDocumentTemplate = async (
   return dynamoResponse;
 };
 
+export const updateDocumentTemplateById = async (
+  id: string,
+  documentTemplate: Partial<DocumentTemplate>,
+) => {
+  await DocumentTemplateRepositoryConfig.initialize();
+  const updateExpression = generateUpdateExpression(documentTemplate);
+
+  const keys = createDynamoKeysForDocumentTemplate({ id });
+
+  const command = new UpdateItemCommand({
+    TableName:
+      DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+    Key: {
+      PK: { S: keys.PK },
+      SK: { S: keys.SK },
+    },
+    UpdateExpression: updateExpression.UpdateExpression,
+    ExpressionAttributeNames: updateExpression.ExpressionAttributeNames,
+    ExpressionAttributeValues: updateExpression.ExpressionAttributeValues,
+  });
+
+  return await dynamoClient.send(command);
+};
+
 export const DocumentTemplateRepository = {
   getDocumentTemplateRecordById,
   getDocumentTemplateRecordByTemplateName,
   getDocumentTemplateRecordsByDocType,
-  getDocumentTemplateFileById,
-  getDocumentTemplateFilePresignedUploadUrl,
   putDocumentTemplate,
+  updateDocumentTemplateById,
 };

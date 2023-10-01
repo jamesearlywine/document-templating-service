@@ -18,6 +18,14 @@ const bundles = [
       "./build/handlers/createOrUpdateDocumentTemplate/index.js",
     ),
   },
+  {
+    in: path.resolve(
+      "./src/handlers/afterDocumentTemplateFileUploaded/index.ts",
+    ),
+    out: path.resolve(
+      "./build/handlers/afterDocumentTemplateFileUploaded/index.js",
+    ),
+  },
 ];
 
 bundles.forEach((bundle) => {

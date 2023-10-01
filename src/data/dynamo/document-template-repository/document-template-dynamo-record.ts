@@ -6,7 +6,7 @@ export type DocumentTemplateDynamoRecord = DocumentTemplate & {
 };
 
 export const PARTITION_KEY_PREFIX = "DOCUMENT_TEMPLATE";
-export const SORT_KEY_PREFIX = "TEMPLATE_NAME";
+export const SORT_KEY_PREFIX = "DOCUMENT_TEMPLATE";
 
 export const composePartitionKey = (id: string) => {
   return `${PARTITION_KEY_PREFIX}#${id}`;
@@ -17,8 +17,8 @@ export const decomposePartitionKey = (key: string) => {
   return { type, id };
 };
 
-export const composeSortKey = (templateName: string) => {
-  return `${SORT_KEY_PREFIX}#${templateName}`;
+export const composeSortKey = (id: string) => {
+  return `${SORT_KEY_PREFIX}#${id}`;
 };
 
 export const decomposeSortKey = (key: string) => {
@@ -26,13 +26,21 @@ export const decomposeSortKey = (key: string) => {
   return { type, templateName };
 };
 
+export const createDynamoKeysForDocumentTemplate = (
+  documentTemplate: Pick<DocumentTemplate, "id">,
+) => {
+  return {
+    PK: composePartitionKey(documentTemplate.id),
+    SK: composeSortKey(documentTemplate.id),
+  };
+};
+
 export const mapDocumentTemplateDynamoRecord = {
   fromDocumentTemplate: (
     documentTemplate: DocumentTemplate,
   ): DocumentTemplateDynamoRecord => {
     return {
-      PK: composePartitionKey(documentTemplate.id),
-      SK: composeSortKey(documentTemplate.templateName),
+      ...createDynamoKeysForDocumentTemplate(documentTemplate),
       ...documentTemplate,
     };
   },

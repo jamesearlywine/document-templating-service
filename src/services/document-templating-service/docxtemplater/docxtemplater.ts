@@ -1,7 +1,6 @@
 import PizZip from "pizzip";
 import fs from "fs";
 import Docxtemplater from "docxtemplater";
-import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 
 export const generateTemplatedContent = ({
   templateFilepath,
