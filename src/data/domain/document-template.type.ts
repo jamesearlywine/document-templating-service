@@ -24,7 +24,8 @@ export type DocumentTemplateV1 = {
   templateKeyDescriptions?: Record<string, string>;
   sampleDocumentData?: Record<string, string>;
   sampleGeneratedDocumentUrl?: string;
-  creationStatus?: CreationStatus;
+  documentTemplateFileUploadedAt?: string;
+  documentTemplateFileHash?: string;
   created?: string;
   updated?: string;
 };
@@ -45,4 +46,14 @@ export const isDocumentTemplate = (
   maybeDocumentTemplate: unknown,
 ): maybeDocumentTemplate is DocumentTemplate => {
   return isDocumentTemplateV1(maybeDocumentTemplate);
+};
+
+export const hasDocumentTemplateFile = (
+  documentTemplate: DocumentTemplate,
+): boolean => {
+  return (
+    !!documentTemplate.storageType &&
+    !!documentTemplate.storageLocation &&
+    !!documentTemplate.filepath
+  );
 };

@@ -44,6 +44,8 @@ export const handler = async (event: {
       storageLocation,
       filepath,
       fileExtension,
+      documentTemplateFileUploadedAt: new Date().toISOString(),
+      documentTemplateFileHash: event.detail.object.etag,
     });
 
   console.log(
