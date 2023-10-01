@@ -81,8 +81,6 @@ export class CreateOrUpdateDocumentTemplateController {
 
       sampleDocumentData,
       templateKeyDescriptions,
-      hasTemplateDocumentFile:
-        existingDocumentTemplate?.hasTemplateDocumentFile ?? false,
       updated: new Date().toISOString(),
       created:
         documentTemplateByIdResponse.Count > 0

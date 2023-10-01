@@ -2,7 +2,7 @@ import DocumentTemplateRepositoryConfig from "src/data/dynamo/document-template-
 import { CreateOrUpdateDocumentTemplateController } from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.controller";
 import { DocumentTemplate } from "src/data/domain/document-template.type";
 import { Optional } from "utility-types";
-import { getValidationErrors } from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.inputValidator";
+import { v4 as uuid } from "uuid";
 
 DocumentTemplateRepositoryConfig.initialize();
 
@@ -13,7 +13,7 @@ export const handler = async (event: Record<string, unknown>) => {
     DocumentTemplate,
     "id"
   >;
-  const id = (event.pathParameters ?? {})["id"] || requestBody.id || null;
+  const id = (event.pathParameters ?? {})["id"] || requestBody.id || uuid();
 
   return CreateOrUpdateDocumentTemplateController.PUT(id, requestBody);
 };

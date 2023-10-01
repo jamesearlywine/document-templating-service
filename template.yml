@@ -207,7 +207,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: e91cf50abb8db66f94b76cba24523223a2c94734eca1836c59a39b525700ef3d.zip
+        S3Key: 1e55e65d99c57eb06e7ece2e64970c587d34e68e9cce60a8e30e710f93db7bf2.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -250,7 +250,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.e91cf50abb8db66f94b76cba24523223a2c94734eca1836c59a39b525700ef3d
+      aws:asset:path: asset.1e55e65d99c57eb06e7ece2e64970c587d34e68e9cce60a8e30e710f93db7bf2
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23:
@@ -269,7 +269,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 6127a6255884bba6cd9fafd9bc0d9e2c3fde336e060e00fb877e71be83203eeb.zip
+        S3Key: 0bcbf7b093275e8b5440c21ed996c7741abc341fa4f886d04ea0dcf8c4ac5085.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -297,7 +297,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/Resource
-      aws:asset:path: asset.6127a6255884bba6cd9fafd9bc0d9e2c3fde336e060e00fb877e71be83203eeb
+      aws:asset:path: asset.0bcbf7b093275e8b5440c21ed996c7741abc341fa4f886d04ea0dcf8c4ac5085
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedEventRule65782E4A:

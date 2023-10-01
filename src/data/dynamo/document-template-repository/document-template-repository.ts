@@ -107,10 +107,7 @@ export const updateDocumentTemplateById = async (
   const command = new UpdateItemCommand({
     TableName:
       DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
-    Key: {
-      PK: { S: keys.PK },
-      SK: { S: keys.SK },
-    },
+    Key: marshall(keys),
     UpdateExpression: updateExpression.UpdateExpression,
     ExpressionAttributeNames: updateExpression.ExpressionAttributeNames,
     ExpressionAttributeValues: updateExpression.ExpressionAttributeValues,
