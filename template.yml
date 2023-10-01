@@ -1,8 +1,9 @@
 Parameters:
   AWSENV:
     Type: String
-    Default: DEV
+    Default: EPHEMERAL
     AllowedValues:
+      - EPHEMERAL
       - DEV
       - TEST
       - STAGING
@@ -23,62 +24,31 @@ Parameters:
     Default: /cdk-bootstrap/hnb659fds/version
     Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Resources:
-  VPCDynamoDbEndpoint800BFC36:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      RouteTableIds:
-        - rtb-066f67d60ea7e7570
-        - rtb-00b7d5ea4cdb82c73
-        - rtb-016a67076e30cffdd
-      ServiceName:
-        Fn::Join:
-          - ""
-          - - com.amazonaws.
-            - Ref: AWS::Region
-            - .dynamodb
-      VpcEndpointType: Gateway
-      VpcId: vpc-058c5ee1e09681197
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/VPC/DynamoDbEndpoint/Resource
-  GotenbergServiceSecurityGroup7A6A64AC:
+  serviceSecurityGroupED3E18CA:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: DocumentTemplatingService/GotenbergServiceSecurityGroup
+      GroupDescription: JLE-Ephemeral-DocumentTemplatingService/serviceSecurityGroup
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroup/Resource
-  GotenbergServiceSecurityGroupHttpIngress:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/serviceSecurityGroup/Resource
+  serviceSecurityGroupHttpIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       CidrIp: 0.0.0.0/0
       FromPort: 3000
       GroupId:
         Fn::GetAtt:
-          - GotenbergServiceSecurityGroup7A6A64AC
+          - serviceSecurityGroupED3E18CA
           - GroupId
       IpProtocol: tcp
       ToPort: 3000
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroupHttpIngress
-  GotenbergServiceSecurityGroupSshIngress:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      CidrIp: 0.0.0.0/0
-      FromPort: 22
-      GroupId:
-        Fn::GetAtt:
-          - GotenbergServiceSecurityGroup7A6A64AC
-          - GroupId
-      IpProtocol: tcp
-      ToPort: 22
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceSecurityGroupSshIngress
-    Condition: GotenbergServiceInstanceEnableSshCondition
-  GotenbergServiceInstanceInstanceRoleF036C99D:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/serviceSecurityGroupHttpIngress
+  GotenbergServiceEc2InstanceInstanceRole3CB3D4E5:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -90,22 +60,22 @@ Resources:
         Version: "2012-10-17"
       Tags:
         - Key: Name
-          Value: DocumentTemplatingService/GotenbergServiceInstance
+          Value: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/InstanceRole/Resource
-  GotenbergServiceInstanceInstanceProfile2AB77017:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance/InstanceRole/Resource
+  GotenbergServiceEc2InstanceInstanceProfile6657995B:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
-        - Ref: GotenbergServiceInstanceInstanceRoleF036C99D
+        - Ref: GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/InstanceProfile
-  GotenbergServiceInstanceA66C5FDB8eab42f3697fe4d9:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
+  GotenbergServiceEc2Instance23EB502F8eab42f3697fe4d9:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2a
       IamInstanceProfile:
-        Ref: GotenbergServiceInstanceInstanceProfile2AB77017
+        Ref: GotenbergServiceEc2InstanceInstanceProfile6657995B
       ImageId:
         Ref: SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter
       InstanceType: c6gd.medium
@@ -115,12 +85,12 @@ Resources:
           DeviceIndex: "0"
           GroupSet:
             - Fn::GetAtt:
-                - GotenbergServiceSecurityGroup7A6A64AC
+                - serviceSecurityGroupED3E18CA
                 - GroupId
           SubnetId: subnet-036f5f2f9c607cf2a
       Tags:
         - Key: Name
-          Value: DocumentTemplatingService/GotenbergServiceInstance
+          Value: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance
       UserData:
         Fn::Base64: |-
           #!/bin/bash
@@ -130,27 +100,9 @@ Resources:
           docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9
           docker start gotenbergInstance
     DependsOn:
-      - GotenbergServiceInstanceInstanceRoleF036C99D
+      - GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstance/Resource
-  GotenbergServiceInstanceBaseUrlA0BD3E86:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name:
-        Fn::Sub:
-          - /${AWS_ENV}/document-templating-service/gotenberg-base-url
-          - AWS_ENV:
-              Ref: AWSENV
-      Type: String
-      Value:
-        Fn::Sub:
-          - http://${GOTENBERG_IP}:3000
-          - GOTENBERG_IP:
-              Fn::GetAtt:
-                - GotenbergServiceInstanceA66C5FDB8eab42f3697fe4d9
-                - PrivateIp
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance/Resource
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
     Properties:
@@ -173,33 +125,41 @@ Resources:
             - - "arn:"
               - Ref: AWS::Partition
               - :iam::546515125053:policy/LambdaPrivateSubnetExecutionRolePolicy
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::546515125053:policy/LambdaGeneralExecutionRolePolicy
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/LambdaExecutionRole/Resource
-  generatedDocumentSecurityGroupCA8A4E03:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/LambdaExecutionRole/Resource
+  generatedDocumentLambdaSecurityGroup5CB9C865:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicegeneratedDocumentA9E2753B
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicegeneratedDocumentLambdaD72A19CD
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/generatedDocument/SecurityGroup/Resource
-  generatedDocumentFE6B32DC:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/generatedDocumentLambda/SecurityGroup/Resource
+  generatedDocumentLambda5E756CB4:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 64fcc8fa80ddb42adbfb3e6dba0a913341af50ac9c4b24f52494fe7174b6f9a6.zip
+        S3Key: 2bdf5a285c40fbd864a8a92fac6a5ef812a2f54c392d4bd1825396b1c037572d.zip
       Environment:
         Variables:
           AWS_ENV:
             Ref: AWSENV
           GOTENBERG_BASE_URL:
-            Fn::GetAtt:
-              - GotenbergServiceInstanceBaseUrlA0BD3E86
-              - Value
+            Fn::Sub:
+              - http://${GOTENBERG_IP}:3000
+              - GOTENBERG_IP:
+                  Fn::GetAtt:
+                    - GotenbergServiceEc2Instance23EB502F8eab42f3697fe4d9
+                    - PrivateIp
           PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN:
             Fn::Sub:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
@@ -210,8 +170,7 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/public-documents-bucket-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
-          S3_VPC_ENDPOINT_USEAST2: vpce-0e24695c3398ce129
-      Handler: generateDocument.handler
+      Handler: index.handler
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
@@ -220,7 +179,7 @@ Resources:
       VpcConfig:
         SecurityGroupIds:
           - Fn::GetAtt:
-              - generatedDocumentSecurityGroupCA8A4E03
+              - generatedDocumentLambdaSecurityGroup5CB9C865
               - GroupId
         SubnetIds:
           - subnet-036f5f2f9c607cf2a
@@ -228,8 +187,70 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/generatedDocument/Resource
-      aws:asset:path: asset.64fcc8fa80ddb42adbfb3e6dba0a913341af50ac9c4b24f52494fe7174b6f9a6
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/generatedDocumentLambda/Resource
+      aws:asset:path: asset.2bdf5a285c40fbd864a8a92fac6a5ef812a2f54c392d4bd1825396b1c037572d
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicecreateOrUpdateDocumentTemplateLambda1D1CF7A0
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/SecurityGroup/Resource
+  createOrUpdateDocumentTemplateLambda21DD51BC:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: 67acaec2d1ad56f83b52266a932e10354831520acf8563f48731ba7b50a2490c.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AWSENV
+          PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-template}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
+      aws:asset:path: asset.67acaec2d1ad56f83b52266a932e10354831520acf8563f48731ba7b50a2490c
       aws:asset:is-bundled: false
       aws:asset:property: Code
   ApiF70053CD:
@@ -242,7 +263,7 @@ Resources:
               Ref: AWSENV
       ProtocolType: HTTP
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Resource
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/Resource
   ApiDefaultStage189A7074:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
@@ -251,7 +272,7 @@ Resources:
       AutoDeploy: true
       StageName: $default
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/DefaultStage/Resource
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/DefaultStage/Resource
   ApiGETgenerateDocumentgenerateDocumentLambdaHttpIntegrationEBA67B53:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -260,18 +281,18 @@ Resources:
       IntegrationType: AWS_PROXY
       IntegrationUri:
         Fn::GetAtt:
-          - generatedDocumentFE6B32DC
+          - generatedDocumentLambda5E756CB4
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--generateDocument/generateDocumentLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--generateDocument/generateDocumentLambdaHttpIntegration/Resource
   ApiGETgenerateDocumentgenerateDocumentLambdaHttpIntegrationPermission6E056E4E:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName:
         Fn::GetAtt:
-          - generatedDocumentFE6B32DC
+          - generatedDocumentLambda5E756CB4
           - Arn
       Principal: apigateway.amazonaws.com
       SourceArn:
@@ -283,7 +304,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/generateDocument
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--generateDocument/generateDocumentLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--generateDocument/generateDocumentLambdaHttpIntegration-Permission
   ApiGETgenerateDocument155C2E1E:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -297,18 +318,105 @@ Resources:
           - - integrations/
             - Ref: ApiGETgenerateDocumentgenerateDocumentLambdaHttpIntegrationEBA67B53
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--generateDocument/Resource
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--generateDocument/Resource
+  ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationA967DFFB:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
+  ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationPermissionD916E15F:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /*/*/documentTemplate
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
+  ApiPUTdocumentTemplate63004375:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      AuthorizationType: NONE
+      RouteKey: PUT /documentTemplate
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationA967DFFB
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate/Resource
+  ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegration0B383EAF:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
+  ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegrationPermission1F513E89:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /*/*/documentTemplate/{id}
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
+  ApiPUTdocumentTemplateid268CFB20:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      AuthorizationType: NONE
+      RouteKey: PUT /documentTemplate/{id}
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegration0B383EAF
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate--{id}/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/31RTW/CMAz9LdzT8DFN224DtDFuVZG4IpOaLtAmUeyCUNX/vqS0W087vWf72c9xFvLtRTazCdwoUfklKfVRNjsGdRHrk0nBQ4WMXmRItvYKRRAeGlQL2WyA8Qb3vVMfJndWG44t+3T9G+5Q1V7zfeNt7WLx/8TWFB6JxNYQgwleQTDwVmioZJPZsksPOJRTb0+6DCqiKu7vtSn+lh+/pBUlVMccZPNZG8Xamlge8xR9pYlCFMY9HYAImeQyQojlqlYX5BVQuIXTxeMI13CP0Lp0unsVQ9Gvx1h4GCZntmZs20jX1uS6y3eDY0dYuRP1l27FLIHSfYOcTd7775lGHLv2iuaL2UXziA/3yDq/jo0WCf7G5ijPNL3OX+X8Ocw/k9aJrw3rCmX2wB97sQelGgIAAA==
+      Analytics: v2:deflate64:H4sIAAAAAAAA/32QwW6DMAyGn6X3kNJO07bb2knbekPsASo3uCwFEhQ7rSrEuy9JQeK00+84X/4/9la+vcghX8GNMlU1WatPcvhhUI34OJsCHHTI6ESJZL1TKAJ4HFBtA4XKO833L2d9H+n/GwdTOyQSB0MMJjgFYK5HoaGTQ2nb1J51vi6cPes2UC10pwrk8OmNYm1NhJZ1ga7TROE0Cno6AhEyyV2UcJZ7rxrkPVAYo9c1MN7gfg2jhKe7XqcvM9RTNmPtYHYurWccR5G8IqRNnfrTXkaRZ9D2vyDz1fu0zHXUZdBEDN/MfcyL+giMVYpI1SI7RBpbobzQ+rp5lZvn4H8hrTPnDesOZfnQP5S414HIAQAA
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
-Conditions:
-  GotenbergServiceInstanceEnableSshCondition:
-    Fn::Equals:
-      - "true"
-      - Ref: GotenbergServiceInstanceEnableSsh
+      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/CDKMetadata/Default
 Rules:
   CheckBootstrapVersion:
     Assertions:

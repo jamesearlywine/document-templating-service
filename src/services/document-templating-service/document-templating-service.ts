@@ -1,11 +1,10 @@
-import { GeneratedDocument } from "src/data/document-templates/generated-document";
-import { TemplateData } from "src/data/document-templates/document-template-data";
 import { v4 as uuid } from "uuid";
 import { DocumentConversionService } from "src/services/document-conversion-service";
 import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
 import { Service } from "src/services/service.type";
 import DocumentConversionServiceConfig from "src/services/document-conversion-service/document-conversion-service.config";
 import DocumentTemplatingServiceConfig from "src/services/document-templating-service/document-templating-service.config";
+import { GeneratedDocument } from "src/data/domain/generated-document.type";
 
 let initialized: Promise<void>;
 export const initialize = async () => {
@@ -21,7 +20,7 @@ export const generateDocumentFromTemplateAndData = async ({
   templateData,
 }: {
   templateId: string;
-  templateData: TemplateData;
+  templateData: Record<string, unknown>;
 }): Promise<GeneratedDocument> => {
   console.log("generateDocumentFromTemplateAndData", {
     templateId,
@@ -78,9 +77,8 @@ export const generateDocumentFromTemplateAndData = async ({
     s3LocationPdf: "none",
     s3PublicUrl: "none", // .pdf
     documentType: template.documentType,
-    templateType: template.templateType,
     templateId: template.id,
-    serializedTemplateData: JSON.stringify(templateData),
+    documentData: templateData,
   };
 
   return generatedDocument;

@@ -1,7 +1,7 @@
 import PizZip from "pizzip";
 import fs from "fs";
 import Docxtemplater from "docxtemplater";
-import { TemplateData } from "src/data/document-templates/document-template-data";
+import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 
 export const generateTemplatedContent = ({
   templateFilepath,
@@ -9,7 +9,7 @@ export const generateTemplatedContent = ({
   outputFilepath,
 }: {
   templateFilepath: string;
-  data: TemplateData;
+  data: Record<string, unknown>;
   outputFilepath?: string;
 }): Buffer => {
   const templateFileContent = fs.readFileSync(templateFilepath, "binary");

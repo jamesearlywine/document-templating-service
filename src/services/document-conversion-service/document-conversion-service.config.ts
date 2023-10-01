@@ -20,13 +20,15 @@ export default class DocumentConversionServiceConfig extends ServiceConfig {
   static initialize = async () => {
     this.reset();
 
-    this.initialized = Promise.all([
-      ConfigFetcherEnv.get(ConfigKeys.GOTENBERG_BASE_URL),
-    ]).then((results) => {
-      this.set({
-        [ConfigKeys.GOTENBERG_BASE_URL]: results[0],
+    if (!this.initialized) {
+      this.initialized = Promise.all([
+        ConfigFetcherEnv.get(ConfigKeys.GOTENBERG_BASE_URL),
+      ]).then((results) => {
+        this.set({
+          [ConfigKeys.GOTENBERG_BASE_URL]: results[0],
+        });
       });
-    });
+    }
 
     return this.initialized;
   };

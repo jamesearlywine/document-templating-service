@@ -12,6 +12,12 @@ const bundles = [
     in: path.resolve("./src/handlers/generateDocument/generateDocument.ts"),
     out: path.resolve("./build/handlers/generateDocument/generateDocument.js"),
   },
+  {
+    in: path.resolve("./src/handlers/createOrUpdateDocumentTemplate/index.ts"),
+    out: path.resolve(
+      "./build/handlers/createOrUpdateDocumentTemplate/index.js",
+    ),
+  },
 ];
 
 bundles.forEach((bundle) => {
