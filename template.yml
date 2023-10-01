@@ -207,7 +207,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 2accaa466540364c7cebeea6e497815b6b2ab994bea7e8a989bb0bbcf28099ba.zip
+        S3Key: 67acaec2d1ad56f83b52266a932e10354831520acf8563f48731ba7b50a2490c.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -250,7 +250,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.2accaa466540364c7cebeea6e497815b6b2ab994bea7e8a989bb0bbcf28099ba
+      aws:asset:path: asset.67acaec2d1ad56f83b52266a932e10354831520acf8563f48731ba7b50a2490c
       aws:asset:is-bundled: false
       aws:asset:property: Code
   ApiF70053CD:
