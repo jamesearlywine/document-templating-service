@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { ApplicationStack } from "./application-stack";
 
-const ephemeralPrefix = "JLE-Ephemeral-";
+const ephemeralPrefix = "JLE-Ephemeral2-";
 export const app: cdk.App = new cdk.App();
 
 export type ApplicationConfig = {
@@ -18,6 +18,7 @@ export const applicationStack = new ApplicationStack(
   `${ephemeralPrefix}DocumentTemplatingService`,
   {
     ephemeralPrefix,
+    // @todo - create vpc/networking stack with resources registered in param store, that can be referenced here
     env: {
       account: "546515125053",
       region: "us-east-2",

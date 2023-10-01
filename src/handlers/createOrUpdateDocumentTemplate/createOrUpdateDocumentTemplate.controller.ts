@@ -7,6 +7,7 @@ import { Optional } from "utility-types";
 import { getValidationErrors } from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.inputValidator";
 import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 import { mapDocumentTemplateDynamoRecord } from "src/data/dynamo/document-template-repository/document-template-dynamo-record";
+import { DocumentTemplateFileRepository } from "src/data/s3/document-template-file-repository/document-template-file-repository";
 
 export class CreateOrUpdateDocumentTemplateController {
   static PUT = async (
@@ -66,7 +67,7 @@ export class CreateOrUpdateDocumentTemplateController {
       }, {});
 
     const presignedUploadUrl =
-      await DocumentTemplateRepository.getDocumentTemplateFilePresignedUploadUrl(
+      await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(
         templateId,
       );
 
@@ -91,11 +92,6 @@ export class CreateOrUpdateDocumentTemplateController {
 
     const dynamoResponse = await DocumentTemplateRepository.putDocumentTemplate(
       mapDocumentTemplateDynamoRecord.fromDocumentTemplate(newDocumentTemplate),
-    );
-
-    console.log(
-      "CreateOrUpdateDocumentTemplateController.PUT dynamoResponse",
-      dynamoResponse,
     );
 
     return { documentTemplate: newDocumentTemplate, presignedUploadUrl };
