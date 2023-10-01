@@ -3,13 +3,13 @@ import type { Config } from "@jest/types";
 const config: Config.InitialOptions = {
   preset: "ts-jest",
   testEnvironment: "node",
-  modulePathIgnorePatterns: ["./aws-sam", "./cdk", "./node_modules"],
+  modulePathIgnorePatterns: ["./aws-sam", "./node_modules"],
   clearMocks: true,
   collectCoverage: true,
   coverageReporters: ["lcov", "text-summary"],
   rootDir: ".",
   moduleDirectories: ["node_modules", "<rootDir>"],
-  testPathIgnorePatterns: ["./aws-sam", "./cdk", "./node_modules", "./testing"],
+  testPathIgnorePatterns: ["./aws-sam", "./node_modules", "./testing"],
   testTimeout: 60000,
   collectCoverageFrom: [
     "src/**/*.ts",

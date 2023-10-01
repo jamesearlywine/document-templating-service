@@ -1,27 +1,32 @@
-export const creationStatus = {
+export const CreationStatus = {
   PENDING_UPLOAD: "PENDING_UPLOAD",
   COMPLETE: "COMPLETE",
 };
 export type CreationStatus =
-  (typeof creationStatus)[keyof typeof creationStatus];
+  (typeof CreationStatus)[keyof typeof CreationStatus];
+
+export const PROCESSPROOF_DOCUMENT_TEMPLATE_TYPE =
+  "processproof:DocumentTemplate";
+
+export const DOCUMENT_TEMPLATE_LATEST_SCHEMA_VERSION = "V1";
 
 export type DocumentTemplateV1 = {
   type: "processproof:DocumentTemplate";
   schemaVersion: "V1";
   id: string;
   docType: string;
-  name: string;
+  templateName: string;
   description: string;
-  storageType: string;
-  storageLocation: string;
-  filepath: string;
-  fileExtension: string;
-  templateKeyDescriptions: Record<string, string>;
-  sampleDocumentData: Record<string, string>;
-  sampleGeneratedDocumentUrl: string;
-  creationStatus: CreationStatus;
-  created: string;
-  updated: string;
+  storageType?: string;
+  storageLocation?: string;
+  filepath?: string;
+  fileExtension?: string;
+  templateKeyDescriptions?: Record<string, string>;
+  sampleDocumentData?: Record<string, string>;
+  sampleGeneratedDocumentUrl?: string;
+  creationStatus?: CreationStatus;
+  created?: string;
+  updated?: string;
 };
 
 export type DocumentTemplate = DocumentTemplateV1;

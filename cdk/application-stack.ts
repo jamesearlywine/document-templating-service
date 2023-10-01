@@ -12,6 +12,11 @@ export class ApplicationStack extends cdk.Stack {
 
   // consider refactor to parameters passed in from pipeline
   config: ApplicationConfig;
+  ephemeralPrefix: string;
+
+  isEphemeralStack = () => {
+    return !!this.ephemeralPrefix;
+  };
 
   vpc: cdk.aws_ec2.IVpc;
   privateSubnet: cdk.aws_ec2.ISubnet;
@@ -29,6 +34,7 @@ export class ApplicationStack extends cdk.Stack {
     super(app, id, props);
 
     this.config = props.config;
+    this.ephemeralPrefix = props.ephemeralPrefix;
 
     /*********************
      * Pipeline-Provided Parameters
@@ -36,8 +42,8 @@ export class ApplicationStack extends cdk.Stack {
     this.AWS_ENV_Parameter = new cdk.CfnParameter(this, "AWS_ENV", {
       type: "String",
       description: "The AWS environment deployed to",
-      default: "DEV",
-      allowedValues: ["DEV", "TEST", "STAGING", "PROD"],
+      default: this.isEphemeralStack() ? "EPHEMERAL" : "DEV",
+      allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
     });
     this.gotenbergServiceInstanceEnableSshParam = new cdk.CfnParameter(
       this,
@@ -77,7 +83,7 @@ export class ApplicationStack extends cdk.Stack {
         AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         vpc: this.vpc,
         subnet: this.privateSubnet,
-        registerResources: !!props.ephemeralPrefix,
+        registerResources: !this.isEphemeralStack(),
       },
     );
 
@@ -99,6 +105,11 @@ export class ApplicationStack extends cdk.Stack {
             "LambdaPrivateSubnetExecutionRolePolicyReference",
             "LambdaPrivateSubnetExecutionRolePolicy",
           ),
+          cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
+            this,
+            "LambdaGeneralExecutionRolePolicyReference",
+            "LambdaGeneralExecutionRolePolicy",
+          ),
         ],
       },
     );
@@ -117,9 +128,7 @@ export class ApplicationStack extends cdk.Stack {
         vpcSubnets: [this.privateSubnet],
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-          GOTENBERG_BASE_URL:
-            this.gotenbergServiceInstance.gotenbergServiceInstanceBaseUrl
-              .stringValue,
+          GOTENBERG_BASE_URL: this.gotenbergServiceInstance.gotenburgBaseUrl,
           PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
             "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
             {
@@ -153,8 +162,20 @@ export class ApplicationStack extends cdk.Stack {
         vpcSubnets: [this.privateSubnet],
         environment: {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+          PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION: cdk.Fn.sub(
+            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}",
+            {
+              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+            },
+          ),
           PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
             "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
+            {
+              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+            },
+          ),
+          PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.Fn.sub(
+            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-template}}",
             {
               AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
             },
@@ -191,6 +212,14 @@ export class ApplicationStack extends cdk.Stack {
     });
     this.api.addRoutes({
       path: "/documentTemplate",
+      methods: [HttpMethod.PUT],
+      integration: new HttpLambdaIntegration(
+        "createOrUpdateDocumentTemplateLambdaHttpIntegration",
+        this.createOrUpdateDocumentTemplateLambda,
+      ),
+    });
+    this.api.addRoutes({
+      path: "/documentTemplate/{id}",
       methods: [HttpMethod.PUT],
       integration: new HttpLambdaIntegration(
         "createOrUpdateDocumentTemplateLambdaHttpIntegration",

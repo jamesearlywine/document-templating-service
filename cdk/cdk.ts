@@ -17,11 +17,11 @@ export const applicationStack = new ApplicationStack(
   app,
   `${ephemeralPrefix}DocumentTemplatingService`,
   {
+    ephemeralPrefix,
     env: {
       account: "546515125053",
       region: "us-east-2",
     },
-    ephemeralPrefix,
     config: {
       vpcId: "vpc-058c5ee1e09681197",
       privateSubnetAttributes: {
