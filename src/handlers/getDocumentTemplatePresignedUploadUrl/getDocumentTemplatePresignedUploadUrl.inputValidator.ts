@@ -3,7 +3,7 @@ import Joi from "joi";
 const uuidSchema = Joi.string().guid({
   version: ["uuidv4"],
 });
-export const getValidationErrors = (id, requestBody) => {
+export const getValidationErrors = (id) => {
   const validationErrors = [];
 
   if (id) {

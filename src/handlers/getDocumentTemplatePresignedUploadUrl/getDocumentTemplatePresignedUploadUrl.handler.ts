@@ -6,6 +6,8 @@ DocumentTemplateRepository.initialize();
 DocumentTemplateFileRepository.initialize();
 
 export const handler = async (event: Record<string, unknown>) => {
+  console.log("getDocumentTemplatePresignedUploadUrl.handler, event", event);
+
   const id = (event.pathParameters ?? {})["id"];
 
   return GetDocumentTemplatePresignedUploadUrlController.GET(id);

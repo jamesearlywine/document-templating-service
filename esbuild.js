@@ -26,6 +26,22 @@ const bundles = [
       "./build/handlers/afterDocumentTemplateFileUploaded/index.js",
     ),
   },
+  {
+    in: path.resolve(
+      "./src/handlers/getDocumentTemplatePresignedUploadUrl/index.ts",
+    ),
+    out: path.resolve(
+      "./build/handlers/getDocumentTemplatePresignedUploadUrl/index.js",
+    ),
+  },
+  {
+    in: path.resolve("./src/handlers/getDocumentTemplates/index.ts"),
+    out: path.resolve("./build/handlers/getDocumentTemplates/index.js"),
+  },
+  {
+    in: path.resolve("./src/handlers/getDocumentTemplate/index.ts"),
+    out: path.resolve("./build/handlers/getDocumentTemplate/index.js"),
+  },
 ];
 
 bundles.forEach((bundle) => {

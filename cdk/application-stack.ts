@@ -24,12 +24,16 @@ export class ApplicationStack extends cdk.Stack {
   privateSubnet: cdk.aws_ec2.ISubnet;
 
   lambdaExecutionRole: cdk.aws_iam.Role;
-
+  lambdaEnvVariables: Record<string, unknown>;
   gotenbergServiceInstance: GotenbergServiceInstance;
 
   generateDocumentLambda: cdk.aws_lambda.Function;
   createOrUpdateDocumentTemplateLambda: cdk.aws_lambda.Function;
   afterDocumentTemplateFileUploadedLambda: cdk.aws_lambda.Function;
+  getDocumentTemplatePresignedUploadUrlLambda: cdk.aws_lambda.Function;
+  getDocumentTemplatesLambda: cdk.aws_lambda.Function;
+  getDocumentTemplateLambda: cdk.aws_lambda.Function;
+
   afterDocumentTemplateFileUploadedEventRule: cdk.aws_events.Rule;
 
   api: HttpApi;
@@ -136,6 +140,37 @@ export class ApplicationStack extends cdk.Stack {
     );
 
     /******************
+     * Lambda Config Parameters
+     */
+    this.lambdaEnvVariables = {
+      AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+      PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+    };
+
+    /******************
      * generateDocument Lambda
      */
     this.generateDocumentLambda = new cdk.aws_lambda.Function(
@@ -147,28 +182,13 @@ export class ApplicationStack extends cdk.Stack {
         code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
-        environment: {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-          GOTENBERG_BASE_URL: this.gotenbergServiceInstance.gotenburgBaseUrl,
-          PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
-          PROCESSPROOF_PUBLIC_DOCUMENTS_BUCKET_ARN: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/public-documents-bucket-arn}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
-        },
+        environment: this.lambdaEnvVariables,
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
     );
 
     /******************
-     * CreateOrUpdateDocumentTemplate Lambda
+     * createOrUpdateDocumentTemplate Lambda
      */
     this.createOrUpdateDocumentTemplateLambda = new cdk.aws_lambda.Function(
       this,
@@ -181,33 +201,65 @@ export class ApplicationStack extends cdk.Stack {
         ),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
-        environment: {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-          PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
+        environment: this.lambdaEnvVariables,
+        role: this.lambdaExecutionRole as IRole,
+      } as FunctionProps,
+    );
+
+    /******************
+     * getDocumentTemplatePresignedUploadUrl Lambda
+     */
+    this.getDocumentTemplatePresignedUploadUrlLambda =
+      new cdk.aws_lambda.Function(
+        this,
+        "getDocumentTemplatePresignedUploadUrlLambda",
+        {
+          runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+          handler: "index.handler",
+          code: cdk.aws_lambda.Code.fromAsset(
+            "build/handlers/getDocumentTemplatePresignedUploadUrl",
           ),
-          PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
-          PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
-          SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
-        },
+          vpc: this.vpc,
+          vpcSubnets: [this.privateSubnet],
+          environment: this.lambdaEnvVariables,
+          role: this.lambdaExecutionRole as IRole,
+        } as FunctionProps,
+      );
+
+    /******************
+     * getDocumentTemplates Lambda
+     */
+    this.getDocumentTemplatesLambda = new cdk.aws_lambda.Function(
+      this,
+      "getDocumentTemplatesLambda",
+      {
+        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+        handler: "index.handler",
+        code: cdk.aws_lambda.Code.fromAsset(
+          "build/handlers/getDocumentTemplates",
+        ),
+        vpc: this.vpc,
+        vpcSubnets: [this.privateSubnet],
+        environment: this.lambdaEnvVariables,
+        role: this.lambdaExecutionRole as IRole,
+      } as FunctionProps,
+    );
+
+    /******************
+     * getDocumentTemplate Lambda
+     */
+    this.getDocumentTemplateLambda = new cdk.aws_lambda.Function(
+      this,
+      "getDocumentTemplateLambda",
+      {
+        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+        handler: "index.handler",
+        code: cdk.aws_lambda.Code.fromAsset(
+          "build/handlers/getDocumentTemplate",
+        ),
+        vpc: this.vpc,
+        vpcSubnets: [this.privateSubnet],
+        environment: this.lambdaEnvVariables,
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
     );
@@ -226,15 +278,7 @@ export class ApplicationStack extends cdk.Stack {
         ),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
-        environment: {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-          SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
-            "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}",
-            {
-              AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-            },
-          ),
-        },
+        environment: this.lambdaEnvVariables,
         role: this.lambdaExecutionRole as IRole,
       } as FunctionProps,
     );
@@ -293,6 +337,8 @@ export class ApplicationStack extends cdk.Stack {
         },
       ),
     });
+
+    // doesn't work yet
     this.api.addRoutes({
       path: "/generateDocument",
       methods: [HttpMethod.GET],
@@ -301,6 +347,8 @@ export class ApplicationStack extends cdk.Stack {
         this.generateDocumentLambda,
       ),
     });
+
+    // put without id in the path
     this.api.addRoutes({
       path: "/documentTemplate",
       methods: [HttpMethod.PUT],
@@ -309,12 +357,40 @@ export class ApplicationStack extends cdk.Stack {
         this.createOrUpdateDocumentTemplateLambda,
       ),
     });
+    // put with id in the path
     this.api.addRoutes({
       path: "/documentTemplate/{id}",
       methods: [HttpMethod.PUT],
       integration: new HttpLambdaIntegration(
         "createOrUpdateDocumentTemplateLambdaHttpIntegration",
         this.createOrUpdateDocumentTemplateLambda,
+      ),
+    });
+
+    this.api.addRoutes({
+      path: "/documentTemplatePresignedUploadUrl/{id}",
+      methods: [HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration",
+        this.getDocumentTemplatePresignedUploadUrlLambda,
+      ),
+    });
+
+    this.api.addRoutes({
+      path: "/documentTemplate",
+      methods: [HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "getDocumentTemplatesLambdaHttpIntegration",
+        this.getDocumentTemplatesLambda,
+      ),
+    });
+
+    this.api.addRoutes({
+      path: "/documentTemplate/{id}",
+      methods: [HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "getDocumentTemplateLambdaHttpIntegration",
+        this.getDocumentTemplateLambda,
       ),
     });
   }

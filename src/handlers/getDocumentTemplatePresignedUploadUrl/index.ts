@@ -1,3 +1,3 @@
-export * from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.handler";
-export * from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.controller";
-export * from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.inputValidator";
+export * from "src/handlers/getDocumentTemplatePresignedUploadUrl/getDocumentTemplatePresignedUploadUrl.controller";
+export * from "src/handlers/getDocumentTemplatePresignedUploadUrl/getDocumentTemplatePresignedUploadUrl.handler";
+export * from "src/handlers/getDocumentTemplatePresignedUploadUrl/getDocumentTemplatePresignedUploadUrl.inputValidator";
