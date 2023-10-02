@@ -18,6 +18,10 @@ import { generateUpdateExpression } from "src/utility/dynamodb/generate-update-e
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
+export const initialize = async () => {
+  return await DocumentTemplateRepositoryConfig.initialize();
+};
+
 export const getDocumentTemplateRecordById = async (
   id: string,
 ): Promise<DynamoRepositoryQueryResponse> => {
@@ -117,6 +121,7 @@ export const updateDocumentTemplateById = async (
 };
 
 export const DocumentTemplateRepository = {
+  initialize,
   getDocumentTemplateRecordById,
   getDocumentTemplateRecordByTemplateName,
   getDocumentTemplateRecordsByDocType,

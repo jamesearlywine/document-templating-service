@@ -3,6 +3,10 @@ import { createPresignedUrl } from "src/utility/s3/create-presigned-url";
 import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
 import { ONE_HOUR_SECONDS } from "src/utility/datetime";
 
+export const initialize = async () => {
+  return await DocumentTemplateFileRepositoryConfig.initialize();
+};
+
 export const getDocumentTemplateFilePresignedUploadUrl = async (
   id: string,
   options?: RequestPresigningArguments,
@@ -23,5 +27,6 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
 };
 
 export const DocumentTemplateFileRepository = {
+  initialize,
   getDocumentTemplateFilePresignedUploadUrl,
 };

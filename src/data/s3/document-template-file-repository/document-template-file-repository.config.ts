@@ -13,7 +13,7 @@ export const ConfigKeys = {
     "PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX",
 };
 
-export default class DocumentTemplateRepositoryConfig extends ServiceConfig {
+export default class DocumentTemplateFileRepositoryConfig extends ServiceConfig {
   static DEFAULT_VALUES = {
     [ConfigKeys.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN]: "",
     [ConfigKeys.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION]: "us-east-2",
@@ -22,22 +22,22 @@ export default class DocumentTemplateRepositoryConfig extends ServiceConfig {
   };
 
   static PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: string =
-    DocumentTemplateRepositoryConfig.DEFAULT_VALUES[
+    DocumentTemplateFileRepositoryConfig.DEFAULT_VALUES[
       ConfigKeys.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN
     ];
 
   static PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME: string =
-    DocumentTemplateRepositoryConfig.DEFAULT_VALUES[
+    DocumentTemplateFileRepositoryConfig.DEFAULT_VALUES[
       ConfigKeys.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME
     ];
 
   static PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION: string =
-    DocumentTemplateRepositoryConfig.DEFAULT_VALUES[
+    DocumentTemplateFileRepositoryConfig.DEFAULT_VALUES[
       ConfigKeys.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION
     ];
 
   static PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX: string =
-    DocumentTemplateRepositoryConfig.DEFAULT_VALUES[
+    DocumentTemplateFileRepositoryConfig.DEFAULT_VALUES[
       ConfigKeys.PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX
     ];
 
