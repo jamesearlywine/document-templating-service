@@ -29,13 +29,13 @@ export class ApplicationStack extends cdk.Stack {
 
   generateDocumentLambda: cdk.aws_lambda.Function;
   createOrUpdateDocumentTemplateLambda: cdk.aws_lambda.Function;
-  afterDocumentTemplateFileUploadedLambda: cdk.aws_lambda.Function;
   getDocumentTemplatePresignedUploadUrlLambda: cdk.aws_lambda.Function;
   getDocumentTemplatesLambda: cdk.aws_lambda.Function;
   getDocumentTemplateLambda: cdk.aws_lambda.Function;
   deleteDocumentTemplateLambda: cdk.aws_lambda.Function;
 
   afterDocumentTemplateFileUploadedEventRule: cdk.aws_events.Rule;
+  afterDocumentTemplateFileUploadedLambda: cdk.aws_lambda.Function;
 
   api: HttpApi;
 
