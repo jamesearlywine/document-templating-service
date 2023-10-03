@@ -88,9 +88,12 @@ export class CreateOrUpdateDocumentTemplateController {
           : new Date().toISOString(),
     };
 
-    const dynamoResponse = await DocumentTemplateRepository.putDocumentTemplate(
-      mapDocumentTemplateDynamoRecord.fromDocumentTemplate(newDocumentTemplate),
-    );
+    const dynamoResponse =
+      await DocumentTemplateRepository.putDocumentTemplateRecord(
+        mapDocumentTemplateDynamoRecord.fromDocumentTemplate(
+          newDocumentTemplate,
+        ),
+      );
 
     return { documentTemplate: newDocumentTemplate, presignedUploadUrl };
   };

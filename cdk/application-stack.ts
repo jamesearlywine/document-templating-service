@@ -33,6 +33,7 @@ export class ApplicationStack extends cdk.Stack {
   getDocumentTemplatePresignedUploadUrlLambda: cdk.aws_lambda.Function;
   getDocumentTemplatesLambda: cdk.aws_lambda.Function;
   getDocumentTemplateLambda: cdk.aws_lambda.Function;
+  deleteDocumentTemplateLambda: cdk.aws_lambda.Function;
 
   afterDocumentTemplateFileUploadedEventRule: cdk.aws_events.Rule;
 
@@ -265,6 +266,25 @@ export class ApplicationStack extends cdk.Stack {
     );
 
     /******************
+     * deleteDocumentTemplate Lambda
+     */
+    this.deleteDocumentTemplateLambda = new cdk.aws_lambda.Function(
+      this,
+      "deleteDocumentTemplateLambda",
+      {
+        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+        handler: "index.handler",
+        code: cdk.aws_lambda.Code.fromAsset(
+          "build/handlers/deleteDocumentTemplate",
+        ),
+        vpc: this.vpc,
+        vpcSubnets: [this.privateSubnet],
+        environment: this.lambdaEnvVariables,
+        role: this.lambdaExecutionRole as IRole,
+      } as FunctionProps,
+    );
+
+    /******************
      * afterDocumentTemplateFileUploaded Lambda
      */
     this.afterDocumentTemplateFileUploadedLambda = new cdk.aws_lambda.Function(
@@ -391,6 +411,15 @@ export class ApplicationStack extends cdk.Stack {
       integration: new HttpLambdaIntegration(
         "getDocumentTemplateLambdaHttpIntegration",
         this.getDocumentTemplateLambda,
+      ),
+    });
+
+    this.api.addRoutes({
+      path: "/documentTemplate/{id}",
+      methods: [HttpMethod.DELETE],
+      integration: new HttpLambdaIntegration(
+        "deleteDocumentTemplateLambdaHttpIntegration",
+        this.deleteDocumentTemplateLambda,
       ),
     });
   }

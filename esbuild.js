@@ -42,6 +42,10 @@ const bundles = [
     in: path.resolve("./src/handlers/getDocumentTemplate/index.ts"),
     out: path.resolve("./build/handlers/getDocumentTemplate/index.js"),
   },
+  {
+    in: path.resolve("./src/handlers/deleteDocumentTemplate/index.ts"),
+    out: path.resolve("./build/handlers/deleteDocumentTemplate/index.js"),
+  },
 ];
 
 bundles.forEach((bundle) => {

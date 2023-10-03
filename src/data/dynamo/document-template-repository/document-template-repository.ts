@@ -1,5 +1,6 @@
 import DocumentTemplateRepositoryConfig from "src/data/dynamo/document-template-repository/document-template-repository.config";
 import {
+  DeleteItemCommand,
   DynamoDBClient,
   PutItemCommand,
   PutItemCommandOutput,
@@ -83,7 +84,7 @@ export const getDocumentTemplateRecordsByDocType = async (
   };
 };
 
-export const putDocumentTemplate = async (
+export const putDocumentTemplateRecord = async (
   documentTemplate: DocumentTemplateDynamoRecord,
 ): Promise<PutItemCommandOutput> => {
   await DocumentTemplateRepositoryConfig.initialize();
@@ -99,7 +100,7 @@ export const putDocumentTemplate = async (
   return dynamoResponse;
 };
 
-export const updateDocumentTemplateById = async (
+export const updateDocumentTemplateRecordById = async (
   id: string,
   documentTemplate: Partial<DocumentTemplate>,
 ) => {
@@ -120,11 +121,27 @@ export const updateDocumentTemplateById = async (
   return await dynamoClient.send(command);
 };
 
+export const deleteDocumentTemplateRecordById = async (id: string) => {
+  await DocumentTemplateRepositoryConfig.initialize();
+
+  const keys = createDynamoKeysForDocumentTemplate({ id });
+
+  const command = new DeleteItemCommand({
+    TableName:
+      DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+    Key: marshall(keys),
+    ReturnValues: "ALL_OLD",
+  });
+
+  return await dynamoClient.send(command);
+};
+
 export const DocumentTemplateRepository = {
   initialize,
   getDocumentTemplateRecordById,
   getDocumentTemplateRecordByTemplateName,
   getDocumentTemplateRecordsByDocType,
-  putDocumentTemplate,
-  updateDocumentTemplateById,
+  putDocumentTemplateRecord,
+  updateDocumentTemplateRecordById,
+  deleteDocumentTemplateRecordById,
 };
