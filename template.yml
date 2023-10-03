@@ -210,7 +210,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: d594ad1be5dced68add37613a1949b1c1768cf0f7a28a19968265c8821523d33.zip
+        S3Key: c2d1af45870eb6d5ae503680b59585d183a3de618939d05e18581509111daa03.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -253,7 +253,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.d594ad1be5dced68add37613a1949b1c1768cf0f7a28a19968265c8821523d33
+      aws:asset:path: asset.c2d1af45870eb6d5ae503680b59585d183a3de618939d05e18581509111daa03
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatePresignedUploadUrlLambdaSecurityGroupD54378C0:
@@ -272,7 +272,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 68002188656f206e59ce47aab54b236628a35b24001701cd8c1cfdecc6c4b00a.zip
+        S3Key: 8b69180f21ef8ba4d4b76190023839aecae3c5a3dc59e5647a3e67963c90f992.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -315,7 +315,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/Resource
-      aws:asset:path: asset.68002188656f206e59ce47aab54b236628a35b24001701cd8c1cfdecc6c4b00a
+      aws:asset:path: asset.8b69180f21ef8ba4d4b76190023839aecae3c5a3dc59e5647a3e67963c90f992
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatesLambdaSecurityGroup22C82DA5:
@@ -334,7 +334,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 75c831a4c2f95bc5b500866c704637bc86415641441404bd8a810e9b747d4af4.zip
+        S3Key: 185493b881645da6bc1389913416109866b6520d5f6b74332238e25ed19fc191.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -377,7 +377,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/getDocumentTemplatesLambda/Resource
-      aws:asset:path: asset.75c831a4c2f95bc5b500866c704637bc86415641441404bd8a810e9b747d4af4
+      aws:asset:path: asset.185493b881645da6bc1389913416109866b6520d5f6b74332238e25ed19fc191
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplateLambdaSecurityGroupA62B963E:
@@ -396,7 +396,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 744e8cc41e8f524bced3ecb2b3bc3d28e6039e6ee5dea0cbe8bab091ce267cc2.zip
+        S3Key: d9fb74ee409357996d0b1b4747327f7c9a8d302e16e86d23785a714dd8e71044.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -439,7 +439,69 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/getDocumentTemplateLambda/Resource
-      aws:asset:path: asset.744e8cc41e8f524bced3ecb2b3bc3d28e6039e6ee5dea0cbe8bab091ce267cc2
+      aws:asset:path: asset.d9fb74ee409357996d0b1b4747327f7c9a8d302e16e86d23785a714dd8e71044
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  deleteDocumentTemplateLambdaSecurityGroup8FEF291E:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral2DocumentTemplatingServicedeleteDocumentTemplateLambdaEAB5F358
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/deleteDocumentTemplateLambda/SecurityGroup/Resource
+  deleteDocumentTemplateLambda4C9C9ABF:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: c87332f823ee0e105682e81b0db883be624d3460753fd3a9fab07fa7fe7bd4f1.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AWSENV
+          PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+          SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::Sub:
+              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}"
+              - AWS_ENV:
+                  Ref: AWSENV
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - deleteDocumentTemplateLambdaSecurityGroup8FEF291E
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/deleteDocumentTemplateLambda/Resource
+      aws:asset:path: asset.c87332f823ee0e105682e81b0db883be624d3460753fd3a9fab07fa7fe7bd4f1
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23:
@@ -458,7 +520,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: afdc04b9c129d48ae1923ee511b7c5f4cfd85cb7e7d48550d0f78a4a62047939.zip
+        S3Key: 0117cc12a222c408ff22057de393f74d85b647e8c6da5f554e98152355f0a813.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -501,7 +563,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/Resource
-      aws:asset:path: asset.afdc04b9c129d48ae1923ee511b7c5f4cfd85cb7e7d48550d0f78a4a62047939
+      aws:asset:path: asset.0117cc12a222c408ff22057de393f74d85b647e8c6da5f554e98152355f0a813
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedEventRule65782E4A:
@@ -860,6 +922,52 @@ Resources:
             - Ref: ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegration379C944C
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/Api/GET--documentTemplate--{id}/Resource
+  ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegration3BA7B3FD:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+          - deleteDocumentTemplateLambda4C9C9ABF
+          - Arn
+      PayloadFormatVersion: "2.0"
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration/Resource
+  ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegrationPermission3C406C44:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - deleteDocumentTemplateLambda4C9C9ABF
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /*/*/documentTemplate/{id}
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration-Permission
+  ApiDELETEdocumentTemplateid9187F7AB:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ApiF70053CD
+      AuthorizationType: NONE
+      RouteKey: DELETE /documentTemplate/{id}
+      Target:
+        Fn::Join:
+          - ""
+          - - integrations/
+            - Ref: ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegration3BA7B3FD
+    Metadata:
+      aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:

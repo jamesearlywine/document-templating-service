@@ -39,14 +39,17 @@ export const handler = async (event: {
     .slice(-1)[0];
 
   const dynamoResponse =
-    await DocumentTemplateRepository.updateDocumentTemplateById(templateId, {
-      storageType,
-      storageLocation,
-      filepath,
-      fileExtension,
-      documentTemplateFileUploadedAt: new Date().toISOString(),
-      documentTemplateFileHash: event.detail.object.etag,
-    });
+    await DocumentTemplateRepository.updateDocumentTemplateRecordById(
+      templateId,
+      {
+        storageType,
+        storageLocation,
+        filepath,
+        fileExtension,
+        documentTemplateFileUploadedAt: new Date().toISOString(),
+        documentTemplateFileHash: event.detail.object.etag,
+      },
+    );
 
   console.log(
     "afterDocumentTemplateFileUploaded.handler, dynamoResponse: ",

@@ -1,12 +1,12 @@
 import { DocumentTemplateRepository } from "src/data/dynamo/document-template-repository";
-import { GetDocumentTemplateController } from "./getDocumentTemplate.controller";
+import { DeleteDocumentTemplateController } from "src/handlers/deleteDocumentTemplate/deleteDocumentTemplate.controller";
 
 DocumentTemplateRepository.initialize();
 
 export const handler = async (event: Record<string, unknown>) => {
-  console.log("getDocumentTemplate.handler, event", event);
+  console.log("deleteDocumentTemplate.handler, event", event);
 
   const id = (event.pathParameters ?? {})["id"];
 
-  return GetDocumentTemplateController.GET(id);
+  return DeleteDocumentTemplateController.DELETE(id);
 };
