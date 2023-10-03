@@ -22,8 +22,8 @@ export const composeSortKey = (id: string) => {
 };
 
 export const decomposeSortKey = (key: string) => {
-  const [type, templateName] = key.split("#");
-  return { type, templateName };
+  const [type, id] = key.split("#");
+  return { type, id };
 };
 
 export const createDynamoKeysForDocumentTemplate = (
