@@ -458,7 +458,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: c87332f823ee0e105682e81b0db883be624d3460753fd3a9fab07fa7fe7bd4f1.zip
+        S3Key: a0ae48dc2b9d27fc666a1fa1b4c2d77fdee167221a351cbee735159f5ce23d51.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -501,7 +501,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral2-DocumentTemplatingService/deleteDocumentTemplateLambda/Resource
-      aws:asset:path: asset.c87332f823ee0e105682e81b0db883be624d3460753fd3a9fab07fa7fe7bd4f1
+      aws:asset:path: asset.a0ae48dc2b9d27fc666a1fa1b4c2d77fdee167221a351cbee735159f5ce23d51
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23:

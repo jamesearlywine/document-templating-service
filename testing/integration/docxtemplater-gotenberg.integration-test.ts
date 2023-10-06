@@ -2,10 +2,9 @@ import path from "path";
 import fs from "fs";
 import waitForExpect from "wait-for-expect";
 import { v4 as uuid } from "uuid";
-import { validJobAffidavitTemplateData } from "src/data/document-templates/job-affidavit/job-affidavit-template-data.fixtures";
+import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
-import { JobAffidavitTemplateData } from "src/data/document-templates/job-affidavit";
 
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
@@ -15,8 +14,8 @@ const REMOVE_TEST_GENERATED_FILES = true;
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
 );
-const TEST_AFFIDAVIT_TEMPLATE_DATA: JobAffidavitTemplateData =
-  validJobAffidavitTemplateData;
+const TEST_AFFIDAVIT_TEMPLATE_DATA =
+  sampleDocumentDataByDocumentType.jobaffidavit;
 
 const UUID = `${uuid()}`;
 const OUTPUT_DOCX_FILE_PATH = path.resolve(
@@ -30,7 +29,7 @@ const OUTPUT_PDF_FILE_PATH = path.resolve(
 describe("local end-to-end - docxtemplater->gotenberg", () => {
   describe("docxtemplater->gotenberg", () => {
     it("should generate a .docx and .pdf output from template .docx and data", async () => {
-      DocxTemplater.generateTemplatedContent({
+      DocxTemplater.generateTemplatedContentFromFiles({
         templateFilepath: TEMPLATE_FILE_PATH,
         data: TEST_AFFIDAVIT_TEMPLATE_DATA,
         outputFilepath: OUTPUT_DOCX_FILE_PATH,

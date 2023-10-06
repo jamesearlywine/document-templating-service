@@ -9,7 +9,10 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoRepositoryQueryResponse } from "src/data/dynamo/dynamo-respository-query-response.type";
-import { DocumentTemplate } from "src/data/domain/document-template.type";
+import {
+  DocumentTemplate,
+  DocumentTemplateMapper,
+} from "src/data/domain/document-template.type";
 import {
   composePartitionKey,
   createDynamoKeysForDocumentTemplate,
@@ -39,7 +42,12 @@ export const getDocumentTemplateRecordById = async (
 
   return {
     ...dynamoResponse,
-    results: dynamoResponse.Items?.map((item) => unmarshall(item)) ?? [],
+    results:
+      dynamoResponse.Items?.map((item) =>
+        DocumentTemplateMapper.fromDocumentTemplateDynamoRecord(
+          unmarshall(item) as DocumentTemplateDynamoRecord,
+        ),
+      ) ?? [],
   };
 };
 export const getDocumentTemplateRecordByTemplateName = async (
