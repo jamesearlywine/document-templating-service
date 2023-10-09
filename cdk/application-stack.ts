@@ -170,7 +170,7 @@ export class ApplicationStack extends cdk.Stack {
         },
       ),
       SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}",
+        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },

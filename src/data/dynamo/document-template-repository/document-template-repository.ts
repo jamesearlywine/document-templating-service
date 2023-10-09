@@ -118,7 +118,7 @@ export const getAllDocumentTemplateRecords =
   };
 
 export const putDocumentTemplateRecord = async (
-  documentTemplate: DocumentTemplateDynamoRecord,
+  documentTemplateDynamoRecord: DocumentTemplateDynamoRecord,
 ): Promise<PutItemCommandOutput> => {
   await DocumentTemplateRepositoryConfig.initialize();
 
@@ -126,7 +126,7 @@ export const putDocumentTemplateRecord = async (
     new PutItemCommand({
       TableName:
         DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
-      Item: marshall(documentTemplate),
+      Item: marshall(documentTemplateDynamoRecord),
     }),
   );
 
