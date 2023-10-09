@@ -1,3 +1,5 @@
+import { DocumentTemplateDynamoRecord } from "src/data/dynamo/document-template-repository";
+
 export const CreationStatus = {
   PENDING_UPLOAD: "PENDING_UPLOAD",
   COMPLETE: "COMPLETE",
@@ -56,4 +58,19 @@ export const hasDocumentTemplateFile = (
     !!documentTemplate.storageLocation &&
     !!documentTemplate.filepath
   );
+};
+
+export const DocumentTemplateMapper = {
+  fromDocumentTemplateDynamoRecord: (
+    documentTemplateDynamoRecord: DocumentTemplateDynamoRecord,
+  ): DocumentTemplate => {
+    const documentTemplate = {
+      ...documentTemplateDynamoRecord,
+    };
+
+    delete documentTemplate.PK;
+    delete documentTemplate.SK;
+
+    return documentTemplate;
+  },
 };

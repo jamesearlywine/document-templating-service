@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { ApplicationStack } from "./application-stack";
 
-const ephemeralPrefix = "JLE-Ephemeral2-";
+const ephemeralPrefix = "JLE-Ephemeral-";
 export const app: cdk.App = new cdk.App();
 
 export type ApplicationConfig = {

@@ -163,8 +163,14 @@ export class ApplicationStack extends cdk.Stack {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
-      SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}",
+      PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
@@ -176,7 +182,7 @@ export class ApplicationStack extends cdk.Stack {
      */
     this.generateDocumentLambda = new cdk.aws_lambda.Function(
       this,
-      "generatedDocumentLambda",
+      "generateDocumentLambda",
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
@@ -358,10 +364,9 @@ export class ApplicationStack extends cdk.Stack {
       ),
     });
 
-    // doesn't work yet
     this.api.addRoutes({
-      path: "/generateDocument",
-      methods: [HttpMethod.GET],
+      path: "/generateDocument/{id}",
+      methods: [HttpMethod.POST],
       integration: new HttpLambdaIntegration(
         "generateDocumentLambdaHttpIntegration",
         this.generateDocumentLambda,

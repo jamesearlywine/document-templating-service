@@ -16,10 +16,11 @@ export class GetDocumentTemplateController {
       };
     }
 
-    const response =
-      await DocumentTemplateRepository.getDocumentTemplateRecordsByDocType(
-        docType,
-      );
+    const response = docType
+      ? await DocumentTemplateRepository.getDocumentTemplateRecordsByDocType(
+          docType,
+        )
+      : await DocumentTemplateRepository.getAllDocumentTemplateRecords();
 
     const documentTemplates = response.results;
 

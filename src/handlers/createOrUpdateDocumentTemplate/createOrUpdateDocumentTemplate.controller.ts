@@ -5,7 +5,6 @@ import {
 } from "src/data/domain/document-template.type";
 import { Optional } from "utility-types";
 import { getValidationErrors } from "src/handlers/createOrUpdateDocumentTemplate/createOrUpdateDocumentTemplate.inputValidator";
-import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 import { mapDocumentTemplateDynamoRecord } from "src/data/dynamo/document-template-repository/document-template-dynamo-record";
 import { DocumentTemplateFileRepository } from "src/data/s3/document-template-file-repository/document-template-file-repository";
 
@@ -54,22 +53,11 @@ export class CreateOrUpdateDocumentTemplateController {
       };
     }
 
-    const sampleDocumentData =
-      requestBody.sampleDocumentData ||
-      sampleDocumentDataByDocumentType[requestBody.docType.toLowerCase()] ||
-      {};
-
-    const templateKeyDescriptions =
-      requestBody.templateKeyDescriptions ||
-      Object.keys(sampleDocumentData).reduce((acc, key) => {
-        acc[key] = key;
-        return acc;
-      }, {});
-
-    const presignedUploadUrl =
+    const presignedUploadUrlData =
       await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(
         templateId,
       );
+    const presignedUploadUrl = presignedUploadUrlData.presignedUrl;
 
     const newDocumentTemplate = {
       ...documentTemplateByIdResponse.results[0],
@@ -79,8 +67,8 @@ export class CreateOrUpdateDocumentTemplateController {
       schemaVersion:
         requestBody.schemaVersion || DOCUMENT_TEMPLATE_LATEST_SCHEMA_VERSION,
 
-      sampleDocumentData,
-      templateKeyDescriptions,
+      sampleDocumentData: requestBody.sampleDocumentData,
+      templateKeyDescriptions: requestBody.templateKeyDescriptions,
       updated: new Date().toISOString(),
       created:
         documentTemplateByIdResponse.Count > 0
