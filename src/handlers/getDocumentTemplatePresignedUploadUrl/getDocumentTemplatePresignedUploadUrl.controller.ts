@@ -37,10 +37,11 @@ export class GetDocumentTemplatePresignedUploadUrlController {
       };
     }
 
-    const presignedUploadUrl =
+    const presignedUploadUrlData =
       await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(
         templateId,
       );
+    const presignedUploadUrl = presignedUploadUrlData.presignedUrl;
 
     return { presignedUploadUrl };
   };

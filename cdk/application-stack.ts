@@ -169,7 +169,7 @@ export class ApplicationStack extends cdk.Stack {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
-      SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
+      DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
         "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
@@ -364,10 +364,9 @@ export class ApplicationStack extends cdk.Stack {
       ),
     });
 
-    // doesn't work yet
     this.api.addRoutes({
-      path: "/generateDocument",
-      methods: [HttpMethod.GET],
+      path: "/generateDocument/{id}",
+      methods: [HttpMethod.POST],
       integration: new HttpLambdaIntegration(
         "generateDocumentLambdaHttpIntegration",
         this.generateDocumentLambda,

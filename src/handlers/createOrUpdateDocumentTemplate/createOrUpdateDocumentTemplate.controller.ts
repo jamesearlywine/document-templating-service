@@ -53,10 +53,11 @@ export class CreateOrUpdateDocumentTemplateController {
       };
     }
 
-    const presignedUploadUrl =
+    const presignedUploadUrlData =
       await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(
         templateId,
       );
+    const presignedUploadUrl = presignedUploadUrlData.presignedUrl;
 
     const newDocumentTemplate = {
       ...documentTemplateByIdResponse.results[0],

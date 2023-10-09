@@ -1,34 +1,17 @@
 import axios from "axios";
 import DocumentConversionServiceConfig from "src/services/document-conversion-service/document-conversion-service.config";
+import { GenerateDocumentController } from "./generateDocument.controller";
+import { Optional } from "utility-types";
+import { DocumentTemplate } from "../../data/domain/document-template.type";
 
-const documentConversionServiceConfigInitialized =
-  DocumentConversionServiceConfig.initialize();
+DocumentConversionServiceConfig.initialize();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler = async (event: Record<string, unknown>) => {
-  await documentConversionServiceConfigInitialized;
+  console.log("postGeneratedDocument.handler, event", event);
 
-  console.log(
-    "DocumentConversionServiceConfig",
-    DocumentConversionServiceConfig,
-  );
+  const templateId = (event.pathParameters ?? {})["id"];
+  const data = JSON.parse(event.body as string) as Record<string, string>;
 
-  let responseFromGotenberg;
-  try {
-    responseFromGotenberg = await axios.get(
-      DocumentConversionServiceConfig.GOTENBERG_BASE_URL,
-    );
-  } catch (error) {
-    console.error(
-      "mergeDocumentAndData.handler, could not fetch rom GOTENBERG_BASE_URL error",
-      {
-        error,
-        GOTENBERG_BASE_URL: DocumentConversionServiceConfig.GOTENBERG_BASE_URL,
-      },
-    );
-  }
-
-  return {
-    responseFromGotenberg: responseFromGotenberg?.data ?? "",
-  };
+  return GenerateDocumentController.POST(templateId, data);
 };

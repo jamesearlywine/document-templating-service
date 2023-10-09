@@ -1,7 +1,7 @@
 import { DocumentTemplateRepository } from "../../src/data/dynamo/document-template-repository";
 import fs from "fs";
 
-process.env["SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN"] =
+process.env["DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_ARN"] =
   "arn:aws:dynamodb:us-east-2:546515125053:table/processproof-dev-document-template-service-datastore";
 
 const loadData = async () => {

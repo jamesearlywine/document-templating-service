@@ -42,7 +42,7 @@ export const getDocumentTemplateRecordById = async (
   const dynamoResponse = await dynamoClient.send(
     new QueryCommand({
       TableName:
-        DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+        DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
       KeyConditionExpression: "PK = :PK",
       ExpressionAttributeValues: { ":PK": { S: composePartitionKey(id) } },
     }),
@@ -66,7 +66,7 @@ export const getDocumentTemplateRecordByTemplateName = async (
   const dynamoResponse = await dynamoClient.send(
     new QueryCommand({
       TableName:
-        DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+        DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
       IndexName: "ByTemplateName",
       KeyConditionExpression: "templateName = :templateName",
       ExpressionAttributeValues: { ":templateName": { S: templateName } },
@@ -87,7 +87,7 @@ export const getDocumentTemplateRecordsByDocType = async (
   const dynamoResponse = await dynamoClient.send(
     new QueryCommand({
       TableName:
-        DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+        DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
       IndexName: "ByDocType",
       KeyConditionExpression: "docType = :docType",
       ExpressionAttributeValues: { ":docType": { S: docType } },
@@ -107,7 +107,7 @@ export const getAllDocumentTemplateRecords =
     const dynamoResponse = await dynamoClient.send(
       new ScanCommand({
         TableName:
-          DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+          DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
       }),
     );
 
@@ -125,7 +125,7 @@ export const putDocumentTemplateRecord = async (
   const dynamoResponse = await dynamoClient.send(
     new PutItemCommand({
       TableName:
-        DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+        DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
       Item: marshall(documentTemplate),
     }),
   );
@@ -144,7 +144,7 @@ export const updateDocumentTemplateRecordById = async (
 
   const command = new UpdateItemCommand({
     TableName:
-      DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+      DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
     Key: marshall(keys),
     UpdateExpression: updateExpression.UpdateExpression,
     ExpressionAttributeNames: updateExpression.ExpressionAttributeNames,
@@ -161,7 +161,7 @@ export const deleteDocumentTemplateRecordById = async (id: string) => {
 
   const command = new DeleteItemCommand({
     TableName:
-      DocumentTemplateRepositoryConfig.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME,
+      DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
     Key: marshall(keys),
     ReturnValues: "ALL_OLD",
   });

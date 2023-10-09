@@ -5,6 +5,7 @@ import { createPresignedUrl } from "src/utility/s3/create-presigned-url";
 import { ONE_HOUR_SECONDS } from "src/utility/datetime";
 import { StorageTypes } from "src/utility/types/storage-types";
 import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
+import { PresignedUrlData } from "../../../utility/s3/presigned-url-data.type";
 
 export const ErrorMessages = {
   UNSUPPORTED_STORAGE_TYPE: "Unsupported storage type",
@@ -25,7 +26,7 @@ export const initialize = async () => {
 export const getDocumentTemplateFilePresignedUploadUrl = async (
   id: string,
   options?: RequestPresigningArguments,
-): Promise<string> => {
+): Promise<PresignedUrlData> => {
   await DocumentTemplateFileRepository.initialize();
 
   return await createPresignedUrl({
@@ -38,6 +39,7 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
       expiresIn: ONE_HOUR_SECONDS,
       ...options,
     },
+    method: "PUT",
   });
 };
 

@@ -3,6 +3,9 @@ import { extractFileExtension } from "src/utility/s3/extract-file-name";
 import { StorageTypes } from "src/utility/types/storage-types";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { GeneratedDocumentFile } from "./generated-document-file.type";
+import { createPresignedUrl } from "src/utility/s3";
+import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
+import { GeneratedDocument } from "src/data/domain/generated-document.type";
 
 let initialized: Promise<unknown>;
 
@@ -37,7 +40,7 @@ export const uploadGeneratedDocumentFile = async ({
       GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
   });
   const command = new PutObjectCommand({ Bucket: s3BucketName, Key: s3Key });
-  const response = client.send(command);
+  await client.send(command);
 
   const storageType = StorageTypes.AWS_S3;
 
@@ -51,7 +54,25 @@ export const uploadGeneratedDocumentFile = async ({
   };
 };
 
+export const generatePresignedDownlaodUrlForGeneratedDocument = async ({
+  generatedDocument,
+  options,
+}: {
+  generatedDocument: GeneratedDocument;
+  options?: RequestPresigningArguments;
+}) => {
+  return await createPresignedUrl({
+    region:
+      GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+    bucket:
+      GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME,
+    key: `${GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${generatedDocument.filename}`,
+    options,
+  });
+};
+
 export const GeneratedDocumentFileRepository = {
   initialize,
   uploadGeneratedDocumentFile,
+  generatePresignedDownlaodUrlForGeneratedDocument,
 };
