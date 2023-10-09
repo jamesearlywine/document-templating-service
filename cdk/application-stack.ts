@@ -182,7 +182,7 @@ export class ApplicationStack extends cdk.Stack {
      */
     this.generateDocumentLambda = new cdk.aws_lambda.Function(
       this,
-      "generatedDocumentLambda",
+      "generateDocumentLambda",
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
