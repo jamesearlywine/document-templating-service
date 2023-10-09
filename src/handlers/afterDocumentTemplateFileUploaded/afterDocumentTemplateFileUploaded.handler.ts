@@ -1,4 +1,5 @@
 import { DocumentTemplateRepository } from "src/data/dynamo/document-template-repository/document-template-repository";
+import { extractFileExtension } from "../../utility/s3/extract-file-name";
 
 export const handler = async (event: {
   version: string; // '0'
@@ -32,11 +33,7 @@ export const handler = async (event: {
   const storageType = event.source;
   const storageLocation = event.detail.bucket.name;
   const filepath = event.detail.object.key;
-  const fileExtension = filepath
-    .split("/")
-    .slice(-1)[0]
-    .split(".")
-    .slice(-1)[0];
+  const fileExtension = extractFileExtension(filepath);
 
   const dynamoResponse =
     await DocumentTemplateRepository.updateDocumentTemplateRecordById(
