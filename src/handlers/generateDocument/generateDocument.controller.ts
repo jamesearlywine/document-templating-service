@@ -4,19 +4,22 @@ import { DocumentTemplateRepository } from "src/data/dynamo/document-template-re
 import { DocumentTemplateFileRepository } from "src/data/s3/document-template-file-repository";
 import { DocumentConversionService } from "src/services/document-conversion-service";
 import { AppConfig } from "src/config/app-config";
+import { DocumentTemplate } from "src/data/domain/document-template.type";
+import { FileExtensions } from "src/utility/types/file-extensions";
+import { GeneratedDocumentFileRepository } from "src/data/s3/generated-document-file-repository";
+import { GeneratedDocumentFile } from "../../data/s3/generated-document-file-repository/generated-document-file.type";
 
 export class GenerateDocumentController {
   static async GET(templateId: string, data: Record<string, unknown>) {
-    const generatedDocumentUuid = uuid();
-    const OUTPUT_DOCX_FILE_PATH = `${AppConfig.SCRATCH_DIRECTORY}/template--${templateId}.docx`;
-    const OUTPUT_PDF_FILE_PATH = `${AppConfig.SCRATCH_DIRECTORY}/template--${templateId}.pdf`;
-
     const response =
       await DocumentTemplateRepository.getDocumentTemplateRecordById(
         templateId,
       );
+    const documentTemplate: DocumentTemplate = response.results[0];
 
-    const documentTemplate = response.results[0];
+    const generatedDocumentUuid = uuid();
+    const outputDocxFilePath = `${AppConfig.SCRATCH_DIRECTORY}/${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.DOCX}`;
+    const outputPdfFilePath = `${AppConfig.SCRATCH_DIRECTORY}/${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.PDF}`;
 
     if (!documentTemplate) {
       throw new Error("Document template not found");
@@ -30,17 +33,26 @@ export class GenerateDocumentController {
     DocxTemplater.generateTemplatedContent({
       templateFileContent,
       data,
-      outputFilepath: OUTPUT_DOCX_FILE_PATH,
+      outputFilepath: outputDocxFilePath,
     });
 
     await DocumentConversionService.docxToPdf({
-      inputLocation: OUTPUT_DOCX_FILE_PATH,
-      outputLocation: OUTPUT_PDF_FILE_PATH,
+      inputLocation: outputDocxFilePath,
+      outputLocation: outputPdfFilePath,
     });
 
-    // send generated document to S3 (private bucket - share link can be generated later, to copy to public bucket)
+    // send generated document to S3 (private bucket - share link can be generated later, including copy to public bucket)
+    const generatedDocumentFile: GeneratedDocumentFile =
+      await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
+        id: generatedDocumentUuid,
+        localFilepath: outputPdfFilePath,
+      });
 
-    // create entry in data store for generated document
+    const documentSecuredHash = "";
+
+    const docType = documentTemplate.docType;
+    const fromTemplateId = documentTemplate.templateName;
+    const documentName = `${docType}--${generatedDocumentUuid}.${FileExtensions.PDF}`;
 
     // return entry data store entry for generated document, with presigned download url good for 1 hour
   }

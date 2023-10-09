@@ -1,24 +1,32 @@
-import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
-import { createPresignedUrl } from "src/utility/s3/create-presigned-url";
-import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
-import { ONE_HOUR_SECONDS } from "src/utility/datetime";
-import { DocumentTemplate } from "src/data/domain/document-template.type";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { AppConfig } from "src/config/app-config";
+import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
+import { DocumentTemplate } from "src/data/domain/document-template.type";
+import { createPresignedUrl } from "src/utility/s3/create-presigned-url";
+import { ONE_HOUR_SECONDS } from "src/utility/datetime";
+import { StorageTypes } from "src/utility/types/storage-types";
+import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
 
 export const ErrorMessages = {
   UNSUPPORTED_STORAGE_TYPE: "Unsupported storage type",
 };
 
+let initialized: Promise<unknown>;
+
 export const initialize = async () => {
-  return await DocumentTemplateFileRepositoryConfig.initialize();
+  if (!initialized) {
+    initialized = Promise.all([
+      await DocumentTemplateFileRepositoryConfig.initialize(),
+    ]);
+  }
+
+  return initialized;
 };
 
 export const getDocumentTemplateFilePresignedUploadUrl = async (
   id: string,
   options?: RequestPresigningArguments,
 ): Promise<string> => {
-  await DocumentTemplateFileRepositoryConfig.initialize();
+  await DocumentTemplateFileRepository.initialize();
 
   return await createPresignedUrl({
     bucket:
@@ -36,9 +44,9 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
 export const getDocumentTemplateFile = async (
   documentTemplate: DocumentTemplate,
 ) => {
-  await DocumentTemplateFileRepositoryConfig.initialize();
+  await DocumentTemplateFileRepository.initialize();
 
-  if (documentTemplate.storageType === AppConfig.STORAGE_TYPES.AWS_S3) {
+  if (documentTemplate.storageType === StorageTypes.AWS_S3) {
     const s3Client = new S3Client({
       region:
         DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,

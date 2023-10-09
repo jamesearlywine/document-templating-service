@@ -163,6 +163,12 @@ export class ApplicationStack extends cdk.Stack {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
+      PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
       SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
         "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-templates-table-arn}}",
         {

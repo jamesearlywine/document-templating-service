@@ -9,6 +9,7 @@ export abstract class ServiceConfig {
     Object.assign(this, options);
   }
 
+  static initialized;
   static initialize(values: Partial<ServiceConfig>) {
     this.reset();
     this.set(values);
