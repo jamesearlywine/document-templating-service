@@ -18,6 +18,8 @@ import {
 
 export class GenerateDocumentController {
   static async POST(templateId: string, data: Record<string, string>) {
+    console.info("GenerateDocumentController.POST: ", { templateId, data });
+
     const response =
       await DocumentTemplateRepository.getDocumentTemplateRecordById(
         templateId,
@@ -36,6 +38,10 @@ export class GenerateDocumentController {
       await DocumentTemplateFileRepository.getDocumentTemplateFile(
         documentTemplate,
       );
+    console.info(
+      "GenerateDocumentController.POST - templateFileContent: ",
+      templateFileContent,
+    );
 
     DocxTemplater.generateTemplatedContent({
       templateFileContent,
