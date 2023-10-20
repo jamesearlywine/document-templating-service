@@ -6,6 +6,12 @@ import { GeneratedDocumentFile } from "./generated-document-file.type";
 import { createPresignedUrl } from "src/utility/s3";
 import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
 import { GeneratedDocument } from "src/data/domain/generated-document.type";
+import {
+  FileExtension,
+  FileExtensions,
+} from "../../../utility/types/file-extension.type";
+import fs from "fs";
+import {Readable} from "stream";
 
 let initialized: Promise<unknown>;
 
@@ -19,17 +25,24 @@ export const initialize = async () => {
   return initialized;
 };
 
+export const DEFAULT_FILE_EXTENSION = FileExtensions.PDF;
+
 export const uploadGeneratedDocumentFile = async ({
   id,
   localFilepath,
+  fileExtension,
 }: {
   id: string;
   localFilepath: string;
+  fileExtension?: FileExtension;
 }): Promise<GeneratedDocumentFile> => {
   await GeneratedDocumentFileRepositoryConfig.initialize();
 
-  const fileExtension = extractFileExtension(localFilepath).toLowerCase();
-  const filename = `${id}.${fileExtension}`;
+  const extractedFileExtension =
+    extractFileExtension(localFilepath).toLowerCase();
+  const filename = `${id}.${
+    fileExtension ?? extractedFileExtension ?? DEFAULT_FILE_EXTENSION
+  }`;
 
   const s3BucketName =
     GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME;
@@ -39,14 +52,19 @@ export const uploadGeneratedDocumentFile = async ({
     region:
       GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
   });
-  const command = new PutObjectCommand({ Bucket: s3BucketName, Key: s3Key });
+
+  const fileStream = fs.createReadStream(localFilepath);
+  const fileReadStream = Readable.from(fileStream);
+  const fileStat = fs.statSync(localFilepath);
+  const contentLength = fileStat.size;
+  const command = new PutObjectCommand({ Bucket: s3BucketName, Key: s3Key, Body: fileReadStream, ContentLength: contentLength});
   await client.send(command);
 
   const storageType = StorageTypes.AWS_S3;
 
   return {
     documentId: id,
-    localFilepath: localFilepath,
+    localFilepath,
     storageType,
     storageLocation: s3BucketName,
     filename,

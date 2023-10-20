@@ -3,7 +3,7 @@ import fs from "fs";
 import waitForExpect from "wait-for-expect";
 import { v4 as uuid } from "uuid";
 import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
-import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
+import * as DocxTemplater from "src/utility/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
 
 import dotenv from "dotenv";

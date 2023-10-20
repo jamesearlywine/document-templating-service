@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import * as fs from "fs";
 import * as crypto from "crypto";
-import * as DocxTemplater from "src/services/document-templating-service/docxtemplater";
+import * as DocxTemplater from "src/utility/docxtemplater";
 import { DocumentTemplateRepository } from "src/data/dynamo/document-template-repository";
 import { DocumentTemplateFileRepository } from "src/data/s3/document-template-file-repository";
 import { DocumentConversionService } from "src/services/document-conversion-service";
@@ -25,45 +25,67 @@ export class GenerateDocumentController {
         templateId,
       );
     const documentTemplate: DocumentTemplate = response.results[0];
+    console.info("GenerateDocumentController.POST: ", { documentTemplate });
 
     const generatedDocumentUuid = uuid();
-    const outputDocxFilePath = `${AppConfig.SCRATCH_DIRECTORY}/${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.DOCX}`;
-    const outputPdfFilePath = `${AppConfig.SCRATCH_DIRECTORY}/${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.PDF}`;
+    const templateFilepath = `${AppConfig.SCRATCH_DIRECTORY}/template--${documentTemplate.id}.${FileExtensions.DOCX}`;
+    const outputDocxFilepath = `${AppConfig.SCRATCH_DIRECTORY}/${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.DOCX}`;
+    const outputPdfFilepath = `${AppConfig.SCRATCH_DIRECTORY}/${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.PDF}`;
 
     if (!documentTemplate) {
       throw new Error("Document template not found");
     }
 
-    const templateFileContent =
+    const s3Response =
       await DocumentTemplateFileRepository.getDocumentTemplateFile(
         documentTemplate,
+        templateFilepath
       );
-    console.info(
-      "GenerateDocumentController.POST - templateFileContent: ",
-      templateFileContent,
+
+    await DocxTemplater.generateTemplatedContentFromFiles({
+      templateFilepath,
+      data,
+      outputFilepath: outputDocxFilepath,
+    });
+
+    console.log(
+      "fs.statSync(templateFilepath): ",
+      fs.statSync(templateFilepath),
     );
 
-    DocxTemplater.generateTemplatedContent({
-      templateFileContent,
-      data,
-      outputFilepath: outputDocxFilePath,
+    console.log(
+      "fs.statSync(outputDocxFilepath): ",
+      fs.statSync(outputDocxFilepath),
+    );
+
+
+    const generatedDocumentFile: GeneratedDocumentFile = await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
+      id: generatedDocumentUuid,
+      localFilepath: outputDocxFilepath,
     });
 
-    await DocumentConversionService.docxToPdf({
-      inputLocation: outputDocxFilePath,
-      outputLocation: outputPdfFilePath,
-    });
+    // await DocumentConversionService.docxToPdf({
+    //   inputLocation: outputDocxFilepath,
+    //   outputLocation: outputPdfFilepath,
+    // });
+    //
+    // console.log(
+    //   "fs.statSync(outputPdfFilepath): ",
+    //   fs.statSync(outputPdfFilepath),
+    // );
+    //
+    // // send generated document to S3 (private bucket - share link can be generated later, including copy to public bucket)
+    // const generatedDocumentFile: GeneratedDocumentFile =
+    //   await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
+    //     id: generatedDocumentUuid,
+    //     localFilepath: outputPdfFilepath,
+    //   });
+    //
 
-    // send generated document to S3 (private bucket - share link can be generated later, including copy to public bucket)
-    const generatedDocumentFile: GeneratedDocumentFile =
-      await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
-        id: generatedDocumentUuid,
-        localFilepath: outputPdfFilePath,
-      });
 
     const documentSecuredHash = crypto
       .createHash(HashAlgorithms.MD5)
-      .update(fs.readFileSync(outputPdfFilePath).toString())
+      .update(fs.readFileSync(outputDocxFilepath).toString())
       .digest("hex");
 
     const generatedDocument: GeneratedDocument = createGeneratedDocument({
@@ -75,7 +97,7 @@ export class GenerateDocumentController {
       storageLocation: generatedDocumentFile.storageLocation,
       filename: generatedDocumentFile.filename,
       fileExtension: generatedDocumentFile.fileExtension,
-      documentName: `${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.PDF}`,
+      documentName: `${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.DOCX}`,
       documentSecuredHash,
       documentSecuredHashAlgorithm: HashAlgorithms.MD5,
     });

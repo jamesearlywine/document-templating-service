@@ -1,11 +1,14 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
+import { NodeJsClient } from "@smithy/types";
 import { DocumentTemplate } from "src/data/domain/document-template.type";
 import { createPresignedUrl } from "src/utility/s3/create-presigned-url";
 import { ONE_HOUR_SECONDS } from "src/utility/datetime";
 import { StorageTypes } from "src/utility/types/storage-types";
 import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
 import { PresignedUrlData } from "../../../utility/s3/presigned-url-data.type";
+import fs from "fs";
+import { Readable } from "stream";
 
 export const ErrorMessages = {
   UNSUPPORTED_STORAGE_TYPE: "Unsupported storage type",
@@ -43,25 +46,56 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
   });
 };
 
+const getDocumentTemplateFileFromS3 = async (documentTemplate: DocumentTemplate, localFilepath: string) => {
+  const s3Client = new S3Client({
+    region:
+    DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+  }) as NodeJsClient<S3Client>;
+
+  let response;
+  const getObjectCommand=
+    new GetObjectCommand({
+      Bucket: documentTemplate.storageLocation,
+      Key: documentTemplate.filepath,
+      ResponseContentType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    });
+
+  try {
+    const response = await s3Client.send(getObjectCommand);
+
+    if (response.Body instanceof Readable) {
+      const fileStream = fs.createWriteStream(localFilepath);
+
+      response.Body.pipe(fileStream);
+
+      await new Promise((resolve, reject) => {
+        fileStream.on("finish", resolve);
+        fileStream.on("error", reject);
+      });
+
+      console.log(`File downloaded to ${localFilepath}`);
+      return true;
+    } else {
+      console.error("Error: Response body is not a readable stream");
+      return false;
+    }
+  } catch (err) {
+    console.error("Error downloading file from S3:", err);
+    return false;
+  }
+
+  return false;
+}
+
 export const getDocumentTemplateFile = async (
   documentTemplate: DocumentTemplate,
+  localFilepath: string
 ) => {
   await DocumentTemplateFileRepository.initialize();
 
   if (documentTemplate.storageType === StorageTypes.AWS_S3) {
-    const s3Client = new S3Client({
-      region:
-        DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
-    });
-
-    const response = await s3Client.send(
-      new GetObjectCommand({
-        Bucket: documentTemplate.storageLocation,
-        Key: documentTemplate.storageLocation,
-      }),
-    );
-
-    return response.Body.transformToString();
+    return getDocumentTemplateFileFromS3(documentTemplate, localFilepath);
   }
 
   throw new Error(

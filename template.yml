@@ -148,7 +148,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: ed1fac628003059ea811d07e0b63a33156a30578e115573286f793af46e0cb7e.zip
+        S3Key: 1efdcac7a3969024eb7149a3180bdf9487fb91f35ba74f70227c355c420b5e13.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -178,12 +178,20 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
+          GOTENBERG_BASE_URL:
+            Fn::Sub:
+              - http://${GOTENBERG_IP}:3000
+              - GOTENBERG_IP:
+                  Fn::GetAtt:
+                    - GotenbergServiceEc2Instance23EB502F8eab42f3697fe4d9
+                    - PrivateIp
       Handler: index.handler
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
           - Arn
       Runtime: nodejs18.x
+      Timeout: 30
       VpcConfig:
         SecurityGroupIds:
           - Fn::GetAtt:
@@ -196,7 +204,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/generateDocumentLambda/Resource
-      aws:asset:path: asset.ed1fac628003059ea811d07e0b63a33156a30578e115573286f793af46e0cb7e
+      aws:asset:path: asset.1efdcac7a3969024eb7149a3180bdf9487fb91f35ba74f70227c355c420b5e13
       aws:asset:is-bundled: false
       aws:asset:property: Code
   createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF:
@@ -215,7 +223,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: bb8509ca2c213c4033f811e4dbe2eafb2f79d45c7b6547fd24c0bc06785aa5cf.zip
+        S3Key: 92e61108b481b18a6176c02865199eacba4b773dc12b96f719c06b52e4131cf1.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -263,7 +271,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.bb8509ca2c213c4033f811e4dbe2eafb2f79d45c7b6547fd24c0bc06785aa5cf
+      aws:asset:path: asset.92e61108b481b18a6176c02865199eacba4b773dc12b96f719c06b52e4131cf1
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatePresignedUploadUrlLambdaSecurityGroupD54378C0:
@@ -282,7 +290,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: eb5eb7b2bafe18072fdb6f9b531990ed0310ac345e45f1404bc8388c9b1c2351.zip
+        S3Key: 3d5c416e397cf2f5a77a9d20b34c3e87e9c1bc48d80e5c26df1d8a88eba87a61.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -330,7 +338,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/Resource
-      aws:asset:path: asset.eb5eb7b2bafe18072fdb6f9b531990ed0310ac345e45f1404bc8388c9b1c2351
+      aws:asset:path: asset.3d5c416e397cf2f5a77a9d20b34c3e87e9c1bc48d80e5c26df1d8a88eba87a61
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatesLambdaSecurityGroup22C82DA5:
@@ -349,7 +357,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: ad2f20d618e3988cde48811bd152fb6cb9a572b4d0d52684dad9dd2c78a0687e.zip
+        S3Key: feba0e66df9fe800efddce0c136ff8b2afd517ebb72db6ac0deb25b08109bdfb.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -397,7 +405,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/getDocumentTemplatesLambda/Resource
-      aws:asset:path: asset.ad2f20d618e3988cde48811bd152fb6cb9a572b4d0d52684dad9dd2c78a0687e
+      aws:asset:path: asset.feba0e66df9fe800efddce0c136ff8b2afd517ebb72db6ac0deb25b08109bdfb
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplateLambdaSecurityGroupA62B963E:
@@ -416,7 +424,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 9735df2ed7629f63ff31a3e26486301bf3e524c7b0ae41f280620c9df0abca99.zip
+        S3Key: 3de8eb112a93704b79bfc98c9db67db874ab465c9250350f1163f898c4374a23.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -464,7 +472,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/getDocumentTemplateLambda/Resource
-      aws:asset:path: asset.9735df2ed7629f63ff31a3e26486301bf3e524c7b0ae41f280620c9df0abca99
+      aws:asset:path: asset.3de8eb112a93704b79bfc98c9db67db874ab465c9250350f1163f898c4374a23
       aws:asset:is-bundled: false
       aws:asset:property: Code
   deleteDocumentTemplateLambdaSecurityGroup8FEF291E:
@@ -483,7 +491,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 22bedffad62d1ed49e2cd74129e42480e28c5e31c755340aced306c368dc5fef.zip
+        S3Key: eee653d7f70b65e552cb12a727e448f3d7b745848344d406b1baac8a78e819d0.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -531,7 +539,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/deleteDocumentTemplateLambda/Resource
-      aws:asset:path: asset.22bedffad62d1ed49e2cd74129e42480e28c5e31c755340aced306c368dc5fef
+      aws:asset:path: asset.eee653d7f70b65e552cb12a727e448f3d7b745848344d406b1baac8a78e819d0
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23:
@@ -550,7 +558,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 5f1426a53a51f7815df11e28272a938905016816055d6c3cf879889e9f3b18d8.zip
+        S3Key: d98432f5abb11bc5f8c280410dd194d3f68543564396590c01d6323d2598e252.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -598,7 +606,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: JLE-Ephemeral-2DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/Resource
-      aws:asset:path: asset.5f1426a53a51f7815df11e28272a938905016816055d6c3cf879889e9f3b18d8
+      aws:asset:path: asset.d98432f5abb11bc5f8c280410dd194d3f68543564396590c01d6323d2598e252
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedEventRule65782E4A:

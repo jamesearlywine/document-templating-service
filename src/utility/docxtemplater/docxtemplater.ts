@@ -7,7 +7,7 @@ export const generateTemplatedContent = ({
   data,
   outputFilepath,
 }: {
-  templateFileContent: string;
+  templateFileContent: Uint8Array | string;
   data: Record<string, unknown>;
   outputFilepath?: string;
 }): Buffer => {

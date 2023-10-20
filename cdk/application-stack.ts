@@ -189,8 +189,13 @@ export class ApplicationStack extends cdk.Stack {
         code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
-        environment: this.lambdaEnvVariables,
+        environment: {
+          ...this.lambdaEnvVariables,
+          GOTENBERG_BASE_URL: this.gotenbergServiceInstance.gotenbergBaseUrl,
+        },
         role: this.lambdaExecutionRole as IRole,
+        timeout: cdk.Duration.seconds(30),
+        dependsOn: [this.gotenbergServiceInstance],
       } as FunctionProps,
     );
 

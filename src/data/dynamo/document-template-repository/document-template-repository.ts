@@ -126,7 +126,9 @@ export const putDocumentTemplateRecord = async (
     new PutItemCommand({
       TableName:
         DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_NAME,
-      Item: marshall(documentTemplateDynamoRecord),
+      Item: marshall(documentTemplateDynamoRecord, {
+        removeUndefinedValues: true,
+      }),
     }),
   );
 
