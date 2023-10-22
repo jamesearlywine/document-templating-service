@@ -1,6 +1,4 @@
-export const extractFilename = (path: string) => {
-  return path.split("/").slice(-1)[0];
-};
+import { extractFilename } from "./extract-file-name";
 
 export const extractFileExtension = (path: string) => {
   return extractFilename(path).split(".").slice(-1)[0];

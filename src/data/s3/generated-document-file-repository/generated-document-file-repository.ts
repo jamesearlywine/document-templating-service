@@ -1,17 +1,18 @@
-import GeneratedDocumentFileRepositoryConfig from "./generated-document-file-repository.config";
-import { extractFileExtension } from "src/utility/s3/extract-file-name";
-import { StorageTypes } from "src/utility/types/storage-types";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { GeneratedDocumentFile } from "./generated-document-file.type";
-import { createPresignedUrl } from "src/utility/s3";
 import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
-import { GeneratedDocument } from "src/data/domain/generated-document.type";
+import GeneratedDocumentFileRepositoryConfig from "./generated-document-file-repository.config";
 import {
+  extractFileExtension,
   FileExtension,
   FileExtensions,
-} from "../../../utility/types/file-extension.type";
+} from "src/utility/file-management";
+import { StorageTypes } from "src/utility/common/storage-types";
+import { createPresignedUrl } from "src/data/s3/common";
+import { GeneratedDocumentFile } from "./generated-document-file.type";
+import { GeneratedDocument } from "src/data/domain/generated-document.type";
+
 import fs from "fs";
-import {Readable} from "stream";
+import { Readable } from "stream";
 
 let initialized: Promise<unknown>;
 
@@ -57,7 +58,12 @@ export const uploadGeneratedDocumentFile = async ({
   const fileReadStream = Readable.from(fileStream);
   const fileStat = fs.statSync(localFilepath);
   const contentLength = fileStat.size;
-  const command = new PutObjectCommand({ Bucket: s3BucketName, Key: s3Key, Body: fileReadStream, ContentLength: contentLength});
+  const command = new PutObjectCommand({
+    Bucket: s3BucketName,
+    Key: s3Key,
+    Body: fileReadStream,
+    ContentLength: contentLength,
+  });
   await client.send(command);
 
   const storageType = StorageTypes.AWS_S3;

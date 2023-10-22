@@ -9,7 +9,7 @@ import {
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import { DynamoRepositoryQueryResponse } from "src/data/dynamo/dynamo-respository-query-response.type";
+import { DynamoRepositoryQueryResponse } from "src/data/dynamo/common/dynamo-respository-query-response.type";
 import {
   DocumentTemplate,
   DocumentTemplateMapper,
@@ -19,7 +19,7 @@ import {
   createDynamoKeysForDocumentTemplate,
   DocumentTemplateDynamoRecord,
 } from "src/data/dynamo/document-template-repository/document-template-dynamo-record";
-import { generateUpdateExpression } from "src/utility/dynamodb/generate-update-expression";
+import { generateUpdateExpression } from "src/data/dynamo/common/generate-update-expression";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -37,7 +37,7 @@ export const initialize = async () => {
 export const getDocumentTemplateRecordById = async (
   id: string,
 ): Promise<DynamoRepositoryQueryResponse> => {
-  await DocumentTemplateRepositoryConfig.initialize();
+  await DocumentTemplateRepository.initialize();
 
   const dynamoResponse = await dynamoClient.send(
     new QueryCommand({
@@ -61,7 +61,7 @@ export const getDocumentTemplateRecordById = async (
 export const getDocumentTemplateRecordByTemplateName = async (
   templateName: string,
 ): Promise<DynamoRepositoryQueryResponse> => {
-  await DocumentTemplateRepositoryConfig.initialize();
+  await DocumentTemplateRepository.initialize();
 
   const dynamoResponse = await dynamoClient.send(
     new QueryCommand({
@@ -82,7 +82,7 @@ export const getDocumentTemplateRecordByTemplateName = async (
 export const getDocumentTemplateRecordsByDocType = async (
   docType: string,
 ): Promise<DynamoRepositoryQueryResponse> => {
-  await DocumentTemplateRepositoryConfig.initialize();
+  await DocumentTemplateRepository.initialize();
 
   const dynamoResponse = await dynamoClient.send(
     new QueryCommand({
@@ -102,7 +102,7 @@ export const getDocumentTemplateRecordsByDocType = async (
 
 export const getAllDocumentTemplateRecords =
   async (): Promise<DynamoRepositoryQueryResponse> => {
-    await DocumentTemplateRepositoryConfig.initialize();
+    await DocumentTemplateRepository.initialize();
 
     const dynamoResponse = await dynamoClient.send(
       new ScanCommand({
@@ -120,7 +120,7 @@ export const getAllDocumentTemplateRecords =
 export const putDocumentTemplateRecord = async (
   documentTemplateDynamoRecord: DocumentTemplateDynamoRecord,
 ): Promise<PutItemCommandOutput> => {
-  await DocumentTemplateRepositoryConfig.initialize();
+  await DocumentTemplateRepository.initialize();
 
   const dynamoResponse = await dynamoClient.send(
     new PutItemCommand({
@@ -139,7 +139,7 @@ export const updateDocumentTemplateRecordById = async (
   id: string,
   documentTemplate: Partial<DocumentTemplate>,
 ) => {
-  await DocumentTemplateRepositoryConfig.initialize();
+  await DocumentTemplateRepository.initialize();
   const updateExpression = generateUpdateExpression(documentTemplate);
 
   const keys = createDynamoKeysForDocumentTemplate({ id });
@@ -157,7 +157,7 @@ export const updateDocumentTemplateRecordById = async (
 };
 
 export const deleteDocumentTemplateRecordById = async (id: string) => {
-  await DocumentTemplateRepositoryConfig.initialize();
+  await DocumentTemplateRepository.initialize();
 
   const keys = createDynamoKeysForDocumentTemplate({ id });
 

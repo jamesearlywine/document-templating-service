@@ -2,11 +2,11 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
 import { NodeJsClient } from "@smithy/types";
 import { DocumentTemplate } from "src/data/domain/document-template.type";
-import { createPresignedUrl } from "src/utility/s3/create-presigned-url";
+import { createPresignedUrl } from "src/data/s3/common/create-presigned-url";
 import { ONE_HOUR_SECONDS } from "src/utility/datetime";
-import { StorageTypes } from "src/utility/types/storage-types";
+import { StorageTypes } from "src/utility/common/storage-types";
 import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
-import { PresignedUrlData } from "../../../utility/s3/presigned-url-data.type";
+import { PresignedUrlData } from "../common/presigned-url-data.type";
 import fs from "fs";
 import { Readable } from "stream";
 
@@ -46,20 +46,22 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
   });
 };
 
-const getDocumentTemplateFileFromS3 = async (documentTemplate: DocumentTemplate, localFilepath: string) => {
+const getDocumentTemplateFileFromS3 = async (
+  documentTemplate: DocumentTemplate,
+  localFilepath: string,
+) => {
   const s3Client = new S3Client({
     region:
-    DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+      DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
   }) as NodeJsClient<S3Client>;
 
   let response;
-  const getObjectCommand=
-    new GetObjectCommand({
-      Bucket: documentTemplate.storageLocation,
-      Key: documentTemplate.filepath,
-      ResponseContentType:
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    });
+  const getObjectCommand = new GetObjectCommand({
+    Bucket: documentTemplate.storageLocation,
+    Key: documentTemplate.filepath,
+    ResponseContentType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  });
 
   try {
     const response = await s3Client.send(getObjectCommand);
@@ -86,11 +88,11 @@ const getDocumentTemplateFileFromS3 = async (documentTemplate: DocumentTemplate,
   }
 
   return false;
-}
+};
 
 export const getDocumentTemplateFile = async (
   documentTemplate: DocumentTemplate,
-  localFilepath: string
+  localFilepath: string,
 ) => {
   await DocumentTemplateFileRepository.initialize();
 

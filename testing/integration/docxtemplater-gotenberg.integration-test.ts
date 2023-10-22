@@ -1,21 +1,26 @@
 import path from "path";
 import fs from "fs";
 import waitForExpect from "wait-for-expect";
-import { v4 as uuid } from "uuid";
-import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
+import {v4 as uuid} from "uuid";
 import * as DocxTemplater from "src/utility/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
 
 import dotenv from "dotenv";
-dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
+
+dotenv.config({path: path.resolve(__dirname, ".env.integration-testing")});
 
 const REMOVE_TEST_GENERATED_FILES = true;
 
 const TEMPLATE_FILE_PATH = path.resolve(
   `${__dirname}/../test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx`,
 );
-const TEST_AFFIDAVIT_TEMPLATE_DATA =
-  sampleDocumentDataByDocumentType.jobaffidavit;
+
+const JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD = fs.readFileSync(
+  path.resolve(__dirname, "../test-templates-dummy-data/job-affidavit-document-template-dynamo-record.json"),
+  "utf8"
+);
+const TEST_AFFIDAVIT_TEMPLATE_DATA = JSON.parse(JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD).sampleDummyData;
+
 
 const UUID = `${uuid()}`;
 const OUTPUT_DOCX_FILE_PATH = path.resolve(

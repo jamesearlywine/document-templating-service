@@ -7,14 +7,14 @@ import { DocumentTemplateFileRepository } from "src/data/s3/document-template-fi
 import { DocumentConversionService } from "src/services/document-conversion-service";
 import { AppConfig } from "src/config/app-config";
 import { DocumentTemplate } from "src/data/domain/document-template.type";
-import { FileExtensions } from "src/utility/types/file-extension.type";
+import { FileExtensions } from "src/utility/file-management";
 import { GeneratedDocumentFileRepository } from "src/data/s3/generated-document-file-repository";
 import { GeneratedDocumentFile } from "../../data/s3/generated-document-file-repository/generated-document-file.type";
-import { HashAlgorithms } from "../../utility/types/hash-algorithm.type";
+import { HashAlgorithms } from "src/utility/common/hash-algorithms";
 import {
   createGeneratedDocument,
   GeneratedDocument,
-} from "../../data/domain/generated-document.type";
+} from "src/data/domain/generated-document.type";
 
 export class GenerateDocumentController {
   static async POST(templateId: string, data: Record<string, string>) {
@@ -39,49 +39,32 @@ export class GenerateDocumentController {
     const s3Response =
       await DocumentTemplateFileRepository.getDocumentTemplateFile(
         documentTemplate,
-        templateFilepath
+        templateFilepath,
       );
 
-    await DocxTemplater.generateTemplatedContentFromFiles({
+    await DocxTemplater.generateFromTemplateFile({
       templateFilepath,
       data,
       outputFilepath: outputDocxFilepath,
     });
 
-    console.log(
-      "fs.statSync(templateFilepath): ",
-      fs.statSync(templateFilepath),
-    );
-
-    console.log(
-      "fs.statSync(outputDocxFilepath): ",
-      fs.statSync(outputDocxFilepath),
-    );
-
-
-    const generatedDocumentFile: GeneratedDocumentFile = await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
+    await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
       id: generatedDocumentUuid,
       localFilepath: outputDocxFilepath,
     });
 
-    // await DocumentConversionService.docxToPdf({
-    //   inputLocation: outputDocxFilepath,
-    //   outputLocation: outputPdfFilepath,
-    // });
-    //
-    // console.log(
-    //   "fs.statSync(outputPdfFilepath): ",
-    //   fs.statSync(outputPdfFilepath),
-    // );
-    //
-    // // send generated document to S3 (private bucket - share link can be generated later, including copy to public bucket)
-    // const generatedDocumentFile: GeneratedDocumentFile =
-    //   await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
-    //     id: generatedDocumentUuid,
-    //     localFilepath: outputPdfFilepath,
-    //   });
-    //
+    await DocumentConversionService.docxToPdf({
+      inputLocation: outputDocxFilepath,
+      outputLocation: outputPdfFilepath,
+    });
 
+    const generatedDocumentPdfFile: GeneratedDocumentFile =
+      await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
+        id: generatedDocumentUuid,
+        localFilepath: outputPdfFilepath,
+      });
+
+    const generatedDocumentFile = generatedDocumentPdfFile;
 
     const documentSecuredHash = crypto
       .createHash(HashAlgorithms.MD5)

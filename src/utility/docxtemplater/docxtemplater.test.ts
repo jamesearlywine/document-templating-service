@@ -1,15 +1,23 @@
 import * as DocxTemplater from "./docxtemplater";
 import path from "path";
-import { sampleDocumentDataByDocumentType } from "src/data/domain/fixtures/sample-document-data-by-document-type";
 import WordExtractor from "word-extractor";
 import fs from "fs";
 import { v4 as uuid } from "uuid";
 
-const validJobAffidavitTemplateData =
-  sampleDocumentDataByDocumentType.jobaffidavit;
+const JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD = fs.readFileSync(
+  path.resolve(
+    __dirname,
+    "../../../testing/test-templates-dummy-data/job-affidavit-document-template-dynamo-record.json",
+  ),
+  "utf8",
+);
+const validJobAffidavitTemplateData = JSON.parse(
+  JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD,
+).sampleDummyData;
 
 const TEMPLATE_FILE_PATH = path.resolve(
-  "testing/test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx",
+  __dirname,
+  "../../../testing/test-templates/AFFIDAVIT-OF-NON-SERVICE--DOCXTEMPLATER.docx",
 );
 
 const OUTPUT_FILE_PATH = path.resolve(
@@ -24,7 +32,7 @@ describe("DocxTemplaterService", () => {
     });
 
     it("should do stuff", async () => {
-      DocxTemplater.generateTemplatedContent({
+      DocxTemplater.generateFromTemplateFile({
         templateFilepath: TEMPLATE_FILE_PATH,
         data: validJobAffidavitTemplateData,
         outputFilepath: OUTPUT_FILE_PATH,

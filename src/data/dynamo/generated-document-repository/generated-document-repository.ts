@@ -1,6 +1,6 @@
 import { DocumentTemplate } from "src/data/domain/document-template.type";
 
-export type DocumentTemplateDynamoRecord = DocumentTemplate & {
+export type GeneratedDocumentRepository = DocumentTemplate & {
   PK: string;
   SK: string;
 };
@@ -38,7 +38,7 @@ export const createDynamoKeysForDocumentTemplate = (
 export const mapDocumentTemplateDynamoRecord = {
   fromDocumentTemplate: (
     documentTemplate: DocumentTemplate,
-  ): DocumentTemplateDynamoRecord => {
+  ): GeneratedDocumentRepository => {
     return {
       ...createDynamoKeysForDocumentTemplate(documentTemplate),
       ...documentTemplate,
