@@ -1,10 +1,8 @@
 import { DocumentConversionService } from "src/services/document-conversion-service";
-import { DocumentTemplatingService } from "src/services/document-templating-service/document-templating-service";
-import { Service } from "src/services/service.type";
+import { Service } from "src/services/common/service.type";
 
 export const AllServices: { [k: string]: Service } = {
   DocumentConversionService,
-  DocumentTemplatingService,
 };
 
 export const initializeAllServices = async () => {

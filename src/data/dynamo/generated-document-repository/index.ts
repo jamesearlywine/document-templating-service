@@ -1,3 +1,3 @@
 export * from "./document-template-repository";
 export * from "./document-template-repository.config";
-export * from "./document-template-dynamo-record";
+export * from "./generated-document-repository";

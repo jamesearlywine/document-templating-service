@@ -3,7 +3,8 @@ const path = require("path");
 
 const sharedConfig = {
   bundle: true,
-  minify: true,
+  minify: false,
+  sourcemap: true,
   platform: "node",
 };
 

@@ -2,16 +2,16 @@ import PizZip from "pizzip";
 import fs from "fs";
 import Docxtemplater from "docxtemplater";
 
-export const generateTemplatedContent = ({
-  templateFileContent,
+export const generateFromTemplateContent = ({
+  templateContent,
   data,
   outputFilepath,
 }: {
-  templateFileContent: string;
+  templateContent: string;
   data: Record<string, unknown>;
   outputFilepath?: string;
 }): Buffer => {
-  const zip = new PizZip(templateFileContent);
+  const zip = new PizZip(templateContent);
   const doc = new Docxtemplater(zip, {
     paragraphLoop: true,
     linebreaks: true,
@@ -35,7 +35,7 @@ export const generateTemplatedContent = ({
   return outputBuffer;
 };
 
-export const generateTemplatedContentFromFiles = ({
+export const generateFromTemplateFile = ({
   templateFilepath,
   data,
   outputFilepath,
@@ -44,10 +44,10 @@ export const generateTemplatedContentFromFiles = ({
   data: Record<string, unknown>;
   outputFilepath?: string;
 }): Buffer => {
-  const templateFileContent = fs.readFileSync(templateFilepath, "binary");
+  const templateContent = fs.readFileSync(templateFilepath, "binary");
 
-  return generateTemplatedContent({
-    templateFileContent,
+  return generateFromTemplateContent({
+    templateContent,
     data,
     outputFilepath,
   });

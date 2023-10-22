@@ -9,7 +9,7 @@ export class GotenbergServiceInstance extends Construct {
   serviceSecurityGroupSshIngress: cdk.aws_ec2.CfnSecurityGroupIngress;
   gotenbergServiceEc2Instance: cdk.aws_ec2.Instance;
   gotenbergServiceInstanceBaseUrl: cdk.aws_ssm.StringParameter;
-  gotenburgBaseUrl: string;
+  gotenbergBaseUrl: string;
 
   constructor(
     parentScope,
@@ -72,7 +72,7 @@ export class GotenbergServiceInstance extends Construct {
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
-      "docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9",
+      "docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.4.2",
       "docker start gotenbergInstance",
     );
     this.gotenbergServiceEc2Instance = new cdk.aws_ec2.Instance(
@@ -101,7 +101,7 @@ export class GotenbergServiceInstance extends Construct {
       } as InstanceProps,
     );
 
-    this.gotenburgBaseUrl = cdk.Fn.sub("http://${GOTENBERG_IP}:3000", {
+    this.gotenbergBaseUrl = cdk.Fn.sub("http://${GOTENBERG_IP}:3000", {
       GOTENBERG_IP: this.gotenbergServiceEc2Instance.instancePrivateIp,
     });
 
@@ -116,7 +116,7 @@ export class GotenbergServiceInstance extends Construct {
               AWS_ENV: props.AWS_ENV,
             },
           ),
-          stringValue: this.gotenburgBaseUrl,
+          stringValue: this.gotenbergBaseUrl,
           simpleName: false,
         },
       );

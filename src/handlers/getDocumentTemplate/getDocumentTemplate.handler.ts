@@ -2,7 +2,6 @@ import { DocumentTemplateRepository } from "src/data/dynamo/document-template-re
 import { GetDocumentTemplateController } from "./getDocumentTemplate.controller";
 
 DocumentTemplateRepository.initialize();
-
 export const handler = async (event: Record<string, unknown>) => {
   console.log("getDocumentTemplate.handler, event", event);
 

@@ -27,14 +27,14 @@ Resources:
   serviceSecurityGroupED3E18CA:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: JLE-Ephemeral-DocumentTemplatingService/serviceSecurityGroup
+      GroupDescription: JLE-Ephemeral-3DocumentTemplatingService/serviceSecurityGroup
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/serviceSecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/serviceSecurityGroup/Resource
   serviceSecurityGroupHttpIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -47,7 +47,7 @@ Resources:
       IpProtocol: tcp
       ToPort: 3000
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/serviceSecurityGroupHttpIngress
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/serviceSecurityGroupHttpIngress
   GotenbergServiceEc2InstanceInstanceRole3CB3D4E5:
     Type: AWS::IAM::Role
     Properties:
@@ -60,17 +60,17 @@ Resources:
         Version: "2012-10-17"
       Tags:
         - Key: Name
-          Value: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance
+          Value: JLE-Ephemeral-3DocumentTemplatingService/GotenbergServiceEc2Instance
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance/InstanceRole/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/GotenbergServiceEc2Instance/InstanceRole/Resource
   GotenbergServiceEc2InstanceInstanceProfile6657995B:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
         - Ref: GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
-  GotenbergServiceEc2Instance23EB502F8eab42f3697fe4d9:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
+  GotenbergServiceEc2Instance23EB502F1aba8c2a95edf874:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2a
@@ -90,19 +90,19 @@ Resources:
           SubnetId: subnet-036f5f2f9c607cf2a
       Tags:
         - Key: Name
-          Value: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance
+          Value: JLE-Ephemeral-3DocumentTemplatingService/GotenbergServiceEc2Instance
       UserData:
         Fn::Base64: |-
           #!/bin/bash
           service docker start
           usermod -a -G docker ec2-user
           chkconfig docker on
-          docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9
+          docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.4.2
           docker start gotenbergInstance
     DependsOn:
       - GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/GotenbergServiceEc2Instance/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/GotenbergServiceEc2Instance/Resource
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
     Properties:
@@ -131,24 +131,24 @@ Resources:
               - Ref: AWS::Partition
               - :iam::546515125053:policy/LambdaGeneralExecutionRolePolicy
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/LambdaExecutionRole/Resource
-  generatedDocumentLambdaSecurityGroup5CB9C865:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/LambdaExecutionRole/Resource
+  generateDocumentLambdaSecurityGroup22F11FE9:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicegeneratedDocumentLambdaD72A19CD
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServicegenerateDocumentLambda37D5B04C
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/generatedDocumentLambda/SecurityGroup/Resource
-  generatedDocumentLambda5E756CB4:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/generateDocumentLambda/SecurityGroup/Resource
+  generateDocumentLambda78F9B7F5:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: eba5202e6795781a685779b3c3525c0d4b2f837c3096d8723f049b97a14eb2b3.zip
+        S3Key: a5659817b439ddef905964b096eb689ea5d20a440a1f2dedb0fcda166a20ae1d.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -178,16 +178,24 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
+          GOTENBERG_BASE_URL:
+            Fn::Sub:
+              - http://${GOTENBERG_IP}:3000
+              - GOTENBERG_IP:
+                  Fn::GetAtt:
+                    - GotenbergServiceEc2Instance23EB502F1aba8c2a95edf874
+                    - PrivateIp
       Handler: index.handler
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
           - Arn
       Runtime: nodejs18.x
+      Timeout: 30
       VpcConfig:
         SecurityGroupIds:
           - Fn::GetAtt:
-              - generatedDocumentLambdaSecurityGroup5CB9C865
+              - generateDocumentLambdaSecurityGroup22F11FE9
               - GroupId
         SubnetIds:
           - subnet-036f5f2f9c607cf2a
@@ -195,27 +203,27 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/generatedDocumentLambda/Resource
-      aws:asset:path: asset.eba5202e6795781a685779b3c3525c0d4b2f837c3096d8723f049b97a14eb2b3
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/generateDocumentLambda/Resource
+      aws:asset:path: asset.a5659817b439ddef905964b096eb689ea5d20a440a1f2dedb0fcda166a20ae1d
       aws:asset:is-bundled: false
       aws:asset:property: Code
   createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicecreateOrUpdateDocumentTemplateLambda1D1CF7A0
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServicecreateOrUpdateDocumentTemplateLambdaBBBDB3DC
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/SecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/SecurityGroup/Resource
   createOrUpdateDocumentTemplateLambda21DD51BC:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: bb8509ca2c213c4033f811e4dbe2eafb2f79d45c7b6547fd24c0bc06785aa5cf.zip
+        S3Key: f13eb0f2e87659d63c1735ce4d520f4e5343ce704a543a87476ba3471284cd42.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -262,27 +270,27 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.bb8509ca2c213c4033f811e4dbe2eafb2f79d45c7b6547fd24c0bc06785aa5cf
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
+      aws:asset:path: asset.f13eb0f2e87659d63c1735ce4d520f4e5343ce704a543a87476ba3471284cd42
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatePresignedUploadUrlLambdaSecurityGroupD54378C0:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicegetDocumentTemplatePresignedUploadUrlLambdaCE7B5A14
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServicegetDocumentTemplatePresignedUploadUrlLambdaE1F2A212
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/SecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/SecurityGroup/Resource
   getDocumentTemplatePresignedUploadUrlLambda3B9778CB:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: eb5eb7b2bafe18072fdb6f9b531990ed0310ac345e45f1404bc8388c9b1c2351.zip
+        S3Key: 64f3b377bb9c7157b213ce3caa8e64cd08805f2a17d2ab65a3177e4eda3d7c19.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -329,27 +337,27 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/Resource
-      aws:asset:path: asset.eb5eb7b2bafe18072fdb6f9b531990ed0310ac345e45f1404bc8388c9b1c2351
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/Resource
+      aws:asset:path: asset.64f3b377bb9c7157b213ce3caa8e64cd08805f2a17d2ab65a3177e4eda3d7c19
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatesLambdaSecurityGroup22C82DA5:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicegetDocumentTemplatesLambdaBC640754
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServicegetDocumentTemplatesLambda3D75B10D
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/getDocumentTemplatesLambda/SecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/getDocumentTemplatesLambda/SecurityGroup/Resource
   getDocumentTemplatesLambda4A2C29FC:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: ad2f20d618e3988cde48811bd152fb6cb9a572b4d0d52684dad9dd2c78a0687e.zip
+        S3Key: a796e423bf8b679d1b1cee025cbad169ade484067c0d5a1dcadf21d06b54402b.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -396,27 +404,27 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/getDocumentTemplatesLambda/Resource
-      aws:asset:path: asset.ad2f20d618e3988cde48811bd152fb6cb9a572b4d0d52684dad9dd2c78a0687e
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/getDocumentTemplatesLambda/Resource
+      aws:asset:path: asset.a796e423bf8b679d1b1cee025cbad169ade484067c0d5a1dcadf21d06b54402b
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplateLambdaSecurityGroupA62B963E:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicegetDocumentTemplateLambdaFC7B759D
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServicegetDocumentTemplateLambda5191FC72
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/getDocumentTemplateLambda/SecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/getDocumentTemplateLambda/SecurityGroup/Resource
   getDocumentTemplateLambda91D77421:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 9735df2ed7629f63ff31a3e26486301bf3e524c7b0ae41f280620c9df0abca99.zip
+        S3Key: 37df6cdc106f4a40009e31340111ed88d1d419fa54d93ae9914a316303a8feb4.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -463,27 +471,27 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/getDocumentTemplateLambda/Resource
-      aws:asset:path: asset.9735df2ed7629f63ff31a3e26486301bf3e524c7b0ae41f280620c9df0abca99
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/getDocumentTemplateLambda/Resource
+      aws:asset:path: asset.37df6cdc106f4a40009e31340111ed88d1d419fa54d93ae9914a316303a8feb4
       aws:asset:is-bundled: false
       aws:asset:property: Code
   deleteDocumentTemplateLambdaSecurityGroup8FEF291E:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServicedeleteDocumentTemplateLambda6BD933A4
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServicedeleteDocumentTemplateLambdaBAB061CA
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/deleteDocumentTemplateLambda/SecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/deleteDocumentTemplateLambda/SecurityGroup/Resource
   deleteDocumentTemplateLambda4C9C9ABF:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 22bedffad62d1ed49e2cd74129e42480e28c5e31c755340aced306c368dc5fef.zip
+        S3Key: 3b5b60843e9447aa47ee26d896bd9bfa3769c94c363442ad8cd2022d82ace89e.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -530,27 +538,27 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/deleteDocumentTemplateLambda/Resource
-      aws:asset:path: asset.22bedffad62d1ed49e2cd74129e42480e28c5e31c755340aced306c368dc5fef
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/deleteDocumentTemplateLambda/Resource
+      aws:asset:path: asset.3b5b60843e9447aa47ee26d896bd9bfa3769c94c363442ad8cd2022d82ace89e
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Automatic security group for Lambda Function JLEEphemeralDocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaEDA4F7B9
+      GroupDescription: Automatic security group for Lambda Function JLEEphemeral3DocumentTemplatingServiceafterDocumentTemplateFileUploadedLambda492AD580
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       VpcId: vpc-058c5ee1e09681197
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/SecurityGroup/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/SecurityGroup/Resource
   afterDocumentTemplateFileUploadedLambdaE99BC85F:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: cad68fb5b0a2401fa3191f022337938ae70e861ec8ae060855c7bd1fed5a8e65.zip
+        S3Key: 4ba527347979e8544b0fa11e12426c9ab1cd1919ef0f0e69ef2902f6eb8ca07d.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -597,8 +605,8 @@ Resources:
     DependsOn:
       - LambdaExecutionRoleD5C26073
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/Resource
-      aws:asset:path: asset.cad68fb5b0a2401fa3191f022337938ae70e861ec8ae060855c7bd1fed5a8e65
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/Resource
+      aws:asset:path: asset.4ba527347979e8544b0fa11e12426c9ab1cd1919ef0f0e69ef2902f6eb8ca07d
       aws:asset:is-bundled: false
       aws:asset:property: Code
   afterDocumentTemplateFileUploadedEventRule65782E4A:
@@ -645,8 +653,8 @@ Resources:
               - Arn
           Id: Target0
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/Resource
-  afterDocumentTemplateFileUploadedEventRuleAllowEventRuleJLEEphemeralDocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaEDA4F7B9A7148853:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/Resource
+  afterDocumentTemplateFileUploadedEventRuleAllowEventRuleJLEEphemeral3DocumentTemplatingServiceafterDocumentTemplateFileUploadedLambda492AD580E5855A8D:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -660,7 +668,7 @@ Resources:
           - afterDocumentTemplateFileUploadedEventRule65782E4A
           - Arn
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/AllowEventRuleJLEEphemeralDocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaEDA4F7B9
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/AllowEventRuleJLEEphemeral3DocumentTemplatingServiceafterDocumentTemplateFileUploadedLambda492AD580
   ApiF70053CD:
     Type: AWS::ApiGatewayV2::Api
     Properties:
@@ -671,7 +679,7 @@ Resources:
               Ref: AWSENV
       ProtocolType: HTTP
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/Resource
   ApiDefaultStage189A7074:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
@@ -680,8 +688,8 @@ Resources:
       AutoDeploy: true
       StageName: $default
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/DefaultStage/Resource
-  ApiGETgenerateDocumentgenerateDocumentLambdaHttpIntegrationEBA67B53:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/DefaultStage/Resource
+  ApiPOSTgenerateDocumentidgenerateDocumentLambdaHttpIntegration6D6FE86E:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId:
@@ -689,18 +697,18 @@ Resources:
       IntegrationType: AWS_PROXY
       IntegrationUri:
         Fn::GetAtt:
-          - generatedDocumentLambda5E756CB4
+          - generateDocumentLambda78F9B7F5
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--generateDocument/generateDocumentLambdaHttpIntegration/Resource
-  ApiGETgenerateDocumentgenerateDocumentLambdaHttpIntegrationPermission6E056E4E:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/POST--generateDocument--{id}/generateDocumentLambdaHttpIntegration/Resource
+  ApiPOSTgenerateDocumentidgenerateDocumentLambdaHttpIntegrationPermission822E0198:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName:
         Fn::GetAtt:
-          - generatedDocumentLambda5E756CB4
+          - generateDocumentLambda78F9B7F5
           - Arn
       Principal: apigateway.amazonaws.com
       SourceArn:
@@ -710,23 +718,23 @@ Resources:
             - Ref: AWS::Partition
             - ":execute-api:us-east-2:546515125053:"
             - Ref: ApiF70053CD
-            - /*/*/generateDocument
+            - /*/*/generateDocument/{id}
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--generateDocument/generateDocumentLambdaHttpIntegration-Permission
-  ApiGETgenerateDocument155C2E1E:
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/POST--generateDocument--{id}/generateDocumentLambdaHttpIntegration-Permission
+  ApiPOSTgenerateDocumentidC1120590:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId:
         Ref: ApiF70053CD
       AuthorizationType: NONE
-      RouteKey: GET /generateDocument
+      RouteKey: POST /generateDocument/{id}
       Target:
         Fn::Join:
           - ""
           - - integrations/
-            - Ref: ApiGETgenerateDocumentgenerateDocumentLambdaHttpIntegrationEBA67B53
+            - Ref: ApiPOSTgenerateDocumentidgenerateDocumentLambdaHttpIntegration6D6FE86E
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--generateDocument/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/POST--generateDocument--{id}/Resource
   ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationA967DFFB:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -739,7 +747,7 @@ Resources:
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
   ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationPermissionD916E15F:
     Type: AWS::Lambda::Permission
     Properties:
@@ -758,7 +766,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/documentTemplate
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
   ApiPUTdocumentTemplate63004375:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -772,7 +780,7 @@ Resources:
           - - integrations/
             - Ref: ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationA967DFFB
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/PUT--documentTemplate/Resource
   ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegration0B383EAF:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -785,7 +793,7 @@ Resources:
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
   ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegrationPermission1F513E89:
     Type: AWS::Lambda::Permission
     Properties:
@@ -804,7 +812,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/documentTemplate/{id}
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
   ApiPUTdocumentTemplateid268CFB20:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -818,7 +826,7 @@ Resources:
           - - integrations/
             - Ref: ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegration0B383EAF
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/PUT--documentTemplate--{id}/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/PUT--documentTemplate--{id}/Resource
   ApiGETdocumentTemplatePresignedUploadUrlidgetDocumentTemplatePresignedUploadUrlLambdaHttpIntegration6198949B:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -831,7 +839,7 @@ Resources:
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration/Resource
   ApiGETdocumentTemplatePresignedUploadUrlidgetDocumentTemplatePresignedUploadUrlLambdaHttpIntegrationPermissionB80A9151:
     Type: AWS::Lambda::Permission
     Properties:
@@ -850,7 +858,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/documentTemplatePresignedUploadUrl/{id}
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration-Permission
   ApiGETdocumentTemplatePresignedUploadUrlidC881220E:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -864,7 +872,7 @@ Resources:
           - - integrations/
             - Ref: ApiGETdocumentTemplatePresignedUploadUrlidgetDocumentTemplatePresignedUploadUrlLambdaHttpIntegration6198949B
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/Resource
   ApiGETdocumentTemplategetDocumentTemplatesLambdaHttpIntegration131B3208:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -877,7 +885,7 @@ Resources:
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplate/getDocumentTemplatesLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplate/getDocumentTemplatesLambdaHttpIntegration/Resource
   ApiGETdocumentTemplategetDocumentTemplatesLambdaHttpIntegrationPermission848B6C82:
     Type: AWS::Lambda::Permission
     Properties:
@@ -896,7 +904,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/documentTemplate
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplate/getDocumentTemplatesLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplate/getDocumentTemplatesLambdaHttpIntegration-Permission
   ApiGETdocumentTemplate13D188B6:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -910,7 +918,7 @@ Resources:
           - - integrations/
             - Ref: ApiGETdocumentTemplategetDocumentTemplatesLambdaHttpIntegration131B3208
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplate/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplate/Resource
   ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegration379C944C:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -923,7 +931,7 @@ Resources:
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplate--{id}/getDocumentTemplateLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplate--{id}/getDocumentTemplateLambdaHttpIntegration/Resource
   ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegrationPermission047554B3:
     Type: AWS::Lambda::Permission
     Properties:
@@ -942,7 +950,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/documentTemplate/{id}
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplate--{id}/getDocumentTemplateLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplate--{id}/getDocumentTemplateLambdaHttpIntegration-Permission
   ApiGETdocumentTemplateid3BF14978:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -956,7 +964,7 @@ Resources:
           - - integrations/
             - Ref: ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegration379C944C
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/GET--documentTemplate--{id}/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/GET--documentTemplate--{id}/Resource
   ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegration3BA7B3FD:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -969,7 +977,7 @@ Resources:
           - Arn
       PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration/Resource
   ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegrationPermission3C406C44:
     Type: AWS::Lambda::Permission
     Properties:
@@ -988,7 +996,7 @@ Resources:
             - Ref: ApiF70053CD
             - /*/*/documentTemplate/{id}
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration-Permission
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration-Permission
   ApiDELETEdocumentTemplateid9187F7AB:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -1002,13 +1010,13 @@ Resources:
           - - integrations/
             - Ref: ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegration3BA7B3FD
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/Resource
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
       Analytics: v2:deflate64:H4sIAAAAAAAA/32QwW7CMAyGn4V7GgrTtO02mLSNW9U9ADLBdKFtUsVOEYr67ktKK/W00//H/uUv9la+vciQr+BGmTrXWaNPMvwwqFp8XEwBDlpkdKJEst4pFDF4DKi2MYXKO833L2d9l9L/Fw6mckgkDoYYTJwUA7MfhIZWhtI2Y3nWuV04e9FNTDXQns4gw6c3irU1KbT0BbpWE8XXIOjpCETIJHdJ4lvuvaqR90AosEcTW6H0E9Kn+dDpChhvcO/jgrG86/S4CEM1/YixcjDzSusZh0GMhBTSphrr07UGkWfQdL8g89X7dOJ10iVoSoRv5i7xkj6AyY2I0S3YEWnsGeWV1v3mVW6e4/wraZ05b1i3KMuH/gFzM+3E3gEAAA==
     Metadata:
-      aws:cdk:path: JLE-Ephemeral-DocumentTemplatingService/CDKMetadata/Default
+      aws:cdk:path: JLE-Ephemeral-3DocumentTemplatingService/CDKMetadata/Default
 Rules:
   CheckBootstrapVersion:
     Assertions:

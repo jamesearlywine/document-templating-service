@@ -9,7 +9,7 @@ import {
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import { DynamoRepositoryQueryResponse } from "src/data/dynamo/dynamo-respository-query-response.type";
+import { DynamoRepositoryQueryResponse } from "src/data/dynamo/common/dynamo-respository-query-response.type";
 import {
   DocumentTemplate,
   DocumentTemplateMapper,
@@ -19,7 +19,7 @@ import {
   createDynamoKeysForDocumentTemplate,
   DocumentTemplateDynamoRecord,
 } from "src/data/dynamo/document-template-repository/document-template-dynamo-record";
-import { generateUpdateExpression } from "src/utility/dynamodb/generate-update-expression";
+import { generateUpdateExpression } from "src/data/dynamo/common/generate-update-expression";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 

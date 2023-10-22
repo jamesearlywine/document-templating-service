@@ -1,5 +1,5 @@
 import { DocumentTemplateRepository } from "src/data/dynamo/document-template-repository/document-template-repository";
-import { extractFileExtension } from "../../utility/s3/extract-file-name";
+import { extractFileExtension } from "src/utility/file-management/extract-file-extension";
 
 export const handler = async (event: {
   version: string; // '0'
