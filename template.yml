@@ -166,7 +166,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 48c58c71917a8dbe79d06f230afcce8e3209ba5f0772f6cd9eff1de840fbc6bb.zip
+        S3Key: 100cd87c0d15c83e073d516a3bc9093b606b887911ce9b446404a7a667d290a3.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -222,7 +222,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/generateDocumentLambda/Resource
-      aws:asset:path: asset.48c58c71917a8dbe79d06f230afcce8e3209ba5f0772f6cd9eff1de840fbc6bb
+      aws:asset:path: asset.100cd87c0d15c83e073d516a3bc9093b606b887911ce9b446404a7a667d290a3
       aws:asset:is-bundled: false
       aws:asset:property: Code
   createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF:
