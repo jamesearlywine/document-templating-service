@@ -1,4 +1,7 @@
 import { GenerateDocumentController } from "./generateDocument.controller";
+import { DocumentConversionService } from "src/services/document-conversion-service";
+
+DocumentConversionService.initialize();
 
 export const handler = async (event: Record<string, unknown>) => {
   console.log("hello, from :: postGeneratedDocument.handler, event", event);
