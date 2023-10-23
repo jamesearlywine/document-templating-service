@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const validDocTypeValues = ["JobAffidavit"];
+const validDocTypeValues = ["JobAffidavit", "Adlib"];
 const requestSchema = Joi.object({
   docType: Joi.string()
     .valid(...validDocTypeValues)
