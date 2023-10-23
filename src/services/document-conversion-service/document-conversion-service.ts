@@ -26,6 +26,11 @@ export const initialize = async () => {
       }),
       please,
     );
+
+    console.log("DocumentConversionService.initialized: ", {
+      url,
+      DocumentConversionServiceConfig,
+    });
   }
 
   return initialized;
