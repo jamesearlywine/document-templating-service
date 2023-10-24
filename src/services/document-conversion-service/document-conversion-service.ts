@@ -6,6 +6,7 @@ import {
   office,
   adjust,
   please,
+  set,
 } from "gotenberg-js-client";
 import DocumentConversionServiceConfig from "./document-conversion-service.config";
 import { Service } from "src/services/common/service.type";
@@ -23,6 +24,9 @@ export const initialize = async () => {
       office,
       adjust({
         url,
+      }),
+      set({
+        waitTimeout: 60,
       }),
       please,
     );
