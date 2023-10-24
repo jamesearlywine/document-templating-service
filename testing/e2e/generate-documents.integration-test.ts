@@ -11,7 +11,7 @@ const templateId = "d192e487-d55f-447b-85d9-d2aad3e4fd5e";
 
 describe("generateDocuments endpoint", () => {
   it("should generate documents", async () => {
-    const numberOfTests = 80;
+    const numberOfTests = 90;
     let results;
     try {
       results = await Promise.all(
