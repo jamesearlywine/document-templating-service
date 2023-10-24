@@ -78,7 +78,7 @@ Resources:
         Ref: GotenbergServiceEc2InstanceInstanceProfile6657995B
       ImageId:
         Ref: SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter
-      InstanceType: c6gd.xlarge
+      InstanceType: c6gd.large
       KeyName: TempKeypair
       NetworkInterfaces:
         - AssociatePublicIpAddress: false
