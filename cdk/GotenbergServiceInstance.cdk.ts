@@ -80,8 +80,8 @@ export class GotenbergServiceInstance extends Construct {
       "GotenbergServiceEc2Instance",
       {
         instanceType: cdk.aws_ec2.InstanceType.of(
-          cdk.aws_ec2.InstanceClass.T4G,
-          cdk.aws_ec2.InstanceSize.MICRO,
+          cdk.aws_ec2.InstanceClass.C6GD,
+          cdk.aws_ec2.InstanceSize.XLARGE,
         ),
         machineImage: cdk.aws_ec2.MachineImage.fromSsmParameter(
           "/us-east-2/processproof-gotenberg-ami",
