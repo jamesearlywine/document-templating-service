@@ -1,6 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { IRole } from "aws-cdk-lib/aws-iam";
-import { FunctionProps } from "aws-cdk-lib/aws-lambda";
+import { FunctionProps, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { GotenbergServiceInstance } from "./GotenbergServiceInstance.cdk";
@@ -27,7 +27,7 @@ export class ApplicationStack extends cdk.Stack {
   lambdaEnvVariables: Record<string, unknown>;
   gotenbergServiceInstance: GotenbergServiceInstance;
 
-  generateDocumentLambda: cdk.aws_lambda.Function;
+  createGeneratedDocumentLambda: cdk.aws_lambda.Function;
   createOrUpdateDocumentTemplateLambda: cdk.aws_lambda.Function;
   getDocumentTemplatePresignedUploadUrlLambda: cdk.aws_lambda.Function;
   getDocumentTemplatesLambda: cdk.aws_lambda.Function;
@@ -178,15 +178,17 @@ export class ApplicationStack extends cdk.Stack {
     };
 
     /******************
-     * generateDocument Lambda
+     * createGeneratedDocument Lambda
      */
-    this.generateDocumentLambda = new cdk.aws_lambda.Function(
+    this.createGeneratedDocumentLambda = new cdk.aws_lambda.Function(
       this,
-      "generateDocumentLambda",
+      "createGeneratedDocumentLambda",
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset("build/handlers/generateDocument"),
+        code: cdk.aws_lambda.Code.fromAsset(
+          "build/handlers/createGeneratedDocument",
+        ),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
         environment: {
@@ -321,7 +323,7 @@ export class ApplicationStack extends cdk.Stack {
         eventBus: this.defaultAccountEventbus,
         targets: [
           new aws_events_targets.LambdaFunction(
-            this.afterDocumentTemplateFileUploadedLambda,
+            this.afterDocumentTemplateFileUploadedLambda as IFunction,
           ),
         ],
         eventPattern: {
@@ -370,11 +372,11 @@ export class ApplicationStack extends cdk.Stack {
     });
 
     this.api.addRoutes({
-      path: "/generateDocument/{id}",
+      path: "/generatedDocument/{id}",
       methods: [HttpMethod.POST],
       integration: new HttpLambdaIntegration(
-        "generateDocumentLambdaHttpIntegration",
-        this.generateDocumentLambda,
+        "createdGeneratedDocumentLambdaHttpIntegration",
+        this.createGeneratedDocumentLambda,
       ),
     });
 
