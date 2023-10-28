@@ -70,7 +70,7 @@ Resources:
         - Ref: GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
-  GotenbergServiceEc2Instance23EB502Ffdbd9bbdf6a06083:
+  GotenbergServiceEc2Instance23EB502F17a907f28cebde71:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2a
@@ -78,7 +78,7 @@ Resources:
         Ref: GotenbergServiceEc2InstanceInstanceProfile6657995B
       ImageId:
         Ref: SsmParameterValueuseast2gotenberginstanceamix8664C96584B6F00A464EAD1953AFF4B05118Parameter
-      InstanceType: c6id.large
+      InstanceType: c6gd.large
       KeyName: TempKeypair
       NetworkInterfaces:
         - AssociatePublicIpAddress: false
@@ -97,7 +97,8 @@ Resources:
           service docker start
           usermod -a -G docker ec2-user
           chkconfig docker on
-          docker run --name gotenbergInstance --rm -p 3000:3000 gotenberg/gotenberg:7.9.2 --uno-listener-restart-threshold=0
+          docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg --uno-listener-restart-threshold=0
+
           docker start gotenbergInstance
     DependsOn:
       - GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
@@ -117,7 +118,7 @@ Resources:
           - http://${GOTENBERG_IP}:3000
           - GOTENBERG_IP:
               Fn::GetAtt:
-                - GotenbergServiceEc2Instance23EB502Ffdbd9bbdf6a06083
+                - GotenbergServiceEc2Instance23EB502F17a907f28cebde71
                 - PrivateIp
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
@@ -201,7 +202,7 @@ Resources:
               - http://${GOTENBERG_IP}:3000
               - GOTENBERG_IP:
                   Fn::GetAtt:
-                    - GotenbergServiceEc2Instance23EB502Ffdbd9bbdf6a06083
+                    - GotenbergServiceEc2Instance23EB502F17a907f28cebde71
                     - PrivateIp
       Handler: index.handler
       Role:
