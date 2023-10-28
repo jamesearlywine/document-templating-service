@@ -9,13 +9,7 @@ const config: Config.InitialOptions = {
   coverageReporters: ["lcov", "text-summary"],
   rootDir: ".",
   moduleDirectories: ["node_modules", "<rootDir>"],
-  testPathIgnorePatterns: [
-    "./aws-sam",
-    "./node_modules",
-    "./testing",
-    "./cdk",
-    "./build",
-  ],
+  testPathIgnorePatterns: ["./aws-sam", "./node_modules", "./testing"],
   testTimeout: 60000,
   collectCoverageFrom: [
     "src/**/*.ts",
