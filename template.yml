@@ -70,7 +70,7 @@ Resources:
         - Ref: GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
-  GotenbergServiceEc2Instance23EB502F2f2f18c261c6a37d:
+  GotenbergServiceEc2Instance23EB502Ffdbd9bbdf6a06083:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2a
@@ -97,7 +97,7 @@ Resources:
           service docker start
           usermod -a -G docker ec2-user
           chkconfig docker on
-          docker container run --name gotenbergInstance -p 3000:3000 gotenberg/gotenberg:7.9.2
+          docker run --name gotenbergInstance --rm -p 3000:3000 gotenberg/gotenberg:7.9.2 --uno-listener-restart-threshold=0
           docker start gotenbergInstance
     DependsOn:
       - GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
@@ -117,7 +117,7 @@ Resources:
           - http://${GOTENBERG_IP}:3000
           - GOTENBERG_IP:
               Fn::GetAtt:
-                - GotenbergServiceEc2Instance23EB502F2f2f18c261c6a37d
+                - GotenbergServiceEc2Instance23EB502Ffdbd9bbdf6a06083
                 - PrivateIp
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
@@ -201,7 +201,7 @@ Resources:
               - http://${GOTENBERG_IP}:3000
               - GOTENBERG_IP:
                   Fn::GetAtt:
-                    - GotenbergServiceEc2Instance23EB502F2f2f18c261c6a37d
+                    - GotenbergServiceEc2Instance23EB502Ffdbd9bbdf6a06083
                     - PrivateIp
       Handler: index.handler
       Role:
