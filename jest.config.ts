@@ -13,6 +13,8 @@ const config: Config.InitialOptions = {
   testTimeout: 60000,
   collectCoverageFrom: [
     "src/**/*.ts",
+    "!src/**/*.fixtures.ts",
+    "!src/**/*.config.ts",
     "!src/**/index.ts",
     "!src/handlers/**/*",
   ],
