@@ -1,11 +1,6 @@
 import { DocumentTemplateDynamoRecord } from "src/data/dynamo/document-template-repository";
 
-export const CreationStatus = {
-  PENDING_UPLOAD: "PENDING_UPLOAD",
-  COMPLETE: "COMPLETE",
-};
-export type CreationStatus =
-  (typeof CreationStatus)[keyof typeof CreationStatus];
+export type DocumentTemplate = DocumentTemplateV1;
 
 export const PROCESSPROOF_DOCUMENT_TEMPLATE_TYPE =
   "processproof:DocumentTemplate";
@@ -32,14 +27,12 @@ export type DocumentTemplateV1 = {
   updated?: string;
 };
 
-export type DocumentTemplate = DocumentTemplateV1;
-
 export const isDocumentTemplateV1 = (
   maybeDocumentTemplateV1: unknown,
 ): maybeDocumentTemplateV1 is DocumentTemplateV1 => {
   const documentTemplateV1 = maybeDocumentTemplateV1 as DocumentTemplateV1;
   return (
-    documentTemplateV1?.type === "processproof:DocumentTemplate" &&
+    documentTemplateV1?.type === PROCESSPROOF_DOCUMENT_TEMPLATE_TYPE &&
     documentTemplateV1?.schemaVersion === "V1"
   );
 };

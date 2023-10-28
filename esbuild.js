@@ -10,8 +10,10 @@ const sharedConfig = {
 
 const bundles = [
   {
-    in: path.resolve("./src/handlers/generateDocument/index.ts"),
-    out: path.resolve("./build/handlers/generateDocument/index.js"),
+    in: path.resolve(
+      "./src/handlers/generatedDocument/createGeneratedDocument.handler.ts",
+    ),
+    out: path.resolve("./build/handlers/createGeneratedDocument/index.js"),
   },
   {
     in: path.resolve("./src/handlers/createOrUpdateDocumentTemplate/index.ts"),

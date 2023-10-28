@@ -16,7 +16,7 @@ import {
   GeneratedDocument,
 } from "src/data/domain/generated-document.type";
 
-export class GenerateDocumentController {
+export class GeneratedDocumentController {
   static async POST(templateId: string, data: Record<string, string>) {
     console.info("GenerateDocumentController.POST: ", { templateId, data });
 

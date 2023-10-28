@@ -9,19 +9,19 @@ export const ConfigKeys = {
     "SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME",
 };
 
-export default class DocumentTemplateRepositoryConfig extends ServiceConfig {
+export default class GeneratedDocumentRepositoryConfig extends ServiceConfig {
   static DEFAULT_VALUES = {
     [ConfigKeys.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN]: "",
     [ConfigKeys.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME]: "",
   };
 
   static SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: string =
-    DocumentTemplateRepositoryConfig.DEFAULT_VALUES[
+    GeneratedDocumentRepositoryConfig.DEFAULT_VALUES[
       ConfigKeys.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN
     ];
 
   static SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME: string =
-    DocumentTemplateRepositoryConfig.DEFAULT_VALUES[
+    GeneratedDocumentRepositoryConfig.DEFAULT_VALUES[
       ConfigKeys.SYSTEM_DOCUMENT_TEMPLATES_DYNAMODB_TABLE_NAME
     ];
 
