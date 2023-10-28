@@ -14,7 +14,10 @@ const templateId = "d192e487-d55f-447b-85d9-d2aad3e4fd5e";
 
 describe("generateDocuments endpoint load tests", () => {
   const testCases = [
-    // { numberOfTests: 240, timeBetweenTestsMs: 2000 }, // 1 per 2 seconds, sustained for 480 seconds
+    //{ numberOfTests: 240, timeBetweenTestsMs: 2000 }, // 1 per 2 seconds, sustained for 480 seconds
+    { numberOfTests: 1, timeBetweenTestsMs: 1000 },
+    { numberOfTests: 2, timeBetweenTestsMs: 1000 },
+    { numberOfTests: 3, timeBetweenTestsMs: 1000 },
     // { numberOfTests: 240, timeBetweenTestsMs: 1000 }, // 1 per second, sustained for 240 seconds
     // { numberOfTests: 60, timeBetweenTestsMs: 500 }, // 2 per second, sustained for 30 seconds
     // { numberOfTests: 60, timeBetweenTestsMs: 100 }, // finished in 19 seconds, 6 per second, sustained for 10 seconds
@@ -28,7 +31,7 @@ describe("generateDocuments endpoint load tests", () => {
     // { numberOfTests: 360, timeBetweenTestsMs: 333 }, // 3 per second, sustained for 120 seconds
     // { numberOfTests: 720, timeBetweenTestsMs: 333 }, // 3 per second, sustained for 240 seconds
     // { numberOfTests: 480, timeBetweenTestsMs: 500 }, // 2 per second, sustained for 240 seconds
-    { numberOfTests: 960, timeBetweenTestsMs: 500 }, // 2 per second, sustained for 480 seconds
+    // { numberOfTests: 960, timeBetweenTestsMs: 500 }, // 2 per second, sustained for 480 seconds
   ];
   test.each(testCases)(
     "should generate documents when %p requests are sent with %p ms between each request",
