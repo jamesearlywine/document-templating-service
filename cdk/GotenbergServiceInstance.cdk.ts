@@ -84,7 +84,8 @@ export class GotenbergServiceInstance extends Construct {
           cdk.aws_ec2.InstanceSize.LARGE,
         ),
         machineImage: cdk.aws_ec2.MachineImage.fromSsmParameter(
-          "/us-east-2/processproof-gotenberg-ami",
+          // "/us-east-2/processproof-gotenberg-ami",
+          "/us-east-2/gotenberg-instance-ami_x86-64",
           {
             userData: userData,
           },
