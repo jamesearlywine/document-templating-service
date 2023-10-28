@@ -72,7 +72,7 @@ export class GotenbergServiceInstance extends Construct {
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
-      "docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg --uno-listener-restart-threshold=0\n",
+      "docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg --uno-listener-restart-threshold=0",
       "docker start gotenbergInstance",
     );
     this.gotenbergServiceEc2Instance = new cdk.aws_ec2.Instance(
@@ -85,7 +85,7 @@ export class GotenbergServiceInstance extends Construct {
         ),
         machineImage: cdk.aws_ec2.MachineImage.fromSsmParameter(
           // "/us-east-2/processproof-gotenberg-ami",
-          "/us-east-2/gotenberg-instance-ami_x86-64",
+          "/us-east-2/gotenberg-instance-ami",
           {
             userData: userData,
           },

@@ -16,9 +16,9 @@ Parameters:
       - "true"
       - "false"
     Description: Whether to enable SSH access to the Gotenberg service instance
-  SsmParameterValueuseast2gotenberginstanceamix8664C96584B6F00A464EAD1953AFF4B05118Parameter:
+  SsmParameterValueuseast2gotenberginstanceamiC96584B6F00A464EAD1953AFF4B05118Parameter:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /us-east-2/gotenberg-instance-ami_x86-64
+    Default: /us-east-2/gotenberg-instance-ami
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -70,14 +70,14 @@ Resources:
         - Ref: GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
-  GotenbergServiceEc2Instance23EB502F17a907f28cebde71:
+  GotenbergServiceEc2Instance23EB502Faa8c6b2a5a217239:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: us-east-2a
       IamInstanceProfile:
         Ref: GotenbergServiceEc2InstanceInstanceProfile6657995B
       ImageId:
-        Ref: SsmParameterValueuseast2gotenberginstanceamix8664C96584B6F00A464EAD1953AFF4B05118Parameter
+        Ref: SsmParameterValueuseast2gotenberginstanceamiC96584B6F00A464EAD1953AFF4B05118Parameter
       InstanceType: c6id.large
       KeyName: TempKeypair
       NetworkInterfaces:
@@ -98,7 +98,6 @@ Resources:
           usermod -a -G docker ec2-user
           chkconfig docker on
           docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg --uno-listener-restart-threshold=0
-
           docker start gotenbergInstance
     DependsOn:
       - GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
@@ -118,7 +117,7 @@ Resources:
           - http://${GOTENBERG_IP}:3000
           - GOTENBERG_IP:
               Fn::GetAtt:
-                - GotenbergServiceEc2Instance23EB502F17a907f28cebde71
+                - GotenbergServiceEc2Instance23EB502Faa8c6b2a5a217239
                 - PrivateIp
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
@@ -202,7 +201,7 @@ Resources:
               - http://${GOTENBERG_IP}:3000
               - GOTENBERG_IP:
                   Fn::GetAtt:
-                    - GotenbergServiceEc2Instance23EB502F17a907f28cebde71
+                    - GotenbergServiceEc2Instance23EB502Faa8c6b2a5a217239
                     - PrivateIp
       Handler: index.handler
       Role:
