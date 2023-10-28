@@ -80,7 +80,7 @@ export class GotenbergServiceInstance extends Construct {
       "GotenbergServiceEc2Instance",
       {
         instanceType: cdk.aws_ec2.InstanceType.of(
-          cdk.aws_ec2.InstanceClass.C6GD,
+          cdk.aws_ec2.InstanceClass.C6ID,
           cdk.aws_ec2.InstanceSize.LARGE,
         ),
         machineImage: cdk.aws_ec2.MachineImage.fromSsmParameter(
