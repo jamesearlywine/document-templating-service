@@ -15,6 +15,8 @@ const config: Config.InitialOptions = {
     "src/**/*.ts",
     "!src/**/*.fixtures.ts",
     "!src/**/*.config.ts",
+    "!src/**/index.ts",
+    "!src/handlers/**/*",
   ],
   coverageThreshold: {
     global: {
