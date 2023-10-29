@@ -33,14 +33,15 @@ phases:
           echo "Not running in CodePipeline, skipping CDK template generation and assets publishing"
         fi
 
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-
-      - echo START -- Build and Publish Docker image for createGeneratedDocument.handler
-      - docker build -t create-generated-document-lambda-execution-environment:latest ./build/handlers/createGeneratedDocument -f ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
-      - docker tag create-generated-document-lambda-execution-environment:latest $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
-      - docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
-      - echo END -- Publish Docker image for createGeneratedDocument.handler
+#      Build and Pyblish Docker image for createGeneratedDocument.handler custom execution environment
+#      - echo Logging in to Amazon ECR...
+#      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+#
+#      - echo START -- Build and Publish Docker image for createGeneratedDocument.handler
+#      - docker build -t create-generated-document-lambda-execution-environment:latest ./build/handlers/createGeneratedDocument -f ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
+#      - docker tag create-generated-document-lambda-execution-environment:latest $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
+#      - docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
+#      - echo END -- Publish Docker image for createGeneratedDocument.handler
 reports:
   arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
     files:
