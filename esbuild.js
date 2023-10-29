@@ -1,6 +1,6 @@
 const { build } = require("esbuild");
+const { copy } = require("esbuild-plugin-copy");
 const path = require("path");
-const fs = require("fs");
 
 const sharedConfig = {
   bundle: true,
@@ -15,6 +15,16 @@ const bundles = [
       "./src/handlers/generatedDocument/createGeneratedDocument.handler.ts",
     ),
     out: path.resolve("./build/handlers/createGeneratedDocument/index.js"),
+    copy: {
+      assets: [
+        {
+          from: [
+            "./src/handlers/generatedDocument/createGeneratedDocument.handler.Dockerfile",
+          ],
+          to: ".",
+        },
+      ],
+    },
   },
   {
     in: path.resolve("./src/handlers/createOrUpdateDocumentTemplate/index.ts"),
@@ -51,16 +61,19 @@ const bundles = [
     out: path.resolve("./build/handlers/deleteDocumentTemplate/index.js"),
   },
 ];
-
-bundles.forEach((bundle) => {
-  build({
-    ...sharedConfig,
-    entryPoints: [bundle.in],
-    outfile: bundle.out,
+const doBuild = async () => {
+  await bundles.forEach((bundle) => {
+    const plugins = [];
+    if (bundle.copy) {
+      plugins.push(copy(bundle.copy));
+    }
+    build({
+      ...sharedConfig,
+      entryPoints: [bundle.in],
+      outfile: bundle.out,
+      plugins: [...plugins],
+    });
   });
-});
+};
 
-fs.copyFileSync(
-  "./src/handlers/generatedDocument/createGeneratedDocument.handler.Dockerfile",
-  "./build/handlers/createGeneratedDocument/Dockerfile",
-);
+doBuild();
