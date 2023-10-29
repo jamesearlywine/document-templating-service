@@ -1,5 +1,6 @@
 const { build } = require("esbuild");
 const path = require("path");
+const fs = require("fs");
 
 const sharedConfig = {
   bundle: true,
