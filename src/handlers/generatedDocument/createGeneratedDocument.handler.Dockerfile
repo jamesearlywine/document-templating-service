@@ -22,8 +22,7 @@ RUN set -xo pipefail && \
 
 RUN cd LibreOffice_7.6.2.1_Linux_x86-64_rpm/RPMS && \
     yum install *.rpm -y && \
-    rm -rf /var/task/LibreOffice_7.6.2* && \
-    cd /opt/libreoffice7.6/ && \
+    rm -rf /var/task/LibreOffice_7.6.2*
 
 ENV HOME=/tmp
 
