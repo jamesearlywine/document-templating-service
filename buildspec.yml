@@ -34,14 +34,14 @@ phases:
         fi
 
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - echo START -- Build Docker image for createGeneratedDocument.handler
       - cp ./src/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
       - docker build -t createGeneratedDocument:latest ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
-      - docker tag createGeneratedDocument:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/createGeneratedDocument:latest
+      - docker tag createGeneratedDocument:latest $AWS_ACCOUNT_NUMER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/createGeneratedDocument:latest
       - echo END -- Build Docker image for createGeneratedDocument.handler
       - echo START -- Publish Docker image for createGeneratedDocument.handler
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - echo END -- Publish Docker image for createGeneratedDocument.handler
 reports:
   arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
