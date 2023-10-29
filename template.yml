@@ -16,9 +16,9 @@ Parameters:
       - "true"
       - "false"
     Description: Whether to enable SSH access to the Gotenberg service instance
-  SsmParameterValueuseast2gotenberginstanceamiC96584B6F00A464EAD1953AFF4B05118Parameter:
+  SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /us-east-2/gotenberg-instance-ami
+    Default: /us-east-2/processproof-gotenberg-ami
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -77,7 +77,7 @@ Resources:
       IamInstanceProfile:
         Ref: GotenbergServiceEc2InstanceInstanceProfile6657995B
       ImageId:
-        Ref: SsmParameterValueuseast2gotenberginstanceamiC96584B6F00A464EAD1953AFF4B05118Parameter
+        Ref: SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter
       InstanceType: c6id.large
       KeyName: TempKeypair
       NetworkInterfaces:
