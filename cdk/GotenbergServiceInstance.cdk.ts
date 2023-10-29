@@ -72,7 +72,7 @@ export class GotenbergServiceInstance extends Construct {
       "service docker start",
       "usermod -a -G docker ec2-user",
       "chkconfig docker on",
-      "docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg --uno-listener-restart-threshold=0",
+      "docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg",
       "docker start gotenbergInstance",
     );
     this.gotenbergServiceEc2Instance = new cdk.aws_ec2.Instance(
