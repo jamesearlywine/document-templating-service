@@ -37,10 +37,8 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
       - echo START -- Build and Publish Docker image for createGeneratedDocument.handler
-      - echo "pwd $(pwd)"
-      - echo "ls $(ls)"
       - echo "./build/handlers  $(ls ./build/handlers)"
-      - docker build -t create-generated-document-lambda-execution-environment:latest ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
+      - docker build -t create-generated-document-lambda-execution-environment:latest ./build/handlers/createGeneratedDocument -f createGeneratedDocument.handler.Dockerfile
       - docker tag create-generated-document-lambda-execution-environment:latest $AWS_ACCOUNT_NUMER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
       - docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
       - echo END -- Publish Docker image for createGeneratedDocument.handler
