@@ -58,3 +58,8 @@ bundles.forEach((bundle) => {
     outfile: bundle.out,
   });
 });
+
+fs.copyFileSync(
+  "./src/handlers/generatedDocument/createGeneratedDocument.handler.Dockerfile",
+  "./build/handlers/createGeneratedDocument/Dockerfile",
+);
