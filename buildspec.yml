@@ -10,8 +10,6 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
@@ -27,7 +25,6 @@ phases:
           export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r .SecretAccessKey)
           export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r .Token)
           export AWS_DEFAULT_REGION=us-east-2
-
           export AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --query Account --output text)
           cdk bootstrap aws://$AWS_ACCOUNT_NUMBER/us-east-2
           npm run build:template
@@ -36,6 +33,8 @@ phases:
           echo "Not running in CodePipeline, skipping CDK template generation and assets publishing"
         fi
 
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - echo START -- Build Docker image for createGeneratedDocument.handler
       - cp ./src/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
       - docker build -t createGeneratedDocument:latest ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
