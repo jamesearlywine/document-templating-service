@@ -1,12 +1,13 @@
 import * as cdk from "aws-cdk-lib";
 import { IRole } from "aws-cdk-lib/aws-iam";
-import { FunctionProps, IFunction } from "aws-cdk-lib/aws-lambda";
+import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { GotenbergServiceInstance } from "./GotenbergServiceInstance.cdk";
 import { ApplicationConfig } from "cdk/cdk";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { aws_events_targets } from "aws-cdk-lib";
+import { aws_ecr, aws_events_targets, RemovalPolicy } from "aws-cdk-lib";
+import * as ecr_assets from "aws-cdk-lib/aws-ecr-assets";
 
 export class ApplicationStack extends cdk.Stack {
   AWS_ENV_Parameter: cdk.CfnParameter;
@@ -184,11 +185,20 @@ export class ApplicationStack extends cdk.Stack {
       this,
       "createGeneratedDocumentLambda",
       {
-        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/createGeneratedDocument",
-        ),
+        // runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+        // handler: "index.handler",
+        // code: cdk.aws_lambda.Code.fromAsset(
+        //   "build/handlers/createGeneratedDocument",
+        // ),
+        handler: Handler.FROM_IMAGE,
+        runtime: cdk.aws_lambda.Runtime.FROM_IMAGE,
+        code: cdk.aws_lambda.Code.fromEcrImage(
+          aws_ecr.Repository.fromRepositoryName(
+            this,
+            "ECRRepositoryForCreateGeneratedDocumentLambdaExecution",
+            "create-generated-document-lambda-execution-environment",
+          ),
+        ), // Replace with the desired image tag
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
         environment: {
