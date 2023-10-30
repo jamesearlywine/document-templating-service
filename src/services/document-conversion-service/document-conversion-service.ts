@@ -32,9 +32,19 @@ export const docxToPdf = async ({
 }): Promise<NodeJS.ReadableStream> => {
   await initialize();
 
-  console.log("inputLocation", inputLocation);
+  console.log(
+    "DocumentConversionServicer.docxToPdf() - inputLocation",
+    inputLocation,
+  );
 
-  execSync(buildConvertDocxToPdfCommand({ inputFilepath: inputLocation }));
+  const stdout = execSync(
+    buildConvertDocxToPdfCommand({ inputFilepath: inputLocation }),
+  );
+  console.log(
+    "DocumentConversionServicer.docxToPdf() - docs->pdf conversion execSync, stdout",
+    stdout.toString(),
+  );
+
   const resultsLocation = inputLocation.replace(".docx", ".pdf");
 
   fs.cpSync(resultsLocation, outputLocation);
