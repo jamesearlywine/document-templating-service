@@ -1,38 +1,26 @@
 import fs from "fs";
-import {
-  pipe,
-  gotenberg,
-  convert,
-  office,
-  adjust,
-  please,
-  set,
-} from "gotenberg-js-client";
+import { execSync } from "node:child_process";
 import DocumentConversionServiceConfig from "./document-conversion-service.config";
 import { Service } from "src/services/common/service.type";
-
-export let toPdf: (url: string) => Promise<NodeJS.ReadableStream>;
 
 export let initialized: Promise<void>;
 export const initialize = async () => {
   if (!initialized) {
-    const url = `${DocumentConversionServiceConfig.GOTENBERG_BASE_URL}/forms/libreoffice/convert`;
     initialized = await DocumentConversionServiceConfig.initialize();
-    toPdf = pipe(
-      gotenberg(DocumentConversionServiceConfig.GOTENBERG_BASE_URL),
-      convert,
-      office,
-      adjust({
-        url,
-      }),
-      set({
-        waitTimeout: 60,
-      }),
-      please,
-    );
   }
 
   return initialized;
+};
+
+export const buildConvertDocxToPdfCommand = ({
+  inputFilepath,
+}: {
+  inputFilepath: string;
+}): string => {
+  return `
+libreoffice7.6 --headless --invisible --nodefault --view \\
+        --nolockcheck --nologo --norestore --convert-to pdf \\
+        --outdir /tmp ${inputFilepath}\\`;
 };
 
 export const docxToPdf = async ({
@@ -44,17 +32,10 @@ export const docxToPdf = async ({
 }): Promise<NodeJS.ReadableStream> => {
   await initialize();
 
-  const pdf = await toPdf(`file://${inputLocation}`);
+  execSync(buildConvertDocxToPdfCommand({ inputFilepath: inputLocation }));
+  outputLocation = inputLocation.replace(".docx", ".pdf");
 
-  const fileStream = fs.createWriteStream(outputLocation);
-  await pdf.pipe(fileStream);
-
-  await new Promise((resolve, reject) => {
-    fileStream.on("finish", resolve);
-    fileStream.on("error", reject);
-  });
-
-  return pdf;
+  return fs.createReadStream(outputLocation);
 };
 
 export const DocumentConversionService: Service & {
