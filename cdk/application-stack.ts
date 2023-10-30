@@ -190,6 +190,7 @@ export class ApplicationStack extends cdk.Stack {
         // code: cdk.aws_lambda.Code.fromAsset(
         //   "build/handlers/createGeneratedDocument",
         // ),
+        name: `createGeneratedDocumentLambda--${new Date().toISOString()}`,
         handler: Handler.FROM_IMAGE,
         runtime: cdk.aws_lambda.Runtime.FROM_IMAGE,
         code: cdk.aws_lambda.Code.fromEcrImage(
