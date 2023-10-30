@@ -13,14 +13,14 @@ export const initialize = async () => {
 };
 
 export const buildConvertDocxToPdfCommand = ({
-  inputFilepath,
+  inputLocation,
 }: {
-  inputFilepath: string;
+  inputLocation: string;
 }): string => {
   return `
 libreoffice7.6 --headless --invisible --nodefault --view \\
         --nolockcheck --nologo --norestore --convert-to pdf \\
-        --outdir /tmp ${inputFilepath}\\`;
+        --outdir /tmp ${inputLocation}\\`;
 };
 
 export const docxToPdf = async ({
@@ -37,9 +37,7 @@ export const docxToPdf = async ({
     inputLocation,
   );
 
-  const stdout = execSync(
-    buildConvertDocxToPdfCommand({ inputFilepath: inputLocation }),
-  );
+  const stdout = execSync(buildConvertDocxToPdfCommand({ inputLocation }));
   console.log(
     "DocumentConversionServicer.docxToPdf() - docs->pdf conversion execSync, stdout",
     stdout.toString(),
