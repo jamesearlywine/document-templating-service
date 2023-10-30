@@ -1,13 +1,13 @@
 import path from "path";
 import fs from "fs";
 import waitForExpect from "wait-for-expect";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 import * as DocxTemplater from "src/utility/docxtemplater";
 import * as DocumentConversionService from "src/services/document-conversion-service";
 
 import dotenv from "dotenv";
 
-dotenv.config({path: path.resolve(__dirname, ".env.integration-testing")});
+dotenv.config({ path: path.resolve(__dirname, ".env.integration-testing") });
 
 const REMOVE_TEST_GENERATED_FILES = true;
 
@@ -16,11 +16,15 @@ const TEMPLATE_FILE_PATH = path.resolve(
 );
 
 const JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD = fs.readFileSync(
-  path.resolve(__dirname, "../test-templates-dummy-data/job-affidavit-document-template-dynamo-record.json"),
-  "utf8"
+  path.resolve(
+    __dirname,
+    "../test-templates-dummy-data/job-affidavit-document-template-dynamo-record.json",
+  ),
+  "utf8",
 );
-const TEST_AFFIDAVIT_TEMPLATE_DATA = JSON.parse(JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD).sampleDummyData;
-
+const TEST_AFFIDAVIT_TEMPLATE_DATA = JSON.parse(
+  JOB_AFFIDAVIT_DOCUMENT_TEMPLATE_DYNAMO_RECORD,
+).sampleDummyData;
 
 const UUID = `${uuid()}`;
 const OUTPUT_DOCX_FILE_PATH = path.resolve(
@@ -34,7 +38,7 @@ const OUTPUT_PDF_FILE_PATH = path.resolve(
 describe("local end-to-end - docxtemplater->gotenberg", () => {
   describe("docxtemplater->gotenberg", () => {
     it("should generate a .docx and .pdf output from template .docx and data", async () => {
-      DocxTemplater.generateTemplatedContentFromFiles({
+      DocxTemplater.generateFromTemplateFile({
         templateFilepath: TEMPLATE_FILE_PATH,
         data: TEST_AFFIDAVIT_TEMPLATE_DATA,
         outputFilepath: OUTPUT_DOCX_FILE_PATH,
