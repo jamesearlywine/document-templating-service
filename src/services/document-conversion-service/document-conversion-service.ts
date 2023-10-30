@@ -44,8 +44,9 @@ export const docxToPdf = async ({
   );
 
   const resultsLocation = inputLocation.replace(".docx", ".pdf");
-
-  fs.cpSync(resultsLocation, outputLocation);
+  if (resultsLocation !== outputLocation) {
+    fs.cpSync(resultsLocation, outputLocation);
+  }
 };
 
 export const DocumentConversionService: Service & {

@@ -171,7 +171,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-10-30T04:14:25.791Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-10-30T04:44:25.135Z
       Environment:
         Variables:
           AWS_ENV:
@@ -208,12 +208,13 @@ Resources:
                   Fn::GetAtt:
                     - GotenbergServiceEc2Instance23EB502F69a64ccf8d270d0d
                     - PrivateIp
+      MemorySize: 3200
       PackageType: Image
       Role:
         Fn::GetAtt:
           - LambdaExecutionRoleD5C26073
           - Arn
-      Timeout: 30
+      Timeout: 600
       VpcConfig:
         SecurityGroupIds:
           - Fn::GetAtt:
