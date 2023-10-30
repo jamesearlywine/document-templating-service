@@ -29,7 +29,7 @@ export const docxToPdf = async ({
 }: {
   inputLocation: string;
   outputLocation?: string;
-}): Promise<NodeJS.ReadableStream> => {
+}): Promise<void> => {
   await initialize();
 
   console.log(
@@ -48,8 +48,6 @@ export const docxToPdf = async ({
   const resultsLocation = inputLocation.replace(".docx", ".pdf");
 
   fs.cpSync(resultsLocation, outputLocation);
-
-  return fs.createReadStream(resultsLocation);
 };
 
 export const DocumentConversionService: Service & {
