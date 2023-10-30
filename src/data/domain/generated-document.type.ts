@@ -5,7 +5,7 @@ export const GENERATED_DOCUMENT_LATEST_SCHEMA_VERSION = "V1";
 
 export type GeneratedDocumentV1 = {
   id: string;
-  type: "processproof:GeneratedDocument";
+  type: typeof PROCESSPROOF_GENERATED_DOCUMENT_TYPE;
   schemaVersion: "V1";
   fromTemplateId: string;
   docType: string;
@@ -36,7 +36,9 @@ export const isGeneratedDocumentV1 = (
   );
 };
 
-export const createGeneratedDocument = (values: Partial<GeneratedDocument>) => {
+export const createGeneratedDocument = (
+  values: Partial<GeneratedDocument>,
+): GeneratedDocument => {
   return {
     id: values.id,
     type: PROCESSPROOF_GENERATED_DOCUMENT_TYPE,
@@ -54,6 +56,6 @@ export const createGeneratedDocument = (values: Partial<GeneratedDocument>) => {
     webUrl: values.webUrl,
     presignedDownloadUrl: values.presignedDownloadUrl,
     presignedDownloadUrlExpiresAt: values.presignedDownloadUrlExpiresAt,
-    presignedDownloadUrlCreated: values.presignedDownloadUrlIssuedAt,
+    presignedDownloadUrlIssuedAt: `${values.presignedDownloadUrlIssuedAt}`,
   };
 };
