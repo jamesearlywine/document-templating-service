@@ -207,7 +207,8 @@ export class ApplicationStack extends cdk.Stack {
           GOTENBERG_BASE_URL: this.gotenbergServiceInstance.gotenbergBaseUrl,
         },
         role: this.lambdaExecutionRole as IRole,
-        timeout: cdk.Duration.seconds(30),
+        timeout: cdk.Duration.seconds(600),
+        memorySize: 3200,
         dependsOn: [this.gotenbergServiceInstance],
       } as FunctionProps,
     );
