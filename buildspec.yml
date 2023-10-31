@@ -31,11 +31,11 @@ phases:
           npm run cdk:publish:assets
           echo Logging in to Amazon ECR...
           aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-          echo START -- Build and Publish Docker image for createGeneratedDocument.handler
+          echo "START -- Build and Publish Docker image for createGeneratedDocument.handler"
           docker build -t create-generated-document-lambda-execution-environment:latest ./build/handlers/createGeneratedDocument -f ./build/handlers/createGeneratedDocument/createGeneratedDocument.handler.Dockerfile
           docker tag create-generated-document-lambda-execution-environment:latest $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
           docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/create-generated-document-lambda-execution-environment:latest
-          echo END -- Publish Docker image for createGeneratedDocument.handler
+          echo "END -- Publish Docker image for createGeneratedDocument.handler"
         else 
           echo "Not running in CodePipeline, skipping CDK template generation and assets publishing"
         fi
