@@ -3,11 +3,9 @@ import { IRole } from "aws-cdk-lib/aws-iam";
 import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
-import { GotenbergServiceInstance } from "./GotenbergServiceInstance.cdk";
 import { ApplicationConfig } from "cdk/cdk";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { aws_ecr, aws_events_targets, RemovalPolicy } from "aws-cdk-lib";
-import * as ecr_assets from "aws-cdk-lib/aws-ecr-assets";
+import { aws_ecr, aws_events_targets } from "aws-cdk-lib";
 
 export class ApplicationStack extends cdk.Stack {
   AWS_ENV_Parameter: cdk.CfnParameter;
@@ -26,7 +24,6 @@ export class ApplicationStack extends cdk.Stack {
 
   lambdaExecutionRole: cdk.aws_iam.Role;
   lambdaEnvVariables: Record<string, unknown>;
-  gotenbergServiceInstance: GotenbergServiceInstance;
 
   createGeneratedDocumentLambda: cdk.aws_lambda.Function;
   createOrUpdateDocumentTemplateLambda: cdk.aws_lambda.Function;
@@ -57,17 +54,6 @@ export class ApplicationStack extends cdk.Stack {
       default: this.isEphemeralStack() ? "DEV" : "DEV",
       allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
     });
-    this.gotenbergServiceInstanceEnableSshParam = new cdk.CfnParameter(
-      this,
-      "GotenbergServiceInstanceEnableSsh",
-      {
-        type: "String",
-        description:
-          "Whether to enable SSH access to the Gotenberg service instance",
-        default: "false",
-        allowedValues: ["true", "false"],
-      },
-    );
 
     /*********************
      * VPC
@@ -98,20 +84,6 @@ export class ApplicationStack extends cdk.Stack {
           AWS_AccountId: cdk.Aws.ACCOUNT_ID,
         },
       ),
-    );
-
-    /******************
-     * Gotenberg Service Instance
-     */
-    this.gotenbergServiceInstance = new GotenbergServiceInstance(
-      this,
-      "GotenbergServiceInstance",
-      {
-        AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        vpc: this.vpc,
-        subnet: this.privateSubnet,
-        registerResources: !this.isEphemeralStack(),
-      },
     );
 
     /******************
@@ -185,11 +157,6 @@ export class ApplicationStack extends cdk.Stack {
       this,
       "createGeneratedDocumentLambda",
       {
-        // runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        // handler: "index.handler",
-        // code: cdk.aws_lambda.Code.fromAsset(
-        //   "build/handlers/createGeneratedDocument",
-        // ),
         description: `createGeneratedDocumentLambda--containerCacheBuster-${new Date().toISOString()}`,
         handler: Handler.FROM_IMAGE,
         runtime: cdk.aws_lambda.Runtime.FROM_IMAGE,
@@ -204,12 +171,10 @@ export class ApplicationStack extends cdk.Stack {
         vpcSubnets: [this.privateSubnet],
         environment: {
           ...this.lambdaEnvVariables,
-          GOTENBERG_BASE_URL: this.gotenbergServiceInstance.gotenbergBaseUrl,
         },
         role: this.lambdaExecutionRole as IRole,
         timeout: cdk.Duration.seconds(600),
         memorySize: 3200,
-        dependsOn: [this.gotenbergServiceInstance],
       } as FunctionProps,
     );
 

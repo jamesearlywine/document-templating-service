@@ -9,118 +9,11 @@ Parameters:
       - STAGING
       - PROD
     Description: The AWS environment deployed to
-  GotenbergServiceInstanceEnableSsh:
-    Type: String
-    Default: "false"
-    AllowedValues:
-      - "true"
-      - "false"
-    Description: Whether to enable SSH access to the Gotenberg service instance
-  SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /us-east-2/processproof-gotenberg-ami
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
     Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Resources:
-  serviceSecurityGroupED3E18CA:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: nullDocumentTemplatingService/serviceSecurityGroup
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
-      VpcId: vpc-058c5ee1e09681197
-    Metadata:
-      aws:cdk:path: nullDocumentTemplatingService/serviceSecurityGroup/Resource
-  serviceSecurityGroupHttpIngress:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      CidrIp: 0.0.0.0/0
-      FromPort: 3000
-      GroupId:
-        Fn::GetAtt:
-          - serviceSecurityGroupED3E18CA
-          - GroupId
-      IpProtocol: tcp
-      ToPort: 3000
-    Metadata:
-      aws:cdk:path: nullDocumentTemplatingService/serviceSecurityGroupHttpIngress
-  GotenbergServiceEc2InstanceInstanceRole3CB3D4E5:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action: sts:AssumeRole
-            Effect: Allow
-            Principal:
-              Service: ec2.amazonaws.com
-        Version: "2012-10-17"
-      Tags:
-        - Key: Name
-          Value: nullDocumentTemplatingService/GotenbergServiceEc2Instance
-    Metadata:
-      aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceEc2Instance/InstanceRole/Resource
-  GotenbergServiceEc2InstanceInstanceProfile6657995B:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Roles:
-        - Ref: GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
-    Metadata:
-      aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceEc2Instance/InstanceProfile
-  GotenbergServiceEc2Instance23EB502F69a64ccf8d270d0d:
-    Type: AWS::EC2::Instance
-    Properties:
-      AvailabilityZone: us-east-2a
-      IamInstanceProfile:
-        Ref: GotenbergServiceEc2InstanceInstanceProfile6657995B
-      ImageId:
-        Ref: SsmParameterValueuseast2processproofgotenbergamiC96584B6F00A464EAD1953AFF4B05118Parameter
-      InstanceType: c6id.large
-      KeyName: TempKeypair
-      NetworkInterfaces:
-        - AssociatePublicIpAddress: false
-          DeviceIndex: "0"
-          GroupSet:
-            - Fn::GetAtt:
-                - serviceSecurityGroupED3E18CA
-                - GroupId
-          SubnetId: subnet-036f5f2f9c607cf2a
-      Tags:
-        - Key: Name
-          Value: nullDocumentTemplatingService/GotenbergServiceEc2Instance
-      UserData:
-        Fn::Base64: |-
-          #!/bin/bash
-          service docker start
-          usermod -a -G docker ec2-user
-          chkconfig docker on
-          docker container run --name gotenbergInstance -d -p 3000:3000 thecodingmachine/gotenberg
-          docker start gotenbergInstance
-    DependsOn:
-      - GotenbergServiceEc2InstanceInstanceRole3CB3D4E5
-    Metadata:
-      aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceEc2Instance/Resource
-  GotenbergServiceInstanceBaseUrlA0BD3E86:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name:
-        Fn::Sub:
-          - /${AWS_ENV}/document-templating-service/gotenberg-base-url
-          - AWS_ENV:
-              Ref: AWSENV
-      Type: String
-      Value:
-        Fn::Sub:
-          - http://${GOTENBERG_IP}:3000
-          - GOTENBERG_IP:
-              Fn::GetAtt:
-                - GotenbergServiceEc2Instance23EB502F69a64ccf8d270d0d
-                - PrivateIp
-    Metadata:
-      aws:cdk:path: nullDocumentTemplatingService/GotenbergServiceInstanceBaseUrl/Resource
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
     Properties:
@@ -171,7 +64,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-10-30T04:53:39.894Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-01T02:52:18.078Z
       Environment:
         Variables:
           AWS_ENV:
@@ -201,13 +94,6 @@ Resources:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
               - AWS_ENV:
                   Ref: AWSENV
-          GOTENBERG_BASE_URL:
-            Fn::Sub:
-              - http://${GOTENBERG_IP}:3000
-              - GOTENBERG_IP:
-                  Fn::GetAtt:
-                    - GotenbergServiceEc2Instance23EB502F69a64ccf8d270d0d
-                    - PrivateIp
       MemorySize: 3200
       PackageType: Image
       Role:
@@ -1034,7 +920,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/32RwW7CMAyGn4V7GhjTtO02mLSNG+oeAJlgukCbVLEDQlXffU5otZ52+h3nr7/f6VK/PutuMYMrFeZwLmq71903gzmr96PbQoAGGYMqkXwMBpUYdx2apbjQxGD59hl8bJP7/8bGVQGJ1MYRg5NJYhjrXllodFf6OrdHHa+3wR9tLS6iJqUL1lV/0aY5e4Um6BJbT5Z9uK2BUNXQ7A+gu4/oDFvv0hfTeouhsURyEsLjDoiQSa+SyFmvozkj50l4QSdXXRmHoDGlgtZWwHiF20WeRdqr1ub1GaphD8YqwMgrfWTse5UJySTr5P7wxr1aFFC3P6AXs7fhx8yTTkGDo/tibhMv6R2YqozI1YQtSOcPqE80vzy86IcnmX8ia4sQHdsGdXnXX8eD6zQUAgAA
+      Analytics: v2:deflate64:H4sIAAAAAAAA/1WQ3W7DIAyFn6X3hKadpm13ayft565iD1C51EtpEkBgUkUo7z6gmZRdHftw8Gd5y1+eeKxXcPOVPLdVp048fhPIlr396AM46JHQMYHeBCeRpeAxKuh5FKbDHMo6MZSOC7TGKzJu3INH1kF/OgOP70FLUkbn8LI+oOuV96nL37eJizI4ReOHM8HmxD9jYv7hCN4jeb7Lknq+D7JFKjgcUKenKMK8V8h7gVUNEN5gHBIh2TurymiCpsS+NGHj4G8pYQLhNLFCyCGlm+LPB5hYXUFnL8Dr1et8tXXWJWhOxE8im3lZ78BcFUSpFuyE1OaM/OrXw+aZbx7T/KtXqnJBk+qRi7v+AjnwjmGxAQAA
     Metadata:
       aws:cdk:path: nullDocumentTemplatingService/CDKMetadata/Default
 Rules:
