@@ -2,6 +2,7 @@ import fs from "fs";
 import { execSync } from "node:child_process";
 import DocumentConversionServiceConfig from "./document-conversion-service.config";
 import { Service } from "src/services/common/service.type";
+import { retry } from "../../utility/common/retry";
 
 export let initialized: Promise<void>;
 export const initialize = async () => {
@@ -37,7 +38,15 @@ export const docxToPdf = async ({
     inputLocation,
   );
 
-  const stdout = execSync(buildConvertDocxToPdfCommand({ inputLocation }));
+  let stdout;
+  retry(
+    () => {
+      stdout = execSync(buildConvertDocxToPdfCommand({ inputLocation }), {
+        timeout: 5 * 1000, // 5 seconds
+      });
+    },
+    { maxRetries: 10 },
+  );
   console.log(
     "DocumentConversionServicer.docxToPdf() - docs->pdf conversion execSync, stdout",
     stdout.toString(),
