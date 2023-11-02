@@ -8,12 +8,21 @@ https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076
 https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Document+Templating+Service
 
 ## How to run locally
-- `npm run test:integration`
-  - You can edit the docxtemplater template in `testing/test-templates`
-  - to view test-generated-files: 
-    - edit `*.integration-test.ts` to `REMOVE_TEST_GENERATED_FILES=false`
-    - watch `testing/test-generated-files/*` for test-generated files
-    
+- Unit Testing
+  - `npm run test`
+- Integration Testing
+  - `npm run test:integration`
+    - You can edit the docxtemplater template in `testing/test-templates`
+    - to view test-generated-files: 
+      - edit `*.integration-test.ts` to `REMOVE_TEST_GENERATED_FILES=false`
+      - watch `testing/test-generated-files/*` for test-generated files
+- Load testing
+  - `npm install -g artillery`
+  - `./testing/artillery/post-generated-documents.yaml`
+    - config: 
+      - target: {apiBaseUrl}
+  - `npm run test:load`
+  - reports: `./testing/artillery/reports`
 ## How to deploy
 - edit `ephemeralPrefix` and hard-coded config values in: 
   - `cdk/cdk.json`
