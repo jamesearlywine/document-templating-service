@@ -4,7 +4,7 @@ const SECONDS = 1000;
 jest.setTimeout(600 * SECONDS);
 
 const endpoint =
-  "https://z5n8gy601h.execute-api.us-east-2.amazonaws.com/generatedDocument";
+  "https://gp1jdhxmoj.execute-api.us-east-2.amazonaws.com/generatedDocument";
 const requestBody = {
   actorName: "Aethen",
   color: "brown",
@@ -48,7 +48,7 @@ describe("generateDocuments endpoint load tests", () => {
           requests.push(
             axios
               .post([endpoint, templateId].join("/"), requestBody, {
-                timeout: 60 * 1000,
+                timeout: 10 * 1000,
               })
               .then((response) => {
                 if (response.status === 200) successes.push(response);
