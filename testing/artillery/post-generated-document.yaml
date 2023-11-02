@@ -1,0 +1,17 @@
+config:
+  target: "https://gp1jdhxmoj.execute-api.us-east-2.amazonaws.com"
+  phases:
+    - duration: 60
+      arrivalRate: 100
+
+scenarios:
+  - flow:
+      - post:
+          url: "/generatedDocument/d192e487-d55f-447b-85d9-d2aad3e4fd5e"
+          json:
+            actorName: "Artillery"
+            color: "blue"
+            liquid: "fountain-waters"
+          capture:
+            json: "$.id"
+            as: "id"

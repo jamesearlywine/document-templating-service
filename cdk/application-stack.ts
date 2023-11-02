@@ -166,7 +166,7 @@ export class ApplicationStack extends cdk.Stack {
             "ECRRepositoryForCreateGeneratedDocumentLambdaExecution",
             "create-generated-document-lambda-execution-environment",
           ),
-        ), // Replace with the desired image tag
+        ),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
         environment: {
