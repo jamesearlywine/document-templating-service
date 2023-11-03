@@ -33,11 +33,9 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
   await DocumentTemplateFileRepository.initialize();
 
   return await createPresignedUrl({
-    bucket:
-      DocumentTemplateFileRepositoryConfig.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME,
-    key: `${DocumentTemplateFileRepositoryConfig.PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX}/${id}/template.docx`,
-    region:
-      DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+    bucket: DocumentTemplateFileRepositoryConfig.DOCUMENT_TEMPLATES_BUCKET_NAME,
+    key: `${DocumentTemplateFileRepositoryConfig.DOCUMENT_TEMPLATES_S3_KEY_PREFIX}/${id}/template.docx`,
+    region: DocumentTemplateFileRepositoryConfig.S3_BUCKETS_PRIMARY_REGION,
     options: {
       expiresIn: ONE_HOUR_SECONDS,
       ...options,
@@ -51,8 +49,7 @@ const getDocumentTemplateFileFromS3 = async (
   localFilepath: string,
 ) => {
   const s3Client = new S3Client({
-    region:
-      DocumentTemplateFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+    region: DocumentTemplateFileRepositoryConfig.S3_BUCKETS_PRIMARY_REGION,
   }) as NodeJsClient<S3Client>;
 
   let response;
