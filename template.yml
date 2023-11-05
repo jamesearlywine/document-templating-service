@@ -9,6 +9,70 @@ Parameters:
       - STAGING
       - PROD
     Description: The AWS environment deployed to
+  S3PRIMARYREGION:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: Primary region for s3 buckets/client
+  DOCUMENTTEMPLATESBUCKETARN:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: ARN of the document templates bucket
+  DOCUMENTTEMPLATESS3KEYPREFIX:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: S3 key prefix for document templates
+  DOCUMENTTEMPLATESDYNAMOTABLEARN:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: ARN of the document templates dynamodb table
+  DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX:
+    Type: String
+    Default: DOCUMENT_TEMPLATE
+    Description: Partition key prefix for document templates
+  GENERATEDDOCUMENTSBUCKETARN:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: ARN of the generated documents bucket
+  GENERATEDDOCUMENTSS3KEYPREFIX:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: S3 key prefix for generated documents
+  GENERATEDDOCUMENTSDYNAMOTABLEARN:
+    Type: String
+    Default:
+      Fn::Sub:
+        - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+        - AWS_ENV:
+            Ref: AWSENV
+    Description: ARN of the generated documents dynamodb table
+  GENERATEDDOCUMENTSDYNAMODBPARTITIONKEYPREFIX:
+    Type: String
+    Default: GENERATED_DOCUMENT
+    Description: Partition key prefix for generated documents
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -64,47 +128,27 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-05T02:54:35.987Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-05T04:40:16.301Z
       Environment:
         Variables:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       MemorySize: 1600
       PackageType: Image
@@ -147,41 +191,21 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       Handler: index.handler
       Role:
@@ -226,41 +250,21 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       Handler: index.handler
       Role:
@@ -305,41 +309,21 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       Handler: index.handler
       Role:
@@ -384,41 +368,21 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       Handler: index.handler
       Role:
@@ -463,41 +427,21 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       Handler: index.handler
       Role:
@@ -542,41 +486,21 @@ Resources:
           AWS_ENV:
             Ref: AWSENV
           S3_PRIMARY_REGION:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: S3PRIMARYREGION
           DOCUMENT_TEMPLATES_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESBUCKETARN
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: DOCUMENTTEMPLATESS3KEYPREFIX
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
-          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: DOCUMENT_TEMPLATE
+            Ref: DOCUMENTTEMPLATESDYNAMOTABLEARN
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DOCUMENTTEMPLATESDYNAMODBPARTITIONKEYPREFIX
           GENERATED_DOCUMENTS_BUCKET_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSBUCKETARN
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSS3KEYPREFIX
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
-            Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
-              - AWS_ENV:
-                  Ref: AWSENV
+            Ref: GENERATEDDOCUMENTSDYNAMOTABLEARN
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: GENERATED_DOCUMENT
       Handler: index.handler
       Role:
@@ -612,7 +536,7 @@ Resources:
                   - Fn::Split:
                       - ":"
                       - Fn::Sub:
-                          - arn:aws:events:${AWS_Region}:${AWS_AccountId}:event-bus/default
+                          - arn:aws:events:${AWS::Region}:${AWS_AccountId}:event-bus/default
                           - AWS_Region:
                               Ref: AWS::Region
                             AWS_AccountId:
