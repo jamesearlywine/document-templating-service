@@ -3,16 +3,29 @@ import { IRole } from "aws-cdk-lib/aws-iam";
 import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
-import { ApplicationConfig } from "cdk/cdk";
+import { StackConfig } from "cdk/cdk";
 import { RuleProps } from "aws-cdk-lib/aws-events";
 import { aws_ecr, aws_events_targets } from "aws-cdk-lib";
 
 export class ApplicationStack extends cdk.Stack {
-  AWS_ENV_Parameter: cdk.CfnParameter;
-  gotenbergServiceInstanceEnableSshParam: cdk.CfnParameter;
+  AWS_ENV_PARAMETER: cdk.CfnParameter;
+  stackParameters: {
+    AWS_ENV: cdk.CfnParameter;
+    S3_PRIMARY_REGION: cdk.CfnParameter;
+    DOCUMENT_TEMPLATES_BUCKET_ARN: cdk.CfnParameter;
+    DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.CfnParameter;
+    DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.CfnParameter;
+    DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: cdk.CfnParameter;
+    GENERATED_DOCUMENTS_BUCKET_ARN: cdk.CfnParameter;
+    GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.CfnParameter;
+    GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: cdk.CfnParameter;
+    GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: cdk.CfnParameter;
+  };
+
+  config: StackConfig;
 
   // consider refactor to parameters passed in from pipeline
-  config: ApplicationConfig;
+
   ephemeralPrefix: string;
 
   isEphemeralStack = () => {
@@ -46,14 +59,97 @@ export class ApplicationStack extends cdk.Stack {
     this.ephemeralPrefix = props.ephemeralPrefix;
 
     /*********************
-     * Pipeline-Provided Parameters
+     * Stack Parameters (defaults values, can be overridden by pipeline)
      */
-    this.AWS_ENV_Parameter = new cdk.CfnParameter(this, "AWS_ENV", {
+    this.AWS_ENV_PARAMETER = new cdk.CfnParameter(this, "AWS_ENV", {
       type: "String",
       description: "The AWS environment deployed to",
       default: this.isEphemeralStack() ? "DEV" : "DEV",
       allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
     });
+
+    this.stackParameters = {
+      AWS_ENV: this.AWS_ENV_PARAMETER,
+      S3_PRIMARY_REGION: new cdk.CfnParameter(this, "S3_PRIMARY_REGION", {
+        type: "String",
+        description: "Primary region for s3 buckets/client",
+        default: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}", {
+          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+        }),
+      }),
+      DOCUMENT_TEMPLATES_BUCKET_ARN: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_BUCKET_ARN", {
+        type: "String",
+        description: "ARN of the document templates bucket",
+        default: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
+          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+        }),
+      }),
+      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_S3_KEY_PREFIX", {
+        type: "String",
+        description: "S3 key prefix for document templates",
+        default: cdk.Fn.sub(
+          "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
+          {
+            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          },
+        ),
+      }),
+      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_DYNAMO_TABLE_ARN", {
+        type: "String",
+        description: "ARN of the document templates dynamodb table",
+        default: cdk.Fn.sub(
+          "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
+          {
+            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          },
+        ),
+      }),
+      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: new cdk.CfnParameter(
+        this,
+        "DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX",
+        {
+          type: "String",
+          description: "Partition key prefix for document templates",
+          default: "DOCUMENT_TEMPLATE",
+        },
+      ),
+      GENERATED_DOCUMENTS_BUCKET_ARN: new cdk.CfnParameter(this, "GENERATED_DOCUMENTS_BUCKET_ARN", {
+        type: "String",
+        description: "ARN of the generated documents bucket",
+        default: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
+          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+        }),
+      }),
+      GENERATED_DOCUMENTS_S3_KEY_PREFIX: new cdk.CfnParameter(this, "GENERATED_DOCUMENTS_S3_KEY_PREFIX", {
+        type: "String",
+        description: "S3 key prefix for generated documents",
+        default: cdk.Fn.sub(
+          "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
+          {
+            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          },
+        ),
+      }),
+      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: new cdk.CfnParameter(this, "GENERATED_DOCUMENTS_DYNAMO_TABLE_ARN", {
+        type: "String",
+        description: "ARN of the generated documents dynamodb table",
+        default: cdk.Fn.sub(
+          "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
+          {
+            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          },
+        ),
+      }),
+      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: new cdk.CfnParameter(
+        this,
+        "GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX",
+        {
+          type: "String",
+          description: "Partition key prefix for generated documents",
+          default: "GENERATED_DOCUMENT",
+        },
+      ),
+    };
 
     /*********************
      * VPC
@@ -77,106 +173,77 @@ export class ApplicationStack extends cdk.Stack {
     this.defaultAccountEventbus = cdk.aws_events.EventBus.fromEventBusArn(
       this,
       "DefaultAccountEventbus",
-      cdk.Fn.sub(
-        "arn:aws:events:${AWS_Region}:${AWS_AccountId}:event-bus/default",
-        {
-          AWS_Region: cdk.Aws.REGION,
-          AWS_AccountId: cdk.Aws.ACCOUNT_ID,
-        },
-      ),
+      cdk.Fn.sub("arn:aws:events:${AWS::Region}:${AWS_AccountId}:event-bus/default", {
+        AWS_Region: cdk.Aws.REGION,
+        AWS_AccountId: cdk.Aws.ACCOUNT_ID,
+      }),
     );
 
     /******************
      * Lambda Execution Role
      */
-    this.lambdaExecutionRole = new cdk.aws_iam.Role(
-      this,
-      "LambdaExecutionRole",
-      {
-        assumedBy: new cdk.aws_iam.ServicePrincipal("lambda.amazonaws.com"),
-        description: "Lambda Execution Role",
-        managedPolicies: [
-          cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
-            "service-role/AWSLambdaBasicExecutionRole",
-          ),
-          cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
-            this,
-            "LambdaPrivateSubnetExecutionRolePolicyReference",
-            "LambdaPrivateSubnetExecutionRolePolicy",
-          ),
-          cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
-            this,
-            "LambdaGeneralExecutionRolePolicyReference",
-            "LambdaGeneralExecutionRolePolicy",
-          ),
-        ],
-      },
-    );
+    this.lambdaExecutionRole = new cdk.aws_iam.Role(this, "LambdaExecutionRole", {
+      assumedBy: new cdk.aws_iam.ServicePrincipal("lambda.amazonaws.com"),
+      description: "Lambda Execution Role",
+      managedPolicies: [
+        cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"),
+        cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
+          this,
+          "LambdaPrivateSubnetExecutionRolePolicyReference",
+          "LambdaPrivateSubnetExecutionRolePolicy",
+        ),
+        cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
+          this,
+          "LambdaGeneralExecutionRolePolicyReference",
+          "LambdaGeneralExecutionRolePolicy",
+        ),
+      ],
+    });
 
     /******************
-     * Lambda Config Parameters
+     * Lambda Config
      */
     this.lambdaEnvVariables = {
-      AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-      PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
-      PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
-      PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
-      PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
-      DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
+      AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
+      S3_PRIMARY_REGION: this.stackParameters.S3_PRIMARY_REGION.valueAsString,
+
+      // Document Templates
+      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackParameters.DOCUMENT_TEMPLATES_BUCKET_ARN.valueAsString,
+      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackParameters.DOCUMENT_TEMPLATES_S3_KEY_PREFIX.valueAsString,
+      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackParameters.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN.valueAsString,
+      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+        this.stackParameters.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX.valueAsString,
+
+      // Generated Documents
+      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackParameters.GENERATED_DOCUMENTS_BUCKET_ARN.valueAsString,
+      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackParameters.GENERATED_DOCUMENTS_S3_KEY_PREFIX.valueAsString,
+      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackParameters.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN.valueAsString,
+      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
     };
 
     /******************
      * createGeneratedDocument Lambda
      */
-    this.createGeneratedDocumentLambda = new cdk.aws_lambda.Function(
-      this,
-      "createGeneratedDocumentLambda",
-      {
-        description: `createGeneratedDocumentLambda--containerCacheBuster-${new Date().toISOString()}`,
-        handler: Handler.FROM_IMAGE,
-        runtime: cdk.aws_lambda.Runtime.FROM_IMAGE,
-        code: cdk.aws_lambda.Code.fromEcrImage(
-          aws_ecr.Repository.fromRepositoryName(
-            this,
-            "ECRRepositoryForCreateGeneratedDocumentLambdaExecution",
-            "create-generated-document-lambda-execution-environment",
-          ),
+    this.createGeneratedDocumentLambda = new cdk.aws_lambda.Function(this, "createGeneratedDocumentLambda", {
+      description: `createGeneratedDocumentLambda--containerCacheBuster-${new Date().toISOString()}`,
+      handler: Handler.FROM_IMAGE,
+      runtime: cdk.aws_lambda.Runtime.FROM_IMAGE,
+      code: cdk.aws_lambda.Code.fromEcrImage(
+        aws_ecr.Repository.fromRepositoryName(
+          this,
+          "ECRRepositoryForCreateGeneratedDocumentLambdaExecution",
+          "create-generated-document-lambda-execution-environment",
         ),
-        vpc: this.vpc,
-        vpcSubnets: [this.privateSubnet],
-        environment: {
-          ...this.lambdaEnvVariables,
-        },
-        role: this.lambdaExecutionRole as IRole,
-        timeout: cdk.Duration.seconds(600),
-        memorySize: 3200,
-      } as FunctionProps,
-    );
+      ),
+      vpc: this.vpc,
+      vpcSubnets: [this.privateSubnet],
+      environment: {
+        ...this.lambdaEnvVariables,
+      },
+      role: this.lambdaExecutionRole as IRole,
+      timeout: cdk.Duration.seconds(600),
+      memorySize: 1600,
+    } as FunctionProps);
 
     /******************
      * createOrUpdateDocumentTemplate Lambda
@@ -187,9 +254,7 @@ export class ApplicationStack extends cdk.Stack {
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/createOrUpdateDocumentTemplate",
-        ),
+        code: cdk.aws_lambda.Code.fromAsset("build/handlers/createOrUpdateDocumentTemplate"),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
         environment: this.lambdaEnvVariables,
@@ -200,79 +265,58 @@ export class ApplicationStack extends cdk.Stack {
     /******************
      * getDocumentTemplatePresignedUploadUrl Lambda
      */
-    this.getDocumentTemplatePresignedUploadUrlLambda =
-      new cdk.aws_lambda.Function(
-        this,
-        "getDocumentTemplatePresignedUploadUrlLambda",
-        {
-          runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-          handler: "index.handler",
-          code: cdk.aws_lambda.Code.fromAsset(
-            "build/handlers/getDocumentTemplatePresignedUploadUrl",
-          ),
-          vpc: this.vpc,
-          vpcSubnets: [this.privateSubnet],
-          environment: this.lambdaEnvVariables,
-          role: this.lambdaExecutionRole as IRole,
-        } as FunctionProps,
-      );
+    this.getDocumentTemplatePresignedUploadUrlLambda = new cdk.aws_lambda.Function(
+      this,
+      "getDocumentTemplatePresignedUploadUrlLambda",
+      {
+        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+        handler: "index.handler",
+        code: cdk.aws_lambda.Code.fromAsset("build/handlers/getDocumentTemplatePresignedUploadUrl"),
+        vpc: this.vpc,
+        vpcSubnets: [this.privateSubnet],
+        environment: this.lambdaEnvVariables,
+        role: this.lambdaExecutionRole as IRole,
+      } as FunctionProps,
+    );
 
     /******************
      * getDocumentTemplates Lambda
      */
-    this.getDocumentTemplatesLambda = new cdk.aws_lambda.Function(
-      this,
-      "getDocumentTemplatesLambda",
-      {
-        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/getDocumentTemplates",
-        ),
-        vpc: this.vpc,
-        vpcSubnets: [this.privateSubnet],
-        environment: this.lambdaEnvVariables,
-        role: this.lambdaExecutionRole as IRole,
-      } as FunctionProps,
-    );
+    this.getDocumentTemplatesLambda = new cdk.aws_lambda.Function(this, "getDocumentTemplatesLambda", {
+      runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+      handler: "index.handler",
+      code: cdk.aws_lambda.Code.fromAsset("build/handlers/getDocumentTemplates"),
+      vpc: this.vpc,
+      vpcSubnets: [this.privateSubnet],
+      environment: this.lambdaEnvVariables,
+      role: this.lambdaExecutionRole as IRole,
+    } as FunctionProps);
 
     /******************
      * getDocumentTemplate Lambda
      */
-    this.getDocumentTemplateLambda = new cdk.aws_lambda.Function(
-      this,
-      "getDocumentTemplateLambda",
-      {
-        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/getDocumentTemplate",
-        ),
-        vpc: this.vpc,
-        vpcSubnets: [this.privateSubnet],
-        environment: this.lambdaEnvVariables,
-        role: this.lambdaExecutionRole as IRole,
-      } as FunctionProps,
-    );
+    this.getDocumentTemplateLambda = new cdk.aws_lambda.Function(this, "getDocumentTemplateLambda", {
+      runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+      handler: "index.handler",
+      code: cdk.aws_lambda.Code.fromAsset("build/handlers/getDocumentTemplate"),
+      vpc: this.vpc,
+      vpcSubnets: [this.privateSubnet],
+      environment: this.lambdaEnvVariables,
+      role: this.lambdaExecutionRole as IRole,
+    } as FunctionProps);
 
     /******************
      * deleteDocumentTemplate Lambda
      */
-    this.deleteDocumentTemplateLambda = new cdk.aws_lambda.Function(
-      this,
-      "deleteDocumentTemplateLambda",
-      {
-        runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
-        handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/deleteDocumentTemplate",
-        ),
-        vpc: this.vpc,
-        vpcSubnets: [this.privateSubnet],
-        environment: this.lambdaEnvVariables,
-        role: this.lambdaExecutionRole as IRole,
-      } as FunctionProps,
-    );
+    this.deleteDocumentTemplateLambda = new cdk.aws_lambda.Function(this, "deleteDocumentTemplateLambda", {
+      runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+      handler: "index.handler",
+      code: cdk.aws_lambda.Code.fromAsset("build/handlers/deleteDocumentTemplate"),
+      vpc: this.vpc,
+      vpcSubnets: [this.privateSubnet],
+      environment: this.lambdaEnvVariables,
+      role: this.lambdaExecutionRole as IRole,
+    } as FunctionProps);
 
     /******************
      * afterDocumentTemplateFileUploaded Lambda
@@ -283,9 +327,7 @@ export class ApplicationStack extends cdk.Stack {
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
         handler: "index.handler",
-        code: cdk.aws_lambda.Code.fromAsset(
-          "build/handlers/afterDocumentTemplateFileUploaded",
-        ),
+        code: cdk.aws_lambda.Code.fromAsset("build/handlers/afterDocumentTemplateFileUploaded"),
         vpc: this.vpc,
         vpcSubnets: [this.privateSubnet],
         environment: this.lambdaEnvVariables,
@@ -298,21 +340,14 @@ export class ApplicationStack extends cdk.Stack {
       "afterDocumentTemplateFileUploadedEventRule",
       {
         eventBus: this.defaultAccountEventbus,
-        targets: [
-          new aws_events_targets.LambdaFunction(
-            this.afterDocumentTemplateFileUploadedLambda as IFunction,
-          ),
-        ],
+        targets: [new aws_events_targets.LambdaFunction(this.afterDocumentTemplateFileUploadedLambda as IFunction)],
         eventPattern: {
           source: ["aws.s3"],
           detailType: ["Object Created"],
           resources: [
-            cdk.Fn.sub(
-              "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
-              {
-                AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-              },
-            ),
+            cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
+              AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
+            }),
           ],
           detail: {
             object: {
@@ -321,7 +356,7 @@ export class ApplicationStack extends cdk.Stack {
                   prefix: cdk.Fn.sub(
                     "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
                     {
-                      AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+                      AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
                     },
                   ),
                 },
@@ -340,12 +375,9 @@ export class ApplicationStack extends cdk.Stack {
      * API Gateway
      */
     this.api = new HttpApi(this, "Api", {
-      apiName: cdk.Fn.sub(
-        "processproof-${AWS_ENV}-document-templating-service",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
+      apiName: cdk.Fn.sub("processproof-${AWS_ENV}-document-templating-service", {
+        AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
+      }),
     });
 
     this.api.addRoutes({

@@ -1,12 +1,14 @@
 import { GeneratedDocument } from "src/data/domain/generated-document.type";
+import GeneratedDocumentRepositoryConfig from "./generated-document-repository.config";
 
 export type GeneratedDocumentDynamoRecord = GeneratedDocument & {
   PK: string;
   SK: string;
 };
 
-export const PARTITION_KEY_PREFIX = "GENERATED_DOCUMENT";
-export const SORT_KEY_PREFIX = "GENERATED_DOCUMENT";
+export const PARTITION_KEY_PREFIX =
+  GeneratedDocumentRepositoryConfig.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX;
+export const SORT_KEY_PREFIX = PARTITION_KEY_PREFIX;
 
 export const composePartitionKey = (id: string) => {
   return `${PARTITION_KEY_PREFIX}#${id}`;

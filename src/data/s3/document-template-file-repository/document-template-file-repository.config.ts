@@ -12,7 +12,7 @@ export const ConfigKeys = {
 export default class DocumentTemplateFileRepositoryConfig extends ServiceConfig {
   static DEFAULT_VALUES = {
     [ConfigKeys.DOCUMENT_TEMPLATES_BUCKET_ARN]: "",
-    [ConfigKeys.S3_BUCKETS_PRIMARY_REGION]: "us-east-2",
+    [ConfigKeys.S3_BUCKETS_PRIMARY_REGION]: "us-east-2", // inject this config
     [ConfigKeys.DOCUMENT_TEMPLATES_S3_KEY_PREFIX]: "document-templates",
   };
 
