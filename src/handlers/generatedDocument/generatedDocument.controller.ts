@@ -76,13 +76,10 @@ export class GeneratedDocumentController {
       fromTemplateId: documentTemplate.id,
       docType: documentTemplate.docType,
       documentData: data,
-      storageType: generatedDocumentFile.storageType,
-      storageLocation: generatedDocumentFile.storageLocation,
+      s3BucketName: generatedDocumentFile.s3BucketName,
+      s3Key: generatedDocumentFile.s3Key,
       filename: generatedDocumentFile.filename,
       fileExtension: generatedDocumentFile.fileExtension,
-      documentName: `${documentTemplate.docType}--${generatedDocumentUuid}.${FileExtensions.DOCX}`,
-      documentSecuredHash,
-      documentSecuredHashAlgorithm: HashAlgorithms.MD5,
     });
 
     const presignedUrlData =

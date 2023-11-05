@@ -6,7 +6,12 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
 import { ONE_HOUR_SECONDS } from "src/utility/datetime";
-import { PresignedUrlData } from "./presigned-url-data.type";
+
+export type PresignedUrlData = {
+  presignedUrl: string;
+  expiresAt: string;
+  issuedAt: string;
+};
 
 const DEFAULT_PRESIGNED_URL_OPTIONS: Partial<RequestPresigningArguments> = {
   expiresIn: ONE_HOUR_SECONDS, // 1 hour

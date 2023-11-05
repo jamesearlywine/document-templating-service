@@ -118,36 +118,53 @@ export class ApplicationStack extends cdk.Stack {
      */
     this.lambdaEnvVariables = {
       AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-      PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION: cdk.Fn.sub(
+      S3_PRIMARY_REGION: cdk.Fn.sub(
         "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
-      PROCESSPROOF_GENERAL_PRIVATE_BUCKET_ARN: cdk.Fn.sub(
+      // Document Templates Persistence
+      DOCUMENT_TEMPLATES_BUCKET_ARN: cdk.Fn.sub(
         "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
-      PROCESSPROOF_DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.Fn.sub(
+      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.Fn.sub(
         "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
-      PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
-        {
-          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
-        },
-      ),
-      DOCUMENT_TEMPLATE_SERVICE_DATASTORE_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
+      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
         "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
           AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
         },
       ),
+      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: "DOCUMENT_TEMPLATE",
+
+      // Generated Documents Persistence
+      GENERATED_DOCUMENTS_BUCKET_ARN: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: cdk.Fn.sub(
+        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
+        {
+          AWS_ENV: this.AWS_ENV_Parameter.valueAsString,
+        },
+      ),
+      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
     };
 
     /******************
@@ -174,7 +191,7 @@ export class ApplicationStack extends cdk.Stack {
         },
         role: this.lambdaExecutionRole as IRole,
         timeout: cdk.Duration.seconds(600),
-        memorySize: 3200,
+        memorySize: 1600,
       } as FunctionProps,
     );
 

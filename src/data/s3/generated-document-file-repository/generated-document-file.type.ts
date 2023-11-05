@@ -1,8 +1,8 @@
 export type GeneratedDocumentFile = {
   documentId: string;
   localFilepath: string;
-  storageType: string;
-  storageLocation: string;
+  s3BucketName: string;
+  s3Key: string;
   filename: string;
   fileExtension: string;
 };

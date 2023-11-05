@@ -1,12 +1,14 @@
 import { DocumentTemplate } from "src/data/domain/document-template.type";
+import DocumentTemplateRepositoryConfig from "./document-template-repository.config";
 
 export type DocumentTemplateDynamoRecord = DocumentTemplate & {
   PK: string;
   SK: string;
 };
 
-export const PARTITION_KEY_PREFIX = "DOCUMENT_TEMPLATE";
-export const SORT_KEY_PREFIX = "DOCUMENT_TEMPLATE";
+export const PARTITION_KEY_PREFIX =
+  DocumentTemplateRepositoryConfig.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX;
+export const SORT_KEY_PREFIX = PARTITION_KEY_PREFIX;
 
 export const composePartitionKey = (id: string) => {
   return `${PARTITION_KEY_PREFIX}#${id}`;

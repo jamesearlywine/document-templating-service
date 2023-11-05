@@ -1,23 +1,19 @@
+import { SchemaVersionedEntity } from "../common/schema-versioned-entity";
+
 export const PROCESSPROOF_GENERATED_DOCUMENT_TYPE =
   "processproof:GeneratedDocument";
 
-export const GENERATED_DOCUMENT_LATEST_SCHEMA_VERSION = "V1";
+export const GENERATED_DOCUMENT_LATEST_SCHEMA_VERSION = "1";
 
-export type GeneratedDocumentV1 = {
+export type GeneratedDocumentV1 = SchemaVersionedEntity & {
   id: string;
-  type: typeof PROCESSPROOF_GENERATED_DOCUMENT_TYPE;
-  schemaVersion: "V1";
   fromTemplateId: string;
   docType: string;
   documentData: Record<string, string>;
-  storageType: string;
-  storageLocation: string;
+  s3BucketName: string;
+  s3Key: string;
   filename: string;
   fileExtension: string;
-  documentName: string;
-  documentSecuredHash: string;
-  documentSecuredHashAlgorithm: string;
-  webUrl?: string;
   presignedDownloadUrl?: string;
   presignedDownloadUrlExpiresAt?: string;
   presignedDownloadUrlIssuedAt?: string;
@@ -31,29 +27,29 @@ export const isGeneratedDocumentV1 = (
   const maybeGeneratedDocumentV1 = value as GeneratedDocumentV1;
 
   return (
-    maybeGeneratedDocumentV1?.type === PROCESSPROOF_GENERATED_DOCUMENT_TYPE &&
-    maybeGeneratedDocumentV1?.schemaVersion === "V1"
+    maybeGeneratedDocumentV1?._type === PROCESSPROOF_GENERATED_DOCUMENT_TYPE &&
+    maybeGeneratedDocumentV1?._schemaVersion === "1"
   );
+};
+
+const isGeneratedDocument = (value: unknown): value is GeneratedDocument => {
+  return isGeneratedDocumentV1(value);
 };
 
 export const createGeneratedDocument = (
   values: Partial<GeneratedDocument>,
 ): GeneratedDocument => {
   return {
+    _type: PROCESSPROOF_GENERATED_DOCUMENT_TYPE,
+    _schemaVersion: GENERATED_DOCUMENT_LATEST_SCHEMA_VERSION,
     id: values.id,
-    type: PROCESSPROOF_GENERATED_DOCUMENT_TYPE,
-    schemaVersion: GENERATED_DOCUMENT_LATEST_SCHEMA_VERSION,
     fromTemplateId: values.fromTemplateId,
     docType: values.docType,
     documentData: values.documentData,
-    storageType: values.storageType,
-    storageLocation: values.storageLocation,
+    s3BucketName: values.s3BucketName,
+    s3Key: values.s3Key,
     filename: values.filename,
     fileExtension: values.fileExtension,
-    documentName: values.documentName,
-    documentSecuredHash: values.documentSecuredHash,
-    documentSecuredHashAlgorithm: values.documentSecuredHashAlgorithm,
-    webUrl: values.webUrl,
     presignedDownloadUrl: values.presignedDownloadUrl,
     presignedDownloadUrlExpiresAt: values.presignedDownloadUrlExpiresAt,
     presignedDownloadUrlIssuedAt: `${values.presignedDownloadUrlIssuedAt}`,

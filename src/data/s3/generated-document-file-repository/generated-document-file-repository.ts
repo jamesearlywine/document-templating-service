@@ -46,12 +46,11 @@ export const uploadGeneratedDocumentFile = async ({
   }`;
 
   const s3BucketName =
-    GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME;
-  const s3Key = `${GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${filename}`;
+    GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_BUCKET_NAME;
+  const s3Key = `${GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${filename}`;
 
   const client = new S3Client({
-    region:
-      GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+    region: GeneratedDocumentFileRepositoryConfig.S3_BUCKETS_PRIMARY_REGION,
   });
 
   const fileStream = fs.createReadStream(localFilepath);
@@ -71,8 +70,8 @@ export const uploadGeneratedDocumentFile = async ({
   return {
     documentId: id,
     localFilepath,
-    storageType,
-    storageLocation: s3BucketName,
+    s3Key,
+    s3BucketName,
     filename,
     fileExtension,
   };
@@ -86,11 +85,10 @@ export const generatePresignedDownlaodUrlForGeneratedDocument = async ({
   options?: RequestPresigningArguments;
 }) => {
   return await createPresignedUrl({
-    region:
-      GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_S3_BUCKETS_PRIMARY_REGION,
+    region: GeneratedDocumentFileRepositoryConfig.S3_BUCKETS_PRIMARY_REGION,
     bucket:
-      GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERAL_PRIVATE_BUCKET_NAME,
-    key: `${GeneratedDocumentFileRepositoryConfig.PROCESSPROOF_GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${generatedDocument.filename}`,
+      GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_BUCKET_NAME,
+    key: `${GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${generatedDocument.filename}`,
     options,
   });
 };
