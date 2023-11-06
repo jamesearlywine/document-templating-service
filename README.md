@@ -23,6 +23,21 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
       - target: {apiBaseUrl}
   - `npm run test:load`
   - reports: `./testing/artillery/reports`
+
+## How to configure
+  - Pass in Cloudformation parameters to configure the service
+    - Pipeline injection of parameters
+      - key/values specified in the pipeline
+      - template configuration file specified in the pipeline
+        - template.config.{env}.yml
+    - `cdk/stack-config.ts`
+      - default values for cloudformation parameters
+      - locations for fetching param/secret from ssm
+        - when cloudformation parameter is not specified
+    - when deploying from the command line, 
+      - `cdk deploy --parameters {key}={value} ...`
+        - (optional) update `npm run deploy` script
+
 ## How to deploy
 - edit `ephemeralPrefix` and hard-coded config values in: 
   - `cdk/cdk.json`
