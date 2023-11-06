@@ -74,7 +74,7 @@ export class StackConfig extends Construct {
       ),
       [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN]: new cdk.CfnParameter(
         this,
-        "DOCUMENT_TEMPLATES_DYNAMO_TABLE_ARN_PARAMETER",
+        "DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN_PARAMETER",
         {
           type: "String",
           description: "ARN of the document templates dynamodb table",
@@ -127,6 +127,32 @@ export class StackConfig extends Construct {
         },
       ),
     };
+    this.stackParameters[ConfigKey.AWS_ENV].overrideLogicalId("AWS_ENV_PARAMETER");
+    this.stackParameters[ConfigKey.S3_PRIMARY_REGION].overrideLogicalId("S3_PRIMARY_REGION_PARAMETER");
+    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN].overrideLogicalId(
+      "DOCUMENT_TEMPLATES_BUCKET_ARN_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX].overrideLogicalId(
+      "DOCUMENT_TEMPLATES_S3_KEY_PREFIX_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN].overrideLogicalId(
+      "DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX].overrideLogicalId(
+      "DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_BUCKET_ARN].overrideLogicalId(
+      "GENERATED_DOCUMENTS_BUCKET_ARN_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX].overrideLogicalId(
+      "GENERATED_DOCUMENTS_S3_KEY_PREFIX_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN].overrideLogicalId(
+      "GENERATED_DOCUMENTS_DYNAMO_TABLE_ARN_PARAMETER",
+    );
+    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX].overrideLogicalId(
+      "GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX_PARAMETER",
+    );
 
     /*********************
      * Fetch Parameter Values (from SSM, etc.)
