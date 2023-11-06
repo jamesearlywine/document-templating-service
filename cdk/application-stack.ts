@@ -239,7 +239,7 @@ export class ApplicationStack extends cdk.Stack {
           detailType: ["Object Created"],
           resources: [
             cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
-              AWS_ENV: this.stackConfig.AwsEnvParameter.valueAsString,
+              AWS_ENV: this.stackConfig.stackParameters.AwsEnv.valueAsString,
             }),
           ],
           detail: {
@@ -249,7 +249,7 @@ export class ApplicationStack extends cdk.Stack {
                   prefix: cdk.Fn.sub(
                     "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
                     {
-                      AWS_ENV: this.stackConfig.AwsEnvParameter.valueAsString,
+                      AWS_ENV: this.stackConfig.stackParameters.AwsEnv.valueAsString,
                     },
                   ),
                 },
@@ -269,7 +269,7 @@ export class ApplicationStack extends cdk.Stack {
      */
     this.api = new HttpApi(this, "Api", {
       apiName: cdk.Fn.sub("processproof-${AWS_ENV}-document-templating-service", {
-        AWS_ENV: this.stackConfig.AwsEnvParameter.valueAsString,
+        AWS_ENV: this.stackConfig.stackParameters.AwsEnv.valueAsString,
       }),
     });
 
