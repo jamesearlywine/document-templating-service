@@ -21,11 +21,11 @@ Parameters:
     Type: String
     Default: ""
     Description: S3 key prefix for document templates
-  DocumentTemplatesDynamoDbTableArn:
+  DocumentTemplatesDynamodbTableArn:
     Type: String
     Default: ""
     Description: ARN of the document templates dynamodb table
-  DocumentTemplatesDynamoDbPartitionKeyPrefix:
+  DocumentTemplatesDynamodbPartitionKeyPrefix:
     Type: String
     Default: DOCUMENT_TEMPLATE
     Description: Partition key prefix for document templates
@@ -37,11 +37,11 @@ Parameters:
     Type: String
     Default: ""
     Description: S3 key prefix for generated documents
-  GeneratedDocumentsDynamoDbTableArn:
+  GeneratedDocumentsDynamodbTableArn:
     Type: String
     Default: ""
     Description: ARN of the generated documents dynamodb table
-  GeneratedDocumentsDynamoDbPartitionKeyPrefix:
+  GeneratedDocumentsDynamodbPartitionKeyPrefix:
     Type: String
     Default: GENERATED_DOCUMENT
     Description: Partition key prefix for generated documents
@@ -70,15 +70,15 @@ Conditions:
       - Fn::Equals:
           - Ref: DocumentTemplatesS3KeyPrefix
           - ""
-  StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447:
+  StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2:
     Fn::Not:
       - Fn::Equals:
-          - Ref: DocumentTemplatesDynamoDbTableArn
+          - Ref: DocumentTemplatesDynamodbTableArn
           - ""
-  StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F:
+  StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815:
     Fn::Not:
       - Fn::Equals:
-          - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+          - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           - ""
   StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93:
     Fn::Not:
@@ -90,15 +90,15 @@ Conditions:
       - Fn::Equals:
           - Ref: GeneratedDocumentsS3KeyPrefix
           - ""
-  StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E:
+  StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8:
     Fn::Not:
       - Fn::Equals:
-          - Ref: GeneratedDocumentsDynamoDbTableArn
+          - Ref: GeneratedDocumentsDynamodbTableArn
           - ""
-  StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB:
+  StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881:
     Fn::Not:
       - Fn::Equals:
-          - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+          - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
           - ""
 Resources:
   LambdaExecutionRoleD5C26073:
@@ -151,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-06T06:26:40.280Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-06T07:48:23.141Z
       Environment:
         Variables:
           AWS_ENV:
@@ -185,16 +185,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -214,16 +214,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       MemorySize: 1600
       PackageType: Image
@@ -294,16 +294,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -323,16 +323,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       Handler: index.handler
       Role:
@@ -405,16 +405,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -434,16 +434,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       Handler: index.handler
       Role:
@@ -516,16 +516,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -545,16 +545,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       Handler: index.handler
       Role:
@@ -627,16 +627,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -656,16 +656,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       Handler: index.handler
       Role:
@@ -738,16 +738,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -767,16 +767,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       Handler: index.handler
       Role:
@@ -849,16 +849,16 @@ Resources:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
-              - Ref: DocumentTemplatesDynamoDbTableArn
+              - StackConfigDocumentTemplatesDynamodbTableArnParameterNotNullConditionADDD49A2
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
-              - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
+              - StackConfigDocumentTemplatesDynamodbPartitionKeyPrefixParameterNotNullCondition1F100815
+              - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
@@ -878,16 +878,16 @@ Resources:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
-              - Ref: GeneratedDocumentsDynamoDbTableArn
+              - StackConfigGeneratedDocumentsDynamodbTableArnParameterNotNullConditionECE066A8
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
-              - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
+              - StackConfigGeneratedDocumentsDynamodbPartitionKeyPrefixParameterNotNullConditionAB810881
+              - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
               - ""
       Handler: index.handler
       Role:
