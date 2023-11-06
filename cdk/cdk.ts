@@ -14,7 +14,7 @@ export type CompileTimeConfig = {
   };
 };
 
-export const applicationStack = new ApplicationStack(app, `${ephemeralPrefix}DocumentTemplatingService`, {
+export const applicationStack = new ApplicationStack(app, `${ephemeralPrefix ?? ""}DocumentTemplatingService`, {
   // @todo - create vpc/networking stack with resources registered in param store, that can be referenced here
   env: {
     account: "546515125053",
