@@ -61,6 +61,7 @@ export class StackConfig extends Construct {
       [ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN]: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_BUCKET_ARN_PARAMETER", {
         type: "String",
         description: "ARN of the document templates bucket",
+        default: "",
       }),
       [ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX]: new cdk.CfnParameter(
         this,

@@ -15,6 +15,7 @@ Parameters:
     Description: Primary region for s3 buckets/client
   StackConfigDOCUMENTTEMPLATESBUCKETARNPARAMETERA646F4C8:
     Type: String
+    Default: ""
     Description: ARN of the document templates bucket
   StackConfigDOCUMENTTEMPLATESS3KEYPREFIXPARAMETER5AFF4207:
     Type: String
@@ -150,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-06T02:41:52.294Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-06T02:42:40.621Z
       Environment:
         Variables:
           AWS_ENV:
