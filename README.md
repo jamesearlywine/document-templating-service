@@ -28,12 +28,14 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
   - Pass in Cloudformation parameters to configure the service
     - Pipeline injection of parameters
       - key/values specified in the pipeline
+        - edit Deploy Stage -> Advanced -> Parameter overrides via Web Console
       - template configuration file specified in the pipeline
-        - template.config.{env}.yml
-    - `cdk/stack-config.ts`
-      - default values for cloudformation parameters
-      - locations for fetching param/secret from ssm
-        - when cloudformation parameter is not specified
+        - `template.config.{env}.json`
+    - default values for cloudformation parameters
+      - `cdk/stack-config.ts`
+    - location for fetching param/secret from ssm
+      - `cdk/stack-config.ts`
+        - resolved when cloudformation parameter-value is not specified
     - when deploying from the command line, 
       - `cdk deploy --parameters {key}={value} ...`
         - (optional) update `npm run deploy` script
