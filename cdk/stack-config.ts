@@ -26,7 +26,6 @@ export class StackConfig extends Construct {
     return !!this.ephemeralPrefix;
   };
 
-  AwsEnvParameter: cdk.CfnParameter;
   stackParameters: Partial<Record<ConfigKey, cdk.CfnParameter>>;
   stackParameterNotNullConditions: Partial<Record<ConfigKey, cdk.CfnCondition>>;
   fetchParameters: Partial<Record<ConfigKey, string>>;
@@ -41,15 +40,13 @@ export class StackConfig extends Construct {
     /*********************
      * Stack Parameters - Injected by Pipeline
      */
-    this.AwsEnvParameter = new cdk.CfnParameter(this, "AwsEnv", {
-      type: "String",
-      description: "The AWS environment deployed to",
-      default: this.isEphemeralStack() ? "DEV" : "DEV",
-      allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
-    });
-
     this.stackParameters = {
-      [ConfigKey.AwsEnv]: this.AwsEnvParameter,
+      [ConfigKey.AwsEnv]: new cdk.CfnParameter(this, "AwsEnv", {
+        type: "String",
+        description: "The AWS environment deployed to",
+        default: this.isEphemeralStack() ? "DEV" : "DEV",
+        allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
+      }),
       [ConfigKey.S3PrimaryRegion]: new cdk.CfnParameter(this, "S3PrimaryRegion", {
         type: "String",
         description: "Primary region for s3 buckets/client",
@@ -134,42 +131,42 @@ export class StackConfig extends Construct {
      */
     this.fetchParameters = {
       [ConfigKey.S3PrimaryRegion]: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}", {
-        AwsEnv: this.AwsEnvParameter.valueAsString,
+        AwsEnv: this.stackParameters.AwsEnv.valueAsString,
       }),
       [ConfigKey.DocumentTemplatesBucketArn]: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}",
         {
-          AwsEnv: this.AwsEnvParameter.valueAsString,
+          AwsEnv: this.stackParameters.AwsEnv.valueAsString,
         },
       ),
       [ConfigKey.DocumentTemplatesS3KeyPrefix]: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
         {
-          AwsEnv: this.AwsEnvParameter.valueAsString,
+          AwsEnv: this.stackParameters.AwsEnv.valueAsString,
         },
       ),
       [ConfigKey.DocumentTemplatesDynamodbTableArn]: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
-          AwsEnv: this.AwsEnvParameter.valueAsString,
+          AwsEnv: this.stackParameters.AwsEnv.valueAsString,
         },
       ),
       [ConfigKey.GeneratedDocumentsBucketArn]: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}",
         {
-          AwsEnv: this.AwsEnvParameter.valueAsString,
+          AwsEnv: this.stackParameters.AwsEnv.valueAsString,
         },
       ),
       [ConfigKey.GeneratedDocumentsS3KeyPrefix]: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
         {
-          AwsEnv: this.AwsEnvParameter.valueAsString,
+          AwsEnv: this.stackParameters.AwsEnv.valueAsString,
         },
       ),
       [ConfigKey.GeneratedDocumentsDynamodbTableArn]: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
-          AwsEnv: this.AwsEnvParameter.valueAsString,
+          AwsEnv: this.stackParameters.AwsEnv.valueAsString,
         },
       ),
     };
