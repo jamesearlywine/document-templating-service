@@ -7,12 +7,12 @@ export enum ConfigKey {
   S3PrimaryRegion = "S3PrimaryRegion",
   DocumentTemplatesBucketArn = "DocumentTemplatesBucketArn",
   DocumentTemplatesS3KeyPrefix = "DocumentTemplatesS3KeyPrefix",
-  DocumentTemplatesDynamodbTableArn = "DocumentTemplatesDynamoDbTableArn",
-  DocumentTemplatesDynamodbPartitionKeyPrefix = "DocumentTemplatesDynamoDbPartitionKeyPrefix",
+  DocumentTemplatesDynamodbTableArn = "DocumentTemplatesDynamodbTableArn",
+  DocumentTemplatesDynamodbPartitionKeyPrefix = "DocumentTemplatesDynamodbPartitionKeyPrefix",
   GeneratedDocumentsBucketArn = "GeneratedDocumentsBucketArn",
   GeneratedDocumentsS3KeyPrefix = "GeneratedDocumentsS3KeyPrefix",
-  GeneratedDocumentsDynamodbTableArn = "GeneratedDocumentsDynamoDbTableArn",
-  GeneratedDocumentsDynamodbPartitionKeyPrefix = "GeneratedDocumentsDynamoDbPartitionKeyPrefix",
+  GeneratedDocumentsDynamodbTableArn = "GeneratedDocumentsDynamodbTableArn",
+  GeneratedDocumentsDynamodbPartitionKeyPrefix = "GeneratedDocumentsDynamodbPartitionKeyPrefix",
 }
 
 export enum ParamType {
