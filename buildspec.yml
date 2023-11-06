@@ -51,3 +51,4 @@ artifacts:
   files:
     - build/**/*
     - template.yml
+    - template.config.dev.yml
