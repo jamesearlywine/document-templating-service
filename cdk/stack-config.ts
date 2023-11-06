@@ -2,38 +2,35 @@ import { Construct } from "constructs";
 import * as cdk from "aws-cdk-lib";
 import { CompileTimeConfig } from "./cdk";
 
-export const enum ConfigKey {
-  AWS_ENV = "AWS_ENV",
-  S3_PRIMARY_REGION = "S3_PRIMARY_REGION",
-  DOCUMENT_TEMPLATES_BUCKET_ARN = "DOCUMENT_TEMPLATES_BUCKET_ARN",
-  DOCUMENT_TEMPLATES_S3_KEY_PREFIX = "DOCUMENT_TEMPLATES_S3_KEY_PREFIX",
-  DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN = "DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN",
-  DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX = "DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX",
-  GENERATED_DOCUMENTS_BUCKET_ARN = "GENERATED_DOCUMENTS_BUCKET_ARN",
-  GENERATED_DOCUMENTS_S3_KEY_PREFIX = "GENERATED_DOCUMENTS_S3_KEY_PREFIX",
-  GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN = "GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN",
-  GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX = "GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX",
+export enum ConfigKey {
+  AwsEnv = "AwsEnv",
+  S3PrimaryRegion = "S3PrimaryRegion",
+  DocumentTemplatesBucketArn = "DocumentTemplatesBucketArn",
+  DocumentTemplatesS3KeyPrefix = "DocumentTemplatesS3KeyPrefix",
+  DocumentTemplatesDynamodbTableArn = "DocumentTemplatesDynamoDbTableArn",
+  DocumentTemplatesDynamodbPartitionKeyPrefix = "DocumentTemplatesDynamoDbPartitionKeyPrefix",
+  GeneratedDocumentsBucketArn = "GeneratedDocumentsBucketArn",
+  GeneratedDocumentsS3KeyPrefix = "GeneratedDocumentsS3KeyPrefix",
+  GeneratedDocumentsDynamodbTableArn = "GeneratedDocumentsDynamoDbTableArn",
+  GeneratedDocumentsDynamodbPartitionKeyPrefix = "GeneratedDocumentsDynamoDbPartitionKeyPrefix",
 }
 
-export const enum ParamType {
-  STACK_PARAMETER = "stackParameter",
-  FETCH_PARAMETER = "fetchParameter",
+export enum ParamType {
+  StackParameter = "stackParameter",
+  FetchParameter = "fetchParameter",
 }
 
 export class StackConfig extends Construct {
   ephemeralPrefix: string;
-
   isEphemeralStack = () => {
     return !!this.ephemeralPrefix;
   };
 
-  AWS_ENV_PARAMETER: cdk.CfnParameter;
-
+  AwsEnvParameter: cdk.CfnParameter;
   stackParameters: Partial<Record<ConfigKey, cdk.CfnParameter>>;
   stackParameterNotNullConditions: Partial<Record<ConfigKey, cdk.CfnCondition>>;
   fetchParameters: Partial<Record<ConfigKey, string>>;
   configMapping: cdk.CfnMapping;
-
   getConfigValue: (key: ConfigKey) => unknown;
 
   constructor(scope: Construct, id: string, compileTimeConfig: CompileTimeConfig) {
@@ -44,7 +41,7 @@ export class StackConfig extends Construct {
     /*********************
      * Stack Parameters - Injected by Pipeline
      */
-    this.AWS_ENV_PARAMETER = new cdk.CfnParameter(this, "AWS_ENV", {
+    this.AwsEnvParameter = new cdk.CfnParameter(this, "AwsEnv", {
       type: "String",
       description: "The AWS environment deployed to",
       default: this.isEphemeralStack() ? "DEV" : "DEV",
@@ -52,63 +49,51 @@ export class StackConfig extends Construct {
     });
 
     this.stackParameters = {
-      [ConfigKey.AWS_ENV]: this.AWS_ENV_PARAMETER,
-      [ConfigKey.S3_PRIMARY_REGION]: new cdk.CfnParameter(this, "S3_PRIMARY_REGION_PARAMETER", {
+      [ConfigKey.AwsEnv]: this.AwsEnvParameter,
+      [ConfigKey.S3PrimaryRegion]: new cdk.CfnParameter(this, "S3PrimaryRegion_PARAMETER", {
         type: "String",
         description: "Primary region for s3 buckets/client",
         default: "",
       }),
-      [ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN]: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_BUCKET_ARN_PARAMETER", {
+      [ConfigKey.DocumentTemplatesBucketArn]: new cdk.CfnParameter(this, "DocumentTemplatesBucketArn_PARAMETER", {
         type: "String",
         description: "ARN of the document templates bucket",
         default: "",
       }),
-      [ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX]: new cdk.CfnParameter(
+      [ConfigKey.DocumentTemplatesS3KeyPrefix]: new cdk.CfnParameter(this, "DocumentTemplatesS3KeyPrefix_PARAMETER", {
+        type: "String",
+        description: "S3 key prefix for document templates",
+        default: "",
+      }),
+      [ConfigKey.DocumentTemplatesDynamodbTableArn]: new cdk.CfnParameter(
         this,
-        "DOCUMENT_TEMPLATES_S3_KEY_PREFIX_PARAMETER",
-        {
-          type: "String",
-          description: "S3 key prefix for document templates",
-          default: "",
-        },
-      ),
-      [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN]: new cdk.CfnParameter(
-        this,
-        "DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN_PARAMETER",
+        "DocumentTemplatesDynamodbTableArn_PARAMETER",
         {
           type: "String",
           description: "ARN of the document templates dynamodb table",
           default: "",
         },
       ),
-      [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX]: new cdk.CfnParameter(
+      [ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix]: new cdk.CfnParameter(
         this,
-        "DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX_PARAMETER",
+        "DocumentTemplatesDynamodbPartitionKeyPrefix_PARAMETER",
         {
           type: "String",
           description: "Partition key prefix for document templates",
           default: "DOCUMENT_TEMPLATE",
         },
       ),
-      [ConfigKey.GENERATED_DOCUMENTS_BUCKET_ARN]: new cdk.CfnParameter(
-        this,
-        "GENERATED_DOCUMENTS_BUCKET_ARN_PARAMETER",
-        {
-          type: "String",
-          description: "ARN of the generated documents bucket",
-          default: "",
-        },
-      ),
-      [ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX]: new cdk.CfnParameter(
-        this,
-        "GENERATED_DOCUMENTS_S3_KEY_PREFIX_PARAMETER",
-        {
-          type: "String",
-          description: "S3 key prefix for generated documents",
-          default: "",
-        },
-      ),
-      [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN]: new cdk.CfnParameter(
+      [ConfigKey.GeneratedDocumentsBucketArn]: new cdk.CfnParameter(this, "GeneratedDocumentsBucketArn_PARAMETER", {
+        type: "String",
+        description: "ARN of the generated documents bucket",
+        default: "",
+      }),
+      [ConfigKey.GeneratedDocumentsS3KeyPrefix]: new cdk.CfnParameter(this, "GeneratedDocumentsS3KeyPrefix_PARAMETER", {
+        type: "String",
+        description: "S3 key prefix for generated documents",
+        default: "",
+      }),
+      [ConfigKey.GeneratedDocumentsDynamodbTableArn]: new cdk.CfnParameter(
         this,
         "GENERATED_DOCUMENTS_DYNAMO_TABLE_ARN_PARAMETER",
         {
@@ -117,9 +102,9 @@ export class StackConfig extends Construct {
           default: "",
         },
       ),
-      [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX]: new cdk.CfnParameter(
+      [ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix]: new cdk.CfnParameter(
         this,
-        "GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX_PARAMETER",
+        "GeneratedDocumentsDynamodbPartitionKeyPrefix_PARAMETER",
         {
           type: "String",
           description: "Partition key prefix for generated documents",
@@ -127,74 +112,72 @@ export class StackConfig extends Construct {
         },
       ),
     };
-    this.stackParameters[ConfigKey.AWS_ENV].overrideLogicalId("AWS_ENV_PARAMETER");
-    this.stackParameters[ConfigKey.S3_PRIMARY_REGION].overrideLogicalId("S3_PRIMARY_REGION_PARAMETER");
-    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN].overrideLogicalId(
-      "DOCUMENT_TEMPLATES_BUCKET_ARN_PARAMETER",
+    this.stackParameters[ConfigKey.AwsEnv].overrideLogicalId("AwsEnv_PARAMETER");
+    this.stackParameters[ConfigKey.S3PrimaryRegion].overrideLogicalId("S3PrimaryRegion_PARAMETER");
+    this.stackParameters[ConfigKey.DocumentTemplatesBucketArn].overrideLogicalId(ConfigKey.DocumentTemplatesBucketArn);
+    this.stackParameters[ConfigKey.DocumentTemplatesS3KeyPrefix].overrideLogicalId(
+      ConfigKey.DocumentTemplatesS3KeyPrefix,
     );
-    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX].overrideLogicalId(
-      "DOCUMENT_TEMPLATES_S3_KEY_PREFIX_PARAMETER",
+    this.stackParameters[ConfigKey.DocumentTemplatesDynamodbTableArn].overrideLogicalId(
+      ConfigKey.DocumentTemplatesDynamodbTableArn,
     );
-    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN].overrideLogicalId(
-      "DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN_PARAMETER",
+    this.stackParameters[ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix].overrideLogicalId(
+      ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix,
     );
-    this.stackParameters[ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX].overrideLogicalId(
-      "DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX_PARAMETER",
+    this.stackParameters[ConfigKey.GeneratedDocumentsBucketArn].overrideLogicalId(
+      ConfigKey.GeneratedDocumentsBucketArn,
     );
-    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_BUCKET_ARN].overrideLogicalId(
-      "GENERATED_DOCUMENTS_BUCKET_ARN_PARAMETER",
+    this.stackParameters[ConfigKey.GeneratedDocumentsS3KeyPrefix].overrideLogicalId(
+      ConfigKey.GeneratedDocumentsS3KeyPrefix,
     );
-    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX].overrideLogicalId(
-      "GENERATED_DOCUMENTS_S3_KEY_PREFIX_PARAMETER",
+    this.stackParameters[ConfigKey.GeneratedDocumentsDynamodbTableArn].overrideLogicalId(
+      ConfigKey.GeneratedDocumentsDynamodbTableArn,
     );
-    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN].overrideLogicalId(
-      "GENERATED_DOCUMENTS_DYNAMO_TABLE_ARN_PARAMETER",
-    );
-    this.stackParameters[ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX].overrideLogicalId(
-      "GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX_PARAMETER",
+    this.stackParameters[ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix].overrideLogicalId(
+      ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix,
     );
 
     /*********************
      * Fetch Parameter Values (from SSM, etc.)
      */
     this.fetchParameters = {
-      [ConfigKey.S3_PRIMARY_REGION]: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}", {
-        AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+      [ConfigKey.S3PrimaryRegion]: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}", {
+        AwsEnv: this.AwsEnvParameter.valueAsString,
       }),
-      [ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN]: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
+      [ConfigKey.DocumentTemplatesBucketArn]: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}",
         {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          AwsEnv: this.AwsEnvParameter.valueAsString,
         },
       ),
-      [ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX]: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
+      [ConfigKey.DocumentTemplatesS3KeyPrefix]: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
         {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          AwsEnv: this.AwsEnvParameter.valueAsString,
         },
       ),
-      [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN]: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
+      [ConfigKey.DocumentTemplatesDynamodbTableArn]: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          AwsEnv: this.AwsEnvParameter.valueAsString,
         },
       ),
-      [ConfigKey.GENERATED_DOCUMENTS_BUCKET_ARN]: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}",
+      [ConfigKey.GeneratedDocumentsBucketArn]: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}",
         {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          AwsEnv: this.AwsEnvParameter.valueAsString,
         },
       ),
-      [ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX]: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
+      [ConfigKey.GeneratedDocumentsS3KeyPrefix]: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
         {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          AwsEnv: this.AwsEnvParameter.valueAsString,
         },
       ),
-      [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN]: cdk.Fn.sub(
-        "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
+      [ConfigKey.GeneratedDocumentsDynamodbTableArn]: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
+          AwsEnv: this.AwsEnvParameter.valueAsString,
         },
       ),
     };
@@ -204,47 +187,47 @@ export class StackConfig extends Construct {
      */
     this.configMapping = new cdk.CfnMapping(this, "ResolvedValues", {
       mapping: {
-        [ConfigKey.AWS_ENV]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.AWS_ENV.valueAsString,
-          [ParamType.FETCH_PARAMETER]: "",
+        [ConfigKey.AwsEnv]: {
+          [ParamType.StackParameter]: this.stackParameters.AwsEnv.valueAsString,
+          [ParamType.FetchParameter]: "",
         },
-        [ConfigKey.S3_PRIMARY_REGION]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.S3_PRIMARY_REGION.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.S3_PRIMARY_REGION,
+        [ConfigKey.S3PrimaryRegion]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.S3PrimaryRegion].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.S3PrimaryRegion],
         },
-        [ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.DOCUMENT_TEMPLATES_BUCKET_ARN.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.DOCUMENT_TEMPLATES_BUCKET_ARN,
+        [ConfigKey.DocumentTemplatesBucketArn]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.DocumentTemplatesBucketArn].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.DocumentTemplatesBucketArn],
         },
-        [ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.DOCUMENT_TEMPLATES_S3_KEY_PREFIX.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.DOCUMENT_TEMPLATES_S3_KEY_PREFIX,
+        [ConfigKey.DocumentTemplatesS3KeyPrefix]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.DocumentTemplatesS3KeyPrefix].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.DocumentTemplatesS3KeyPrefix],
         },
-        [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN,
+        [ConfigKey.DocumentTemplatesDynamodbTableArn]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.DocumentTemplatesDynamodbTableArn].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.DocumentTemplatesDynamodbTableArn],
         },
-        [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX]: {
-          [ParamType.STACK_PARAMETER]:
-            this.stackParameters.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX.valueAsString,
-          [ParamType.FETCH_PARAMETER]: "",
+        [ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix]: {
+          [ParamType.StackParameter]:
+            this.stackParameters[ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix].valueAsString,
+          [ParamType.FetchParameter]: "",
         },
-        [ConfigKey.GENERATED_DOCUMENTS_BUCKET_ARN]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.GENERATED_DOCUMENTS_BUCKET_ARN.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.GENERATED_DOCUMENTS_BUCKET_ARN,
+        [ConfigKey.GeneratedDocumentsBucketArn]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.GeneratedDocumentsBucketArn].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.GeneratedDocumentsBucketArn],
         },
-        [ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.GENERATED_DOCUMENTS_S3_KEY_PREFIX.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.GENERATED_DOCUMENTS_S3_KEY_PREFIX,
+        [ConfigKey.GeneratedDocumentsS3KeyPrefix]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.GeneratedDocumentsS3KeyPrefix].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.GeneratedDocumentsS3KeyPrefix],
         },
-        [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN]: {
-          [ParamType.STACK_PARAMETER]: this.stackParameters.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN.valueAsString,
-          [ParamType.FETCH_PARAMETER]: this.fetchParameters.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN,
+        [ConfigKey.GeneratedDocumentsDynamodbTableArn]: {
+          [ParamType.StackParameter]: this.stackParameters[ConfigKey.GeneratedDocumentsDynamodbTableArn].valueAsString,
+          [ParamType.FetchParameter]: this.fetchParameters[ConfigKey.GeneratedDocumentsDynamodbTableArn],
         },
-        [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX]: {
-          [ParamType.STACK_PARAMETER]:
-            this.stackParameters.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX.valueAsString,
-          [ParamType.FETCH_PARAMETER]: "",
+        [ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix]: {
+          [ParamType.StackParameter]:
+            this.stackParameters[ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix].valueAsString,
+          [ParamType.FetchParameter]: "",
         },
       },
       lazy: true,
@@ -267,7 +250,7 @@ export class StackConfig extends Construct {
           stackParameterNotNullConditionLogicalId,
           {
             expression: cdk.Fn.conditionNot(
-              cdk.Fn.conditionEquals(this.configMapping.findInMap(key, ParamType.STACK_PARAMETER), ""),
+              cdk.Fn.conditionEquals(this.configMapping.findInMap(key, ParamType.StackParameter), ""),
             ),
           },
         );
@@ -279,8 +262,8 @@ export class StackConfig extends Construct {
 
       return cdk.Fn.conditionIf(
         this.stackParameterNotNullConditions[key]?.logicalId,
-        this.configMapping.findInMap(key, ParamType.STACK_PARAMETER),
-        this.configMapping.findInMap(key, ParamType.FETCH_PARAMETER),
+        this.configMapping.findInMap(key, ParamType.StackParameter),
+        this.configMapping.findInMap(key, ParamType.FetchParameter),
       );
     };
   }
