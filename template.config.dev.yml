@@ -1,11 +1,14 @@
-Parameters:
-  AwsEnv: DEV
-  S3PrimaryRegion: us-east-1
-  DocumentTemplatesBucketArn: DocumentTemplatesBucketArn here
-  DocumentTemplatesS3KeyPrefix: DocumentTemplatesS3KeyPrefix here
-  DocumentTemplatesDynamodbTableArn: DocumentTemplatesDynamodbTableArn here
-  DocumentTemplatesDynamodbPartitionKeyPrefix: DocumentTemplatesDynamodbPartitionKeyPrefix here
-  GeneratedDocumentsBucketArn: GeneratedDocumentsBucketArn here
-  GeneratedDocumentsS3KeyPrefix: GeneratedDocumentsS3KeyPrefix here
-  GeneratedDocumentsDynamodbTableArn: GeneratedDocumentsDynamodbTableArn here
-  GeneratedDocumentsDynamodbPartitionKeyPrefix: GeneratedDocumentsDynamodbPartitionKeyPrefix here
+configuration:
+  ParameterOverrides: |
+    '{
+        "AwsEnv": "DEV",
+        "S3PrimaryRegion": "us-east-1",
+        "DocumentTemplatesBucketArn": "DocumentTemplatesBucketArn here",
+        "DocumentTemplatesS3KeyPrefix": "DocumentTemplatesS3KeyPrefix-here",
+        "DocumentTemplatesDynamodbTableArn": "DocumentTemplatesDynamodbTableArn-here",
+        "DocumentTemplatesDynamodbPartitionKeyPrefix": "DocumentTemplatesDynamodbPartitionKeyPrefix-here",
+        "GeneratedDocumentsBucketArn": "GeneratedDocumentsBucketArn-here",
+        "GeneratedDocumentsS3KeyPrefix": "GeneratedDocumentsS3KeyPrefix-here",
+        "GeneratedDocumentsDynamodbTableArn": "GeneratedDocumentsDynamodbTableArn-here",
+        "GeneratedDocumentsDynamodbPartitionKeyPrefix": "GeneratedDocumentsDynamodbPartitionKeyPrefix-here"
+    }'
