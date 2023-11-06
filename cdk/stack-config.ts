@@ -56,12 +56,11 @@ export class StackConfig extends Construct {
       [ConfigKey.S3_PRIMARY_REGION]: new cdk.CfnParameter(this, "S3_PRIMARY_REGION_PARAMETER", {
         type: "String",
         description: "Primary region for s3 buckets/client",
-        default: null,
+        default: "",
       }),
       [ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN]: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_BUCKET_ARN_PARAMETER", {
         type: "String",
         description: "ARN of the document templates bucket",
-        default: null,
       }),
       [ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX]: new cdk.CfnParameter(
         this,
@@ -69,7 +68,7 @@ export class StackConfig extends Construct {
         {
           type: "String",
           description: "S3 key prefix for document templates",
-          default: null,
+          default: "",
         },
       ),
       [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN]: new cdk.CfnParameter(
@@ -78,7 +77,7 @@ export class StackConfig extends Construct {
         {
           type: "String",
           description: "ARN of the document templates dynamodb table",
-          default: null,
+          default: "",
         },
       ),
       [ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX]: new cdk.CfnParameter(
@@ -96,7 +95,7 @@ export class StackConfig extends Construct {
         {
           type: "String",
           description: "ARN of the generated documents bucket",
-          default: null,
+          default: "",
         },
       ),
       [ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX]: new cdk.CfnParameter(
@@ -105,7 +104,7 @@ export class StackConfig extends Construct {
         {
           type: "String",
           description: "S3 key prefix for generated documents",
-          default: null,
+          default: "",
         },
       ),
       [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN]: new cdk.CfnParameter(
@@ -114,7 +113,7 @@ export class StackConfig extends Construct {
         {
           type: "String",
           description: "ARN of the generated documents dynamodb table",
-          default: null,
+          default: "",
         },
       ),
       [ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX]: new cdk.CfnParameter(
@@ -249,11 +248,10 @@ export class StackConfig extends Construct {
     };
 
     this.getConfigValue = (key: ConfigKey) => {
-      const stackParameterValueNotNullConditionLogicalId = buildStackParameterNotNullConditionLogicalId(key);
       createIfNotExistsStackParameterNotNullCondition(key);
 
       return cdk.Fn.conditionIf(
-        stackParameterValueNotNullConditionLogicalId,
+        this.stackParameterNotNullConditions[key]?.logicalId,
         this.configMapping.findInMap(key, ParamType.STACK_PARAMETER),
         this.configMapping.findInMap(key, ParamType.FETCH_PARAMETER),
       );

@@ -62,10 +62,7 @@ export class ApplicationStack extends cdk.Stack {
     this.defaultAccountEventbus = cdk.aws_events.EventBus.fromEventBusArn(
       this,
       "DefaultAccountEventbus",
-      cdk.Fn.sub("arn:aws:events:${AWS::Region}:${AWS_AccountId}:event-bus/default", {
-        AWS_Region: cdk.Aws.REGION,
-        AWS_AccountId: cdk.Aws.ACCOUNT_ID,
-      }),
+      cdk.Fn.sub("arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/default"),
     );
 
     /******************
