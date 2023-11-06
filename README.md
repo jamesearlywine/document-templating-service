@@ -7,7 +7,7 @@ https://miro.com/app/board/uXjVMomNJfU=/?share_link_id=936300575076
 ## Confluence
 https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Document+Templating+Service
 
-## How to run locally
+## How to Test
 - Unit Testing
   - `npm run test`
 - Integration Testing
