@@ -31,14 +31,14 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
         - edit Deploy Stage -> Advanced -> Parameter overrides via Web Console
       - template configuration file specified in the pipeline
         - `template.config.{env}.json`
-    - default values for cloudformation parameters
-      - `cdk/stack-config.ts`
-    - location for fetching param/secret from ssm
-      - `cdk/stack-config.ts`
-        - resolved when cloudformation parameter-value is not specified
     - when deploying from the command line, 
       - `cdk deploy --parameters {key}={value} ...`
         - (optional) update `npm run deploy` script
+    - default values for cloudformation parameters
+      - `cdk/stack-config.ts`
+    - fetch param/secret from ssm
+      - `cdk/stack-config.ts`
+        - value resolved when cloudformation parameter-value is not specified
 
 ## How to deploy
 - edit `ephemeralPrefix` and hard-coded config values in: 
