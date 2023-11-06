@@ -1,36 +1,18 @@
 import * as cdk from "aws-cdk-lib";
+import { aws_ecr, aws_events_targets } from "aws-cdk-lib";
 import { IRole } from "aws-cdk-lib/aws-iam";
 import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
-import { StackConfig } from "cdk/cdk";
+import { CompileTimeConfig } from "cdk/cdk";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { aws_ecr, aws_events_targets } from "aws-cdk-lib";
+import { ConfigKey, StackConfig } from "./stack-config";
 
 export class ApplicationStack extends cdk.Stack {
-  AWS_ENV_PARAMETER: cdk.CfnParameter;
-  stackParameters: {
-    AWS_ENV: cdk.CfnParameter;
-    S3_PRIMARY_REGION: cdk.CfnParameter;
-    DOCUMENT_TEMPLATES_BUCKET_ARN: cdk.CfnParameter;
-    DOCUMENT_TEMPLATES_S3_KEY_PREFIX: cdk.CfnParameter;
-    DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: cdk.CfnParameter;
-    DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: cdk.CfnParameter;
-    GENERATED_DOCUMENTS_BUCKET_ARN: cdk.CfnParameter;
-    GENERATED_DOCUMENTS_S3_KEY_PREFIX: cdk.CfnParameter;
-    GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: cdk.CfnParameter;
-    GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: cdk.CfnParameter;
-  };
-
-  config: StackConfig;
+  compileTimeConfig: CompileTimeConfig;
+  stackConfig: StackConfig;
 
   // consider refactor to parameters passed in from pipeline
-
-  ephemeralPrefix: string;
-
-  isEphemeralStack = () => {
-    return !!this.ephemeralPrefix;
-  };
 
   vpc: cdk.aws_ec2.IVpc;
   privateSubnet: cdk.aws_ec2.ISubnet;
@@ -55,107 +37,14 @@ export class ApplicationStack extends cdk.Stack {
   constructor(app, id: string, props) {
     super(app, id, props);
 
-    this.config = props.config;
-    this.ephemeralPrefix = props.ephemeralPrefix;
-
-    /*********************
-     * Stack Parameters (defaults values, can be overridden by pipeline)
-     */
-    this.AWS_ENV_PARAMETER = new cdk.CfnParameter(this, "AWS_ENV", {
-      type: "String",
-      description: "The AWS environment deployed to",
-      default: this.isEphemeralStack() ? "DEV" : "DEV",
-      allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
-    });
-
-    this.stackParameters = {
-      AWS_ENV: this.AWS_ENV_PARAMETER,
-      S3_PRIMARY_REGION: new cdk.CfnParameter(this, "S3_PRIMARY_REGION", {
-        type: "String",
-        description: "Primary region for s3 buckets/client",
-        default: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets-primary-region}}", {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-        }),
-      }),
-      DOCUMENT_TEMPLATES_BUCKET_ARN: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_BUCKET_ARN", {
-        type: "String",
-        description: "ARN of the document templates bucket",
-        default: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-        }),
-      }),
-      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_S3_KEY_PREFIX", {
-        type: "String",
-        description: "S3 key prefix for document templates",
-        default: cdk.Fn.sub(
-          "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
-          {
-            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-          },
-        ),
-      }),
-      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: new cdk.CfnParameter(this, "DOCUMENT_TEMPLATES_DYNAMO_TABLE_ARN", {
-        type: "String",
-        description: "ARN of the document templates dynamodb table",
-        default: cdk.Fn.sub(
-          "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
-          {
-            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-          },
-        ),
-      }),
-      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: new cdk.CfnParameter(
-        this,
-        "DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX",
-        {
-          type: "String",
-          description: "Partition key prefix for document templates",
-          default: "DOCUMENT_TEMPLATE",
-        },
-      ),
-      GENERATED_DOCUMENTS_BUCKET_ARN: new cdk.CfnParameter(this, "GENERATED_DOCUMENTS_BUCKET_ARN", {
-        type: "String",
-        description: "ARN of the generated documents bucket",
-        default: cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
-          AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-        }),
-      }),
-      GENERATED_DOCUMENTS_S3_KEY_PREFIX: new cdk.CfnParameter(this, "GENERATED_DOCUMENTS_S3_KEY_PREFIX", {
-        type: "String",
-        description: "S3 key prefix for generated documents",
-        default: cdk.Fn.sub(
-          "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
-          {
-            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-          },
-        ),
-      }),
-      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: new cdk.CfnParameter(this, "GENERATED_DOCUMENTS_DYNAMO_TABLE_ARN", {
-        type: "String",
-        description: "ARN of the generated documents dynamodb table",
-        default: cdk.Fn.sub(
-          "{{resolve:ssm:/${AWS_ENV}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
-          {
-            AWS_ENV: this.AWS_ENV_PARAMETER.valueAsString,
-          },
-        ),
-      }),
-      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: new cdk.CfnParameter(
-        this,
-        "GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX",
-        {
-          type: "String",
-          description: "Partition key prefix for generated documents",
-          default: "GENERATED_DOCUMENT",
-        },
-      ),
-    };
+    this.compileTimeConfig = props.config;
+    this.stackConfig = new StackConfig(this, "StackConfig", this.compileTimeConfig);
 
     /*********************
      * VPC
      */
     this.vpc = cdk.aws_ec2.Vpc.fromLookup(this, "VPC", {
-      vpcId: this.config.vpcId,
+      vpcId: this.compileTimeConfig.vpcId,
     });
 
     /*********************
@@ -164,7 +53,7 @@ export class ApplicationStack extends cdk.Stack {
     this.privateSubnet = cdk.aws_ec2.Subnet.fromSubnetAttributes(
       this,
       "PrivateSubnet",
-      this.config.privateSubnetAttributes,
+      this.compileTimeConfig.privateSubnetAttributes,
     );
 
     /******************
@@ -204,21 +93,28 @@ export class ApplicationStack extends cdk.Stack {
      * Lambda Config
      */
     this.lambdaEnvVariables = {
-      AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
-      S3_PRIMARY_REGION: this.stackParameters.S3_PRIMARY_REGION.valueAsString,
+      AWS_ENV: this.stackConfig.getConfigValue(ConfigKey.AWS_ENV),
+      S3_PRIMARY_REGION: this.stackConfig.getConfigValue(ConfigKey.S3_PRIMARY_REGION),
 
       // Document Templates
-      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackParameters.DOCUMENT_TEMPLATES_BUCKET_ARN.valueAsString,
-      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackParameters.DOCUMENT_TEMPLATES_S3_KEY_PREFIX.valueAsString,
-      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackParameters.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN.valueAsString,
-      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-        this.stackParameters.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX.valueAsString,
+      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackConfig.getConfigValue(ConfigKey.DOCUMENT_TEMPLATES_BUCKET_ARN),
+      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackConfig.getConfigValue(ConfigKey.DOCUMENT_TEMPLATES_S3_KEY_PREFIX),
+      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackConfig.getConfigValue(
+        ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN,
+      ),
+      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.getConfigValue(
+        ConfigKey.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX,
+      ),
 
       // Generated Documents
-      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackParameters.GENERATED_DOCUMENTS_BUCKET_ARN.valueAsString,
-      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackParameters.GENERATED_DOCUMENTS_S3_KEY_PREFIX.valueAsString,
-      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackParameters.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN.valueAsString,
-      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
+      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackConfig.getConfigValue(ConfigKey.GENERATED_DOCUMENTS_BUCKET_ARN),
+      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackConfig.getConfigValue(ConfigKey.GENERATED_DOCUMENTS_S3_KEY_PREFIX),
+      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackConfig.getConfigValue(
+        ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN,
+      ),
+      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.getConfigValue(
+        ConfigKey.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX,
+      ),
     };
 
     /******************
@@ -346,7 +242,7 @@ export class ApplicationStack extends cdk.Stack {
           detailType: ["Object Created"],
           resources: [
             cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
-              AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
+              AWS_ENV: this.stackConfig.AWS_ENV_PARAMETER.valueAsString,
             }),
           ],
           detail: {
@@ -356,7 +252,7 @@ export class ApplicationStack extends cdk.Stack {
                   prefix: cdk.Fn.sub(
                     "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
                     {
-                      AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
+                      AWS_ENV: this.stackConfig.AWS_ENV_PARAMETER.valueAsString,
                     },
                   ),
                 },
@@ -376,7 +272,7 @@ export class ApplicationStack extends cdk.Stack {
      */
     this.api = new HttpApi(this, "Api", {
       apiName: cdk.Fn.sub("processproof-${AWS_ENV}-document-templating-service", {
-        AWS_ENV: this.stackParameters.AWS_ENV.valueAsString,
+        AWS_ENV: this.stackConfig.AWS_ENV_PARAMETER.valueAsString,
       }),
     });
 
