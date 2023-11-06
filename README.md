@@ -34,6 +34,9 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
       - default values for cloudformation parameters
       - locations for fetching param/secret from ssm
         - when cloudformation parameter is not specified
+    - when deploying from the command line, 
+      - `cdk deploy --parameters {key}={value} ...`
+        - (optional) update `npm run deploy` script
 
 ## How to deploy
 - edit `ephemeralPrefix` and hard-coded config values in: 
