@@ -50,61 +50,53 @@ export class StackConfig extends Construct {
 
     this.stackParameters = {
       [ConfigKey.AwsEnv]: this.AwsEnvParameter,
-      [ConfigKey.S3PrimaryRegion]: new cdk.CfnParameter(this, "S3PrimaryRegion_PARAMETER", {
+      [ConfigKey.S3PrimaryRegion]: new cdk.CfnParameter(this, "S3PrimaryRegion", {
         type: "String",
         description: "Primary region for s3 buckets/client",
         default: "",
       }),
-      [ConfigKey.DocumentTemplatesBucketArn]: new cdk.CfnParameter(this, "DocumentTemplatesBucketArn_PARAMETER", {
+      [ConfigKey.DocumentTemplatesBucketArn]: new cdk.CfnParameter(this, "DocumentTemplatesBucketArn", {
         type: "String",
         description: "ARN of the document templates bucket",
         default: "",
       }),
-      [ConfigKey.DocumentTemplatesS3KeyPrefix]: new cdk.CfnParameter(this, "DocumentTemplatesS3KeyPrefix_PARAMETER", {
+      [ConfigKey.DocumentTemplatesS3KeyPrefix]: new cdk.CfnParameter(this, "DocumentTemplatesS3KeyPrefix", {
         type: "String",
         description: "S3 key prefix for document templates",
         default: "",
       }),
-      [ConfigKey.DocumentTemplatesDynamodbTableArn]: new cdk.CfnParameter(
-        this,
-        "DocumentTemplatesDynamodbTableArn_PARAMETER",
-        {
-          type: "String",
-          description: "ARN of the document templates dynamodb table",
-          default: "",
-        },
-      ),
+      [ConfigKey.DocumentTemplatesDynamodbTableArn]: new cdk.CfnParameter(this, "DocumentTemplatesDynamodbTableArn", {
+        type: "String",
+        description: "ARN of the document templates dynamodb table",
+        default: "",
+      }),
       [ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix]: new cdk.CfnParameter(
         this,
-        "DocumentTemplatesDynamodbPartitionKeyPrefix_PARAMETER",
+        "DocumentTemplatesDynamodbPartitionKeyPrefix",
         {
           type: "String",
           description: "Partition key prefix for document templates",
           default: "DOCUMENT_TEMPLATE",
         },
       ),
-      [ConfigKey.GeneratedDocumentsBucketArn]: new cdk.CfnParameter(this, "GeneratedDocumentsBucketArn_PARAMETER", {
+      [ConfigKey.GeneratedDocumentsBucketArn]: new cdk.CfnParameter(this, "GeneratedDocumentsBucketArn", {
         type: "String",
         description: "ARN of the generated documents bucket",
         default: "",
       }),
-      [ConfigKey.GeneratedDocumentsS3KeyPrefix]: new cdk.CfnParameter(this, "GeneratedDocumentsS3KeyPrefix_PARAMETER", {
+      [ConfigKey.GeneratedDocumentsS3KeyPrefix]: new cdk.CfnParameter(this, "GeneratedDocumentsS3KeyPrefix", {
         type: "String",
         description: "S3 key prefix for generated documents",
         default: "",
       }),
-      [ConfigKey.GeneratedDocumentsDynamodbTableArn]: new cdk.CfnParameter(
-        this,
-        "GENERATED_DOCUMENTS_DYNAMO_TABLE_ARN_PARAMETER",
-        {
-          type: "String",
-          description: "ARN of the generated documents dynamodb table",
-          default: "",
-        },
-      ),
+      [ConfigKey.GeneratedDocumentsDynamodbTableArn]: new cdk.CfnParameter(this, "GeneratedDocumentsDynamodbTableArn", {
+        type: "String",
+        description: "ARN of the generated documents dynamodb table",
+        default: "",
+      }),
       [ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix]: new cdk.CfnParameter(
         this,
-        "GeneratedDocumentsDynamodbPartitionKeyPrefix_PARAMETER",
+        "GeneratedDocumentsDynamodbPartitionKeyPrefix",
         {
           type: "String",
           description: "Partition key prefix for generated documents",
@@ -112,8 +104,8 @@ export class StackConfig extends Construct {
         },
       ),
     };
-    this.stackParameters[ConfigKey.AwsEnv].overrideLogicalId("AwsEnv_PARAMETER");
-    this.stackParameters[ConfigKey.S3PrimaryRegion].overrideLogicalId("S3PrimaryRegion_PARAMETER");
+    this.stackParameters[ConfigKey.AwsEnv].overrideLogicalId("AwsEnv");
+    this.stackParameters[ConfigKey.S3PrimaryRegion].overrideLogicalId("S3PrimaryRegion");
     this.stackParameters[ConfigKey.DocumentTemplatesBucketArn].overrideLogicalId(ConfigKey.DocumentTemplatesBucketArn);
     this.stackParameters[ConfigKey.DocumentTemplatesS3KeyPrefix].overrideLogicalId(
       ConfigKey.DocumentTemplatesS3KeyPrefix,
@@ -239,7 +231,7 @@ export class StackConfig extends Construct {
     this.stackParameterNotNullConditions = {};
 
     const buildStackParameterNotNullConditionLogicalId = (key: ConfigKey) => {
-      return `${key}_PARAMETER_NOT_NULL_CONDITION`;
+      return `${key}ParameterNotNullCondition`;
     };
 
     const createIfNotExistsStackParameterNotNullCondition = (key: ConfigKey) => {

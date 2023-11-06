@@ -1,5 +1,5 @@
 Parameters:
-  AwsEnv_PARAMETER:
+  AwsEnv:
     Type: String
     Default: DEV
     AllowedValues:
@@ -9,7 +9,7 @@ Parameters:
       - STAGING
       - PROD
     Description: The AWS environment deployed to
-  S3PrimaryRegion_PARAMETER:
+  S3PrimaryRegion:
     Type: String
     Default: ""
     Description: Primary region for s3 buckets/client
@@ -50,52 +50,52 @@ Parameters:
     Default: /cdk-bootstrap/hnb659fds/version
     Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
 Conditions:
-  StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30:
+  StackConfigAwsEnvParameterNotNullConditionB26A30DA:
     Fn::Not:
       - Fn::Equals:
-          - Ref: AwsEnv_PARAMETER
+          - Ref: AwsEnv
           - ""
-  StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835:
+  StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3:
     Fn::Not:
       - Fn::Equals:
-          - Ref: S3PrimaryRegion_PARAMETER
+          - Ref: S3PrimaryRegion
           - ""
-  StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290:
+  StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE:
     Fn::Not:
       - Fn::Equals:
           - Ref: DocumentTemplatesBucketArn
           - ""
-  StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A:
+  StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D:
     Fn::Not:
       - Fn::Equals:
           - Ref: DocumentTemplatesS3KeyPrefix
           - ""
-  StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5:
+  StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447:
     Fn::Not:
       - Fn::Equals:
           - Ref: DocumentTemplatesDynamoDbTableArn
           - ""
-  StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8:
+  StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F:
     Fn::Not:
       - Fn::Equals:
           - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
           - ""
-  StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4:
+  StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93:
     Fn::Not:
       - Fn::Equals:
           - Ref: GeneratedDocumentsBucketArn
           - ""
-  StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30:
+  StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244:
     Fn::Not:
       - Fn::Equals:
           - Ref: GeneratedDocumentsS3KeyPrefix
           - ""
-  StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA:
+  StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E:
     Fn::Not:
       - Fn::Equals:
           - Ref: GeneratedDocumentsDynamoDbTableArn
           - ""
-  StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713:
+  StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB:
     Fn::Not:
       - Fn::Equals:
           - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
@@ -151,78 +151,78 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-06T06:17:17.901Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-06T06:20:12.546Z
       Environment:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       MemorySize: 1600
@@ -265,73 +265,73 @@ Resources:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       Handler: index.handler
@@ -376,73 +376,73 @@ Resources:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       Handler: index.handler
@@ -487,73 +487,73 @@ Resources:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       Handler: index.handler
@@ -598,73 +598,73 @@ Resources:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       Handler: index.handler
@@ -709,73 +709,73 @@ Resources:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       Handler: index.handler
@@ -820,73 +820,73 @@ Resources:
         Variables:
           AWS_ENV:
             Fn::If:
-              - StackConfigAwsEnvPARAMETERNOTNULLCONDITION6CE80A30
-              - Ref: AwsEnv_PARAMETER
+              - StackConfigAwsEnvParameterNotNullConditionB26A30DA
+              - Ref: AwsEnv
               - ""
           S3_PRIMARY_REGION:
             Fn::If:
-              - StackConfigS3PrimaryRegionPARAMETERNOTNULLCONDITIONB5E67835
-              - Ref: S3PrimaryRegion_PARAMETER
+              - StackConfigS3PrimaryRegionParameterNotNullCondition4F4305C3
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesBucketArnPARAMETERNOTNULLCONDITION92E98290
+              - StackConfigDocumentTemplatesBucketArnParameterNotNullConditionC9BDC7FE
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesS3KeyPrefixPARAMETERNOTNULLCONDITIONE889B43A
+              - StackConfigDocumentTemplatesS3KeyPrefixParameterNotNullConditionE6E81C2D
               - Ref: DocumentTemplatesS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbTableArnPARAMETERNOTNULLCONDITION5F5012E5
+              - StackConfigDocumentTemplatesDynamoDbTableArnParameterNotNullCondition01F25447
               - Ref: DocumentTemplatesDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION7800FFB8
+              - StackConfigDocumentTemplatesDynamoDbPartitionKeyPrefixParameterNotNullCondition132CEE4F
               - Ref: DocumentTemplatesDynamoDbPartitionKeyPrefix
               - ""
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsBucketArnPARAMETERNOTNULLCONDITION74C75CF4
+              - StackConfigGeneratedDocumentsBucketArnParameterNotNullConditionBDE2BA93
               - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsS3KeyPrefixPARAMETERNOTNULLCONDITION4471AE30
+              - StackConfigGeneratedDocumentsS3KeyPrefixParameterNotNullConditionBE9CC244
               - Ref: GeneratedDocumentsS3KeyPrefix
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbTableArnPARAMETERNOTNULLCONDITION64FB23FA
+              - StackConfigGeneratedDocumentsDynamoDbTableArnParameterNotNullConditionCC7E264E
               - Ref: GeneratedDocumentsDynamoDbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnv_PARAMETER
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
             Fn::If:
-              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixPARAMETERNOTNULLCONDITION8B940713
+              - StackConfigGeneratedDocumentsDynamoDbPartitionKeyPrefixParameterNotNullConditionD20386DB
               - Ref: GeneratedDocumentsDynamoDbPartitionKeyPrefix
               - ""
       Handler: index.handler
@@ -932,7 +932,7 @@ Resources:
           - Fn::Sub:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
               - AWS_ENV:
-                  Ref: AwsEnv_PARAMETER
+                  Ref: AwsEnv
         detail:
           object:
             key:
@@ -940,7 +940,7 @@ Resources:
                   Fn::Sub:
                     - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}"
                     - AWS_ENV:
-                        Ref: AwsEnv_PARAMETER
+                        Ref: AwsEnv
       State: ENABLED
       Targets:
         - Arn:
@@ -972,7 +972,7 @@ Resources:
         Fn::Sub:
           - processproof-${AWS_ENV}-document-templating-service
           - AWS_ENV:
-              Ref: AwsEnv_PARAMETER
+              Ref: AwsEnv
       ProtocolType: HTTP
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Resource
