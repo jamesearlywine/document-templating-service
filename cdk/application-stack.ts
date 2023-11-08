@@ -4,14 +4,11 @@ import { IRole } from "aws-cdk-lib/aws-iam";
 import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
-import { CompileTimeConfig } from "cdk/cdk";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { ConfigKey, StackConfig } from "./stack-config";
+import { ConfigKeys, initializeStackConfig } from "./cdk.stack-config-definition";
+import { StackConfig } from "./stack-config/stack-config";
 
 export class ApplicationStack extends cdk.Stack {
-  compileTimeConfig: CompileTimeConfig;
-  stackConfig: StackConfig;
-
   // consider refactor to parameters passed in from pipeline
 
   vpc: cdk.aws_ec2.IVpc;
@@ -34,27 +31,31 @@ export class ApplicationStack extends cdk.Stack {
 
   defaultAccountEventbus: cdk.aws_events.IEventBus;
 
+  stackConfig: StackConfig;
+
   constructor(app, id: string, props) {
     super(app, id, props);
 
-    this.compileTimeConfig = props.config;
-    this.stackConfig = new StackConfig(this, "StackConfig", this.compileTimeConfig);
+    /*********************
+     * Stack Config
+     */
+    this.stackConfig = initializeStackConfig(this);
 
     /*********************
      * VPC
      */
     this.vpc = cdk.aws_ec2.Vpc.fromLookup(this, "VPC", {
-      vpcId: this.compileTimeConfig.vpcId,
+      vpcId: this.stackConfig.get(ConfigKeys.VpcId) as string,
     });
 
     /*********************
      * Private Subnet
      */
-    this.privateSubnet = cdk.aws_ec2.Subnet.fromSubnetAttributes(
-      this,
-      "PrivateSubnet",
-      this.compileTimeConfig.privateSubnetAttributes,
-    );
+    this.privateSubnet = cdk.aws_ec2.Subnet.fromSubnetAttributes(this, "PrivateSubnet", {
+      subnetId: this.stackConfig.get(ConfigKeys.PrivateSubnetId) as string,
+      availabilityZone: this.stackConfig.get(ConfigKeys.PrivateSubnetAvailabilityZone) as string,
+      routeTableId: this.stackConfig.get(ConfigKeys.PrivateSubnetRouteTableId) as string,
+    });
 
     /******************
      * Eventbus
@@ -90,27 +91,23 @@ export class ApplicationStack extends cdk.Stack {
      * Lambda Config
      */
     this.lambdaEnvVariables = {
-      AWS_ENV: this.stackConfig.getConfigValue(ConfigKey.AwsEnv),
-      S3_PRIMARY_REGION: this.stackConfig.getConfigValue(ConfigKey.S3PrimaryRegion),
+      AWS_ENV: this.stackConfig.get(ConfigKeys.AwsEnv),
+      S3_PRIMARY_REGION: this.stackConfig.get(ConfigKeys.S3PrimaryRegion),
 
       // Document Templates
-      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackConfig.getConfigValue(ConfigKey.DocumentTemplatesBucketArn),
-      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackConfig.getConfigValue(ConfigKey.DocumentTemplatesS3KeyPrefix),
-      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackConfig.getConfigValue(
-        ConfigKey.DocumentTemplatesDynamodbTableArn,
-      ),
-      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.getConfigValue(
-        ConfigKey.DocumentTemplatesDynamodbPartitionKeyPrefix,
+      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackConfig.get(ConfigKeys.DocumentTemplatesBucketArn),
+      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackConfig.get(ConfigKeys.DocumentTemplatesS3KeyPrefix),
+      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackConfig.get(ConfigKeys.DocumentTemplatesDynamodbTableArn),
+      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.get(
+        ConfigKeys.DocumentTemplatesDynamodbPartitionKeyPrefix,
       ),
 
       // Generated Documents
-      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackConfig.getConfigValue(ConfigKey.GeneratedDocumentsBucketArn),
-      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackConfig.getConfigValue(ConfigKey.GeneratedDocumentsS3KeyPrefix),
-      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackConfig.getConfigValue(
-        ConfigKey.GeneratedDocumentsDynamodbTableArn,
-      ),
-      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.getConfigValue(
-        ConfigKey.GeneratedDocumentsDynamodbPartitionKeyPrefix,
+      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackConfig.get(ConfigKeys.GeneratedDocumentsBucketArn),
+      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackConfig.get(ConfigKeys.GeneratedDocumentsS3KeyPrefix),
+      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackConfig.get(ConfigKeys.GeneratedDocumentsDynamodbTableArn),
+      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.get(
+        ConfigKeys.GeneratedDocumentsDynamodbPartitionKeyPrefix,
       ),
     };
 
@@ -239,7 +236,7 @@ export class ApplicationStack extends cdk.Stack {
           detailType: ["Object Created"],
           resources: [
             cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
-              AWS_ENV: this.stackConfig.stackParameters.AwsEnv.valueAsString,
+              AWS_ENV: this.stackConfig.get(ConfigKeys.AwsEnv) as string,
             }),
           ],
           detail: {
@@ -249,7 +246,7 @@ export class ApplicationStack extends cdk.Stack {
                   prefix: cdk.Fn.sub(
                     "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
                     {
-                      AWS_ENV: this.stackConfig.stackParameters.AwsEnv.valueAsString,
+                      AWS_ENV: this.stackConfig.get(ConfigKeys.AwsEnv) as string,
                     },
                   ),
                 },
@@ -269,7 +266,7 @@ export class ApplicationStack extends cdk.Stack {
      */
     this.api = new HttpApi(this, "Api", {
       apiName: cdk.Fn.sub("processproof-${AWS_ENV}-document-templating-service", {
-        AWS_ENV: this.stackConfig.stackParameters.AwsEnv.valueAsString,
+        AWS_ENV: this.stackConfig.get(ConfigKeys.AwsEnv) as string,
       }),
     });
 
