@@ -1,4 +1,4 @@
-import { ApplicationStack } from "cdk/application-stack";
+import { ApplicationStack } from "cdk/application-stack/application-stack";
 import { app, CompileTimeConfig } from "cdk/cdk";
 
 const ephemeralPrefix = "Test-Ephemeral";
