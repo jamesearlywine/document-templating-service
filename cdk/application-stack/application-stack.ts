@@ -90,20 +90,22 @@ export class ApplicationStack extends cdk.Stack {
      * Lambda Config
      */
     this.lambdaEnvVariables = {
-      AWS_ENV: this.stackConfig.awsEnv,
-      S3_PRIMARY_REGION: this.stackConfig.s3PrimaryRegion,
+      AWS_ENV: this.stackConfig.awsEnv.valueAsString,
+      S3_PRIMARY_REGION: this.stackConfig.s3PrimaryRegion.valueAsString,
 
       // Document Templates
-      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackConfig.documentTemplatesBucketArn,
-      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackConfig.documentTemplatesS3KeyPrefix,
-      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackConfig.documentTemplatesDynamodbTableArn,
-      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.documentTemplatesDynamodbPartitionKeyPrefix,
+      DOCUMENT_TEMPLATES_BUCKET_ARN: this.stackConfig.documentTemplatesBucketArn.valueAsString,
+      DOCUMENT_TEMPLATES_S3_KEY_PREFIX: this.stackConfig.documentTemplatesS3KeyPrefix.valueAsString,
+      DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN: this.stackConfig.documentTemplatesDynamodbTableArn.valueAsString,
+      DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+        this.stackConfig.documentTemplatesDynamodbPartitionKeyPrefix.valueAsString,
 
       // Generated Documents
-      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackConfig.generatedDocumentsBucketArn,
-      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackConfig.generatedDocumentsS3KeyPrefix,
-      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackConfig.generatedDocumentsDynamodbTableArn,
-      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: this.stackConfig.generatedDocumentsDynamodbPartitionKeyPrefix,
+      GENERATED_DOCUMENTS_BUCKET_ARN: this.stackConfig.generatedDocumentsBucketArn.valueAsString,
+      GENERATED_DOCUMENTS_S3_KEY_PREFIX: this.stackConfig.generatedDocumentsS3KeyPrefix.valueAsString,
+      GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN: this.stackConfig.generatedDocumentsDynamodbTableArn.valueAsString,
+      GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+        this.stackConfig.generatedDocumentsDynamodbPartitionKeyPrefix.valueAsString,
     };
 
     /******************
