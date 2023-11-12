@@ -39,7 +39,7 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
           - `cdk.json`
         - when deploying from pipeline 
           - overrides specified in pipeline
-          - overrides specified in a template.config.{env}.json file
+          - overrides specified in a template.config.{env}.json file (must enable this in pipeline)
         
 ## How to deploy
 - to deploy an ephemeral stack 
