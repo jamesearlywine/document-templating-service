@@ -10,6 +10,9 @@ export class StackConfig {
   }
 
   set(key: string, stackConfigOptions: StackConfigOptions | string) {
+    if (stackConfigOptions === null || stackConfigOptions === undefined) {
+      stackConfigOptions = "";
+    }
     if (typeof stackConfigOptions === "string") {
       stackConfigOptions = { value: stackConfigOptions };
     }
