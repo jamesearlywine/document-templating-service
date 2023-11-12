@@ -25,32 +25,31 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
   - reports: `./testing/artillery/reports`
 
 ## How to configure
-  - Pass in Cloudformation parameters to configure the service
-    - Pipeline injection of parameters
-      - key/values specified in the pipeline
-        - edit Deploy Stage -> Advanced -> Parameter overrides via Web Console
-      - template configuration file specified in the pipeline
-        - `template.config.{env}.json`
-    - when deploying from the command line, 
-      - `cdk deploy --parameters {key}={value} ...`
-        - (optional) update `npm run deploy` script
-    - default values for cloudformation parameters
-      - `cdk/stack-config.ts`
-    - fetch param/secret from ssm
-      - `cdk/stack-config.ts`
-        - value resolved when cloudformation parameter-value is not specified
-
+  - `cdk/stack-config.ts`
+    - Define a key/value on StackConfig
+      - this can be a simple string value
+      - this can be resolved from ssm: "{{resolve:ssm:/path/to/ssm/parameter:1}}"
+    - Define a CfnParameter on StackConfig with a default value
+      - this can be a simple string value
+      - this can be resolved from ssm: "{{resolve:ssm:/path/to/ssm/parameter:1}}"
+      - this can be overriden:
+        - when deploying from the command line
+          - overrides specified in a config file
+          - overrides specifies  in cli args
+          - `cdk.json`
+        - when deploying from pipeline 
+          - overrides specified in pipeline
+          - overrides specified in a template.config.{env}.json file
+        
 ## How to deploy
-- edit `ephemeralPrefix` and hard-coded config values in: 
-  - `cdk/cdk.json`
-  - `cdk/application-stack.cdk.ts`
-- `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-1` (or your preferred aws region)
+- to deploy an ephemeral stack 
+  - `cdk/cdk.ts`
+    - set `ephemeralPrefix` to a unique value, AWS_ENV will be "dev"
+- `cdk bootstrap aws://{YOUR_AWS_ACCOUNT_NUMBER}/us-east-2` (or your preferred aws region)
 - `npm run build`
   - `npm run build:watch` (if you want to watch for changes)
 - `npm run build:template`
 - `npm run deploy` 
   - `cdk watch` (if you want to watch for changes)
-
-
 
 Then go to your aws web console and find the cloudformation stack "{ephemeralPrefix}DocumentTemplatingService" in your specified aws region.
