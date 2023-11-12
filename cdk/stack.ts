@@ -5,9 +5,9 @@ import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { StackConfig } from "./application-stack-config";
+import { StackConfig } from "./stack-config";
 
-export class ApplicationStack extends cdk.Stack {
+export class Stack extends cdk.Stack {
   // consider refactor to parameters passed in from pipeline
 
   vpc: cdk.aws_ec2.IVpc;
@@ -32,8 +32,16 @@ export class ApplicationStack extends cdk.Stack {
 
   stackConfig: StackConfig;
 
+  ephemeralPrefix: string;
+  isEphemeralStack = () => !!this.ephemeralPrefix;
+
   constructor(app, id: string, props) {
-    super(app, id, props);
+    super(app, id, props); /**
+
+     /*********************
+     * Ephermal Prefix
+     */
+    this.ephemeralPrefix = props.ephemeralPrefix;
 
     /*********************
      * Stack Config

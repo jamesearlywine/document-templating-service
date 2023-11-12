@@ -1,11 +1,11 @@
-import { ApplicationStack } from "cdk/application-stack/application-stack";
+import { Stack } from "cdk/stack";
 import { app, CompileTimeConfig } from "cdk/cdk";
 
 const ephemeralPrefix = "Test-Ephemeral";
 
 describe("cdk applicationStack", () => {
   it("should instantiate without errors", () => {
-    const applicationStack = new ApplicationStack(app, `${ephemeralPrefix}DocumentTemplatingService`, {
+    const applicationStack = new Stack(app, `${ephemeralPrefix}DocumentTemplatingService`, {
       env: {
         account: "546515125053",
         region: "us-east-2",
