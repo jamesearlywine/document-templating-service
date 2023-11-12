@@ -40,7 +40,7 @@ export class Stack extends cdk.Stack {
     super(app, id, props); /**
 
      /*********************
-     * Ephermal Prefix
+     * Ephemeral Prefix
      */
     this.ephemeralPrefix = props.ephemeralPrefix;
 
