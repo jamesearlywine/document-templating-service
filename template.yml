@@ -1,5 +1,5 @@
 Parameters:
-  AwsEnvParameter:
+  AwsEnv:
     Type: String
     Default: DEV
     AllowedValues:
@@ -9,39 +9,39 @@ Parameters:
       - STAGING
       - PROD
     Description: The AWS environment deployed to
-  S3PrimaryRegionParameter:
+  S3PrimaryRegion:
     Type: String
     Default: ""
     Description: Primary region for s3 buckets/client
-  DocumentTemplatesBucketArnParameter:
+  DocumentTemplatesBucketArn:
     Type: String
     Default: ""
     Description: ARN of the document templates bucket
-  DocumentTemplatesS3KeyPrefixParameter:
+  DocumentTemplatesS3KeyPrefix:
     Type: String
     Default: document_templates
     Description: S3 key prefix for document templates
-  DocumentTemplatesDynamodbTableArnParameter:
+  DocumentTemplatesDynamodbTableArn:
     Type: String
     Default: ""
     Description: ARN of the document templates dynamodb table
-  DocumentTemplatesDynamodbPartitionKeyPrefixParameter:
+  DocumentTemplatesDynamodbPartitionKeyPrefix:
     Type: String
     Default: DOCUMENT_TEMPLATE
     Description: Partition key prefix for document templates dynamodb table
-  GeneratedDocumentsBucketArnParameter:
+  GeneratedDocumentsBucketArn:
     Type: String
     Default: ""
     Description: ARN of the generated documents bucket
-  GeneratedDocumentsS3KeyPrefixParameter:
+  GeneratedDocumentsS3KeyPrefix:
     Type: String
     Default: generated_documents
     Description: S3 key prefix for generated documents
-  GeneratedDocumentsDynamodbTableArnParameter:
+  GeneratedDocumentsDynamodbTableArn:
     Type: String
     Default: ""
     Description: ARN of the generated documents dynamodb table
-  GeneratedDocumentsDynamodbPartitionKeyPrefixParameter:
+  GeneratedDocumentsDynamodbPartitionKeyPrefix:
     Type: String
     Default: GENERATED_DOCUMENT
     Description: Partition key prefix for generated documents dynamodb table
@@ -53,52 +53,52 @@ Conditions:
   AwsEnvisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: AwsEnvParameter
+          - Ref: AwsEnv
           - ""
   S3PrimaryRegionisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: S3PrimaryRegionParameter
+          - Ref: S3PrimaryRegion
           - ""
   DocumentTemplatesBucketArnisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: DocumentTemplatesBucketArnParameter
+          - Ref: DocumentTemplatesBucketArn
           - ""
   DocumentTemplatesS3KeyPrefixisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: DocumentTemplatesS3KeyPrefixParameter
+          - Ref: DocumentTemplatesS3KeyPrefix
           - ""
   DocumentTemplatesDynamodbTableArnisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: DocumentTemplatesDynamodbTableArnParameter
+          - Ref: DocumentTemplatesDynamodbTableArn
           - ""
   DocumentTemplatesDynamodbPartitionKeyPrefixisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+          - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           - ""
   GeneratedDocumentsBucketArnisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: GeneratedDocumentsBucketArnParameter
+          - Ref: GeneratedDocumentsBucketArn
           - ""
   GeneratedDocumentsS3KeyPrefixisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: GeneratedDocumentsS3KeyPrefixParameter
+          - Ref: GeneratedDocumentsS3KeyPrefix
           - ""
   GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: GeneratedDocumentsDynamodbTableArnParameter
+          - Ref: GeneratedDocumentsDynamodbTableArn
           - ""
   GeneratedDocumentsDynamodbPartitionKeyPrefixisParameterEmptyCondition:
     Fn::Not:
       - Fn::Equals:
-          - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+          - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
           - ""
 Resources:
   LambdaExecutionRoleD5C26073:
@@ -151,59 +151,59 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-12T19:20:46.271Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-12T23:57:37.011Z
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       MemorySize: 1600
       PackageType: Image
       Role:
@@ -243,55 +243,55 @@ Resources:
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -333,55 +333,55 @@ Resources:
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -423,55 +423,55 @@ Resources:
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -513,55 +513,55 @@ Resources:
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -603,55 +603,55 @@ Resources:
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -693,55 +693,55 @@ Resources:
       Environment:
         Variables:
           AWS_ENV:
-            Ref: AwsEnvParameter
+            Ref: AwsEnv
           S3_PRIMARY_REGION:
             Fn::If:
               - S3PrimaryRegionisParameterEmptyCondition
-              - Ref: S3PrimaryRegionParameter
+              - Ref: S3PrimaryRegion
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_BUCKET_ARN:
             Fn::If:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesBucketArnParameter
+              - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Ref: DocumentTemplatesS3KeyPrefixParameter
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
-              - Ref: DocumentTemplatesDynamodbTableArnParameter
+              - Ref: DocumentTemplatesDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: DocumentTemplatesDynamodbPartitionKeyPrefixParameter
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
           GENERATED_DOCUMENTS_BUCKET_ARN:
             Fn::If:
               - GeneratedDocumentsBucketArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsBucketArnParameter
+              - Ref: GeneratedDocumentsBucketArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Ref: GeneratedDocumentsS3KeyPrefixParameter
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
-              - Ref: GeneratedDocumentsDynamodbTableArnParameter
+              - Ref: GeneratedDocumentsDynamodbTableArn
               - Fn::Sub:
                   - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
                   - AwsEnv:
-                      Ref: AwsEnvParameter
+                      Ref: AwsEnv
           GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
-            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefixParameter
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
       Handler: index.handler
       Role:
         Fn::GetAtt:
@@ -785,12 +785,12 @@ Resources:
           - Fn::Sub:
               - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
               - AWS_ENV:
-                  Ref: AwsEnvParameter
+                  Ref: AwsEnv
         detail:
           object:
             key:
               - prefix:
-                  Ref: DocumentTemplatesS3KeyPrefixParameter
+                  Ref: DocumentTemplatesS3KeyPrefix
       State: ENABLED
       Targets:
         - Arn:
@@ -822,7 +822,7 @@ Resources:
         Fn::Sub:
           - processproof-${AWS_ENV}-document-templating-service
           - AWS_ENV:
-              Ref: AwsEnvParameter
+              Ref: AwsEnv
       ProtocolType: HTTP
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Resource
