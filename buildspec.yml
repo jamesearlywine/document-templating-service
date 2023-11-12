@@ -10,6 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
+      - confd -onetime -backend env
   build:
     commands:
       - echo Build started on `date`

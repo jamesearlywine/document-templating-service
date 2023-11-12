@@ -23,10 +23,10 @@ export const ConfigKeys = {
 export const DEFAULT_VALUES = {
   AWS_ENV: "DEV",
   AWS_ENV_EPHEMERAL: "DEV",
-  DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: "DOCUMENT_TEMPLATE",
   DOCUMENT_TEMPLATES_S3_KEY_PREFIX: "document_templates",
-  GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
+  DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: "DOCUMENT_TEMPLATE",
   GENERATED_DOCUMENTS_S3_KEY_PREFIX: "generated_documents",
+  GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
 };
 
 export let AwsEnvParameter: cdk.CfnParameter;
@@ -55,7 +55,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "Primary region for s3 buckets/client",
         default: "",
       }),
-      value: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}", {
+      query: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}", {
         AwsEnv: AwsEnvParameter.valueAsString,
       }),
     })
@@ -65,7 +65,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "ARN of the document templates bucket",
         default: "",
       }),
-      value: cdk.Fn.sub(
+      query: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}",
         {
           AwsEnv: AwsEnvParameter.valueAsString,
@@ -85,7 +85,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "ARN of the document templates dynamodb table",
         default: "",
       }),
-      value: cdk.Fn.sub(
+      query: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
           AwsEnv: AwsEnvParameter.valueAsString,
@@ -105,7 +105,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "ARN of the generated documents bucket",
         default: "",
       }),
-      value: cdk.Fn.sub(
+      query: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}",
         {
           AwsEnv: AwsEnvParameter.valueAsString,
@@ -125,7 +125,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "ARN of the generated documents dynamodb table",
         default: "",
       }),
-      value: cdk.Fn.sub(
+      query: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
           AwsEnv: AwsEnvParameter.valueAsString,

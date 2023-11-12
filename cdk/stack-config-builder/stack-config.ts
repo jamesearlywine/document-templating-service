@@ -1,4 +1,4 @@
-import { StackConfigItem, StackConfigOptions } from "./stack-config-item";
+import { StackConfigItem, StackConfigItemOptions } from "./stack-config-item";
 import { Construct } from "constructs";
 
 export class StackConfig {
@@ -9,14 +9,14 @@ export class StackConfig {
     this.parentScope = scope;
   }
 
-  set(key: string, stackConfigOptions: StackConfigOptions | string) {
-    if (stackConfigOptions === null || stackConfigOptions === undefined) {
-      stackConfigOptions = "";
+  set(key: string, stackConfigItemOptions: StackConfigItemOptions | string) {
+    if (stackConfigItemOptions === null || stackConfigItemOptions === undefined) {
+      stackConfigItemOptions = "";
     }
-    if (typeof stackConfigOptions === "string") {
-      stackConfigOptions = { value: stackConfigOptions };
+    if (typeof stackConfigItemOptions === "string") {
+      stackConfigItemOptions = { value: stackConfigItemOptions };
     }
-    this.stackConfigItems[key] = StackConfigItem.create(this.parentScope, key, stackConfigOptions);
+    this.stackConfigItems[key] = StackConfigItem.create(this.parentScope, key, stackConfigItemOptions);
     return this;
   }
 
