@@ -251,12 +251,7 @@ export class Stack extends cdk.Stack {
             object: {
               key: [
                 {
-                  prefix: cdk.Fn.sub(
-                    "{{resolve:ssm:/${AWS_ENV}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
-                    {
-                      AWS_ENV: AwsEnvParameter.valueAsString,
-                    },
-                  ),
+                  prefix: this.stackConfig.get(ConfigKeys.DocumentTemplatesS3KeyPrefix),
                 },
               ],
             },
