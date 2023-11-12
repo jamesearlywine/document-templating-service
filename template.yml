@@ -19,7 +19,7 @@ Parameters:
     Description: ARN of the document templates bucket
   DocumentTemplatesS3KeyPrefix:
     Type: String
-    Default: ""
+    Default: document_templates
     Description: S3 key prefix for document templates
   DocumentTemplatesDynamodbTableArn:
     Type: String
@@ -35,7 +35,7 @@ Parameters:
     Description: ARN of the generated documents bucket
   GeneratedDocumentsS3KeyPrefix:
     Type: String
-    Default: ""
+    Default: generated_documents
     Description: S3 key prefix for generated documents
   GeneratedDocumentsDynamodbTableArn:
     Type: String
@@ -151,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-12T08:35:19.969Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-12T08:38:55.372Z
       Environment:
         Variables:
           AWS_ENV:
@@ -173,10 +173,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -196,10 +193,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition
@@ -267,10 +261,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -290,10 +281,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition
@@ -363,10 +351,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -386,10 +371,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition
@@ -459,10 +441,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -482,10 +461,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition
@@ -555,10 +531,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -578,10 +551,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition
@@ -651,10 +621,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -674,10 +641,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition
@@ -747,10 +711,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
-            Fn::If:
-              - DocumentTemplatesS3KeyPrefixParameterNotNullCondition
-              - Ref: DocumentTemplatesS3KeyPrefix
-              - document_templates
+            Ref: DocumentTemplatesS3KeyPrefix
           DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
             Fn::If:
               - DocumentTemplatesDynamodbTableArnParameterNotNullCondition
@@ -770,10 +731,7 @@ Resources:
                   - AwsEnv:
                       Ref: AwsEnv
           GENERATED_DOCUMENTS_S3_KEY_PREFIX:
-            Fn::If:
-              - GeneratedDocumentsS3KeyPrefixParameterNotNullCondition
-              - Ref: GeneratedDocumentsS3KeyPrefix
-              - generated_documents
+            Ref: GeneratedDocumentsS3KeyPrefix
           GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
             Fn::If:
               - GeneratedDocumentsDynamodbTableArnParameterNotNullCondition

@@ -20,6 +20,15 @@ export const ConfigKeys = {
   GeneratedDocumentsDynamodbPartitionKeyPrefix: "GeneratedDocumentsDynamodbPartitionKeyPrefix",
 };
 
+export const DEFAULT_VALUES = {
+  AWS_ENV: "DEV",
+  AWS_ENV_EPHEMERAL: "DEV",
+  DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: "DOCUMENT_TEMPLATE",
+  DOCUMENT_TEMPLATES_S3_KEY_PREFIX: "document_templates",
+  GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
+  GENERATED_DOCUMENTS_S3_KEY_PREFIX: "generated_documents",
+};
+
 export let AwsEnvParameter: cdk.CfnParameter;
 export let stackConfig;
 
@@ -27,7 +36,7 @@ export const initializeStackConfig = (stack: Stack) => {
   AwsEnvParameter = new cdk.CfnParameter(stack, "AwsEnvParameter", {
     type: "String",
     description: "The AWS environment deployed to",
-    default: stack.isEphemeralStack() ? "DEV" : "DEV",
+    default: stack.isEphemeralStack() ? DEFAULT_VALUES.AWS_ENV_EPHEMERAL : DEFAULT_VALUES.AWS_ENV,
     allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
   });
 
@@ -64,9 +73,8 @@ export const initializeStackConfig = (stack: Stack) => {
       cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesS3KeyPrefix", {
         type: "String",
         description: "S3 key prefix for document templates",
-        default: "",
+        default: DEFAULT_VALUES.DOCUMENT_TEMPLATES_S3_KEY_PREFIX,
       }),
-      value: "document_templates",
     })
     .set(ConfigKeys.DocumentTemplatesDynamodbTableArn, {
       cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesDynamodbTableArn", {
@@ -85,7 +93,7 @@ export const initializeStackConfig = (stack: Stack) => {
       cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesDynamodbPartitionKeyPrefix", {
         type: "String",
         description: "Partition key prefix for document templates dynamodb table",
-        default: "DOCUMENT_TEMPLATE",
+        default: DEFAULT_VALUES.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX,
       }),
     })
     .set(ConfigKeys.GeneratedDocumentsBucketArn, {
@@ -102,9 +110,8 @@ export const initializeStackConfig = (stack: Stack) => {
       cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsS3KeyPrefix", {
         type: "String",
         description: "S3 key prefix for generated documents",
-        default: "",
+        default: DEFAULT_VALUES.GENERATED_DOCUMENTS_S3_KEY_PREFIX,
       }),
-      value: "generated_documents",
     })
     .set(ConfigKeys.GeneratedDocumentsDynamodbTableArn, {
       cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsDynamodbTableArn", {
@@ -123,7 +130,7 @@ export const initializeStackConfig = (stack: Stack) => {
       cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsDynamodbPartitionKeyPrefix", {
         type: "String",
         description: "Partition key prefix for generated documents dynamodb table",
-        default: "GENERATED_DOCUMENT",
+        default: DEFAULT_VALUES.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX,
       }),
     });
 
