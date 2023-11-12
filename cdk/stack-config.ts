@@ -83,10 +83,14 @@ export class StackConfig {
       default: "{{resolve:ssm:/dev/processproof-s3-buckets/general-private-bucket-arn}}",
     });
 
-    this.generatedDocumentsDynamodbPartitionKeyPrefix = new cdk.CfnParameter(stack, "GeneratedDocumentsS3KeyPrefix", {
-      type: "String",
-      description: "S3 key prefix for generated documents",
-      default: "GENERATED_DOCUMENT",
-    });
+    this.generatedDocumentsDynamodbPartitionKeyPrefix = new cdk.CfnParameter(
+      stack,
+      "GeneratedDocumentsDynamodbPartitionKeyPrefix",
+      {
+        type: "String",
+        description: "S3 key prefix for generated documents",
+        default: "GENERATED_DOCUMENT",
+      },
+    );
   }
 }
