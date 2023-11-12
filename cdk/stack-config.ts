@@ -66,12 +66,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "S3 key prefix for document templates",
         default: "",
       }),
-      value: cdk.Fn.sub(
-        "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
-        {
-          AwsEnv: AwsEnvParameter.valueAsString,
-        },
-      ),
+      value: "document_templates",
     })
     .set(ConfigKeys.DocumentTemplatesDynamodbTableArn, {
       cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesDynamodbTableArn", {
@@ -109,12 +104,7 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "S3 key prefix for generated documents",
         default: "",
       }),
-      value: cdk.Fn.sub(
-        "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
-        {
-          AwsEnv: AwsEnvParameter.valueAsString,
-        },
-      ),
+      value: "generated_documents",
     })
     .set(ConfigKeys.GeneratedDocumentsDynamodbTableArn, {
       cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsDynamodbTableArn", {
