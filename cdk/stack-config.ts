@@ -65,9 +65,12 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "ARN of the document templates bucket",
         default: "",
       }),
-      value: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
-        AwsEnv: AwsEnvParameter.valueAsString,
-      }),
+      value: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}",
+        {
+          AwsEnv: AwsEnvParameter.valueAsString,
+        },
+      ),
     })
     .set(ConfigKeys.DocumentTemplatesS3KeyPrefix, {
       cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesS3KeyPrefix", {
@@ -102,9 +105,12 @@ export const initializeStackConfig = (stack: Stack) => {
         description: "ARN of the generated documents bucket",
         default: "",
       }),
-      value: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
-        AwsEnv: AwsEnvParameter.valueAsString,
-      }),
+      value: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}",
+        {
+          AwsEnv: AwsEnvParameter.valueAsString,
+        },
+      ),
     })
     .set(ConfigKeys.GeneratedDocumentsS3KeyPrefix, {
       cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsS3KeyPrefix", {
