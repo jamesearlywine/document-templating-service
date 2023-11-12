@@ -27,19 +27,27 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
 ## How to configure
   - `cdk/stack-config.ts`
     - Define a ConfigKey on StackConfig
-    - Set a ConfigValue on stack-config
-      - this can be a simple string value: "some-config-value"
-      - this can be an ssm query: "{{resolve:ssm:/path/to/ssm/parameter:1}}"
-    - Define a CfnParameter on StackConfig with a default value
-      - this can have a simple string default value
-      - this can be overriden:
-        - when deploying from the command line
-          - overrides specified in a config file
-          - overrides specifies  in cli args
-          - `cdk.json`
-        - when deploying from pipeline 
-          - overrides specified in pipeline
-          - overrides specified in a template.config.{env}.json file (must enable this in pipeline)
+    - Set a value on stack-config
+      - this can be a simple string `value`: "some-config-value"
+      - this can be a `cfnParameter` on StackConfig with a default value
+        - this can have a simple string default value
+        - this can be overriden:
+          - when deploying from the command line
+            - overrides specified in a config file
+            - overrides specifies  in cli args
+            - `cdk.json`
+          - when deploying from pipeline 
+            - overrides specified in pipeline
+            - overrides specified in a template.config.{env}.json file (must enable this in pipeline)
+      - this can be a `query`
+    - Order of Evaluations for `StackConfig.get(key)`:
+      - Note: StackConfigItemOptions requires a `query` or a `value` or a `cfnParameter` 
+      - If a `value` is set, that value is returned (resolved at compile-time)
+      - If a `cfnParameter` is set
+        - If that value is a non-empty value, that value is returned (resolved at deploy-time)
+        - If that value is an empty value, the `query` result is returned (resolved at deploy-time)
+      - If neither `value` nor `cfnParameter` is set, the `query` result is returned (resolved at deploy-time)
+        - example: `{{resolve:ssm:parameter-name}}`
         
 ## How to deploy
 - to deploy an ephemeral stack 
