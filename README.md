@@ -26,12 +26,12 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
 
 ## How to configure
   - `cdk/stack-config.ts`
-    - Define a key/value on StackConfig
-      - this can be a simple string value
-      - this can be resolved from ssm: "{{resolve:ssm:/path/to/ssm/parameter:1}}"
+    - Define a ConfigKey on StackConfig
+    - Set a ConfigValue on stack-config
+      - this can be a simple string value: "some-config-value"
+      - this can be an ssm query: "{{resolve:ssm:/path/to/ssm/parameter:1}}"
     - Define a CfnParameter on StackConfig with a default value
-      - this can be a simple string value
-      - this can be resolved from ssm: "{{resolve:ssm:/path/to/ssm/parameter:1}}"
+      - this can have a simple string default value
       - this can be overriden:
         - when deploying from the command line
           - overrides specified in a config file
