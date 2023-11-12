@@ -7,6 +7,7 @@ export class StackConfig {
   privateSubnetAvailabilityZone: string;
   privateSubnetRouteTableId: string;
 
+  awsEnv: cdk.CfnParameter;
   s3PrimaryRegion: cdk.CfnParameter;
   documentTemplatesBucketArn: cdk.CfnParameter;
   documentTemplatesS3KeyPrefix: cdk.CfnParameter;
@@ -22,6 +23,13 @@ export class StackConfig {
     this.privateSubnetId = "subnet-036f5f2f9c607cf2a";
     this.privateSubnetAvailabilityZone = "us-east-2a";
     this.privateSubnetRouteTableId = "rtb-00b7d5ea4cdb82c73";
+
+    this.awsEnv = new cdk.CfnParameter(stack, "AwsEnv", {
+      type: "String",
+      description: "The AWS application environment",
+      default: "dev",
+      allowedValues: ["dev", "qa", "prod"],
+    });
 
     this.s3PrimaryRegion = new cdk.CfnParameter(stack, "S3PrimaryRegion", {
       type: "String",
