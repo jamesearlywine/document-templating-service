@@ -1,127 +1,141 @@
-import * as cdk from "aws-cdk-lib";
+import { StackConfig } from "./stack-config-builder/stack-config";
 import { Stack } from "./stack";
+import * as cdk from "aws-cdk-lib";
 
-export const ephemeralPrefix = "jle";
+export const ConfigKeys = {
+  EphemeralPrefix: "EphemeralPrefix",
+  PrivateSubnetId: "PrivateSubnetId",
+  PrivateSubnetAvailabilityZone: "PrivateSubnetAvailabilityZone",
+  PrivateSubnetRouteTableId: "PrivateSubnetRouteTableId",
+  VpcId: "VpcId",
+  AwsEnv: "AwsEnv",
+  S3PrimaryRegion: "S3PrimaryRegion",
+  DocumentTemplatesBucketArn: "DocumentTemplatesBucketArn",
+  DocumentTemplatesS3KeyPrefix: "DocumentTemplatesS3KeyPrefix",
+  DocumentTemplatesDynamodbTableArn: "DocumentTemplatesDynamodbTableArn",
+  DocumentTemplatesDynamodbPartitionKeyPrefix: "DocumentTemplatesDynamodbPartitionKeyPrefix",
+  GeneratedDocumentsBucketArn: "GeneratedDocumentsBucketArn",
+  GeneratedDocumentsS3KeyPrefix: "GeneratedDocumentsS3KeyPrefix",
+  GeneratedDocumentsDynamodbTableArn: "GeneratedDocumentsDynamodbTableArn",
+  GeneratedDocumentsDynamodbPartitionKeyPrefix: "GeneratedDocumentsDynamodbPartitionKeyPrefix",
+};
 
-export class StackConfig {
-  static DEFAULT_VALUES = {
-    AWS_ENV: "dev",
-    AWS_ENV_EPHEMERAL: "dev",
-    DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX: "DOCUMENT_TEMPLATE",
-    GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX: "GENERATED_DOCUMENT",
-  };
+export let AwsEnvParameter: cdk.CfnParameter;
+export let stackConfig;
 
-  awsEnv: cdk.CfnParameter;
+export const initializeStackConfig = (stack: Stack) => {
+  AwsEnvParameter = new cdk.CfnParameter(stack, "AwsEnvParameter", {
+    type: "String",
+    description: "The AWS environment deployed to",
+    default: stack.isEphemeralStack() ? "DEV" : "DEV",
+    allowedValues: ["EPHEMERAL", "DEV", "TEST", "STAGING", "PROD"],
+  });
 
-  vpcId: string;
-  privateSubnetId: string;
-  privateSubnetAvailabilityZone: string;
-  privateSubnetRouteTableId: string;
-
-  s3PrimaryRegion: cdk.CfnParameter;
-  documentTemplatesBucketArn: cdk.CfnParameter;
-  documentTemplatesS3KeyPrefix: cdk.CfnParameter;
-  documentTemplatesDynamodbTableArn: cdk.CfnParameter;
-  documentTemplatesDynamodbPartitionKeyPrefix: cdk.CfnParameter;
-  generatedDocumentsBucketArn: cdk.CfnParameter;
-  generatedDocumentsS3KeyPrefix: cdk.CfnParameter;
-  generatedDocumentsDynamodbTableArn: cdk.CfnParameter;
-  generatedDocumentsDynamodbPartitionKeyPrefix: cdk.CfnParameter;
-
-  constructor(stack: Stack) {
-    this.awsEnv = new cdk.CfnParameter(stack, "AwsEnv", {
-      type: "String",
-      description: "The AWS application environment",
-      default: stack.isEphemeralStack()
-        ? StackConfig.DEFAULT_VALUES.AWS_ENV_EPHEMERAL
-        : StackConfig.DEFAULT_VALUES.AWS_ENV,
-      allowedValues: ["dev", "qa", "prod"],
-    });
-
-    this.vpcId = "vpc-058c5ee1e09681197";
-    this.privateSubnetId = "subnet-036f5f2f9c607cf2a";
-    this.privateSubnetAvailabilityZone = "us-east-2a";
-    this.privateSubnetRouteTableId = "rtb-00b7d5ea4cdb82c73";
-
-    this.s3PrimaryRegion = new cdk.CfnParameter(stack, "S3PrimaryRegion", {
-      type: "String",
-      description: "Primary region for s3 buckets/client",
-      default: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}", {
-        AwsEnv: this.awsEnv.valueAsString,
+  stackConfig = StackConfig.create(stack)
+    .set(ConfigKeys.EphemeralPrefix, stack.ephemeralPrefix)
+    .set(ConfigKeys.VpcId, "vpc-058c5ee1e09681197")
+    .set(ConfigKeys.PrivateSubnetId, "subnet-036f5f2f9c607cf2a")
+    .set(ConfigKeys.PrivateSubnetAvailabilityZone, "us-east-2a")
+    .set(ConfigKeys.PrivateSubnetRouteTableId, "rtb-00b7d5ea4cdb82c73")
+    .set(ConfigKeys.AwsEnv, {
+      cfnParameter: AwsEnvParameter,
+    })
+    .set(ConfigKeys.S3PrimaryRegion, {
+      cfnParameter: new cdk.CfnParameter(stack, "S3PrimaryRegion", {
+        type: "String",
+        description: "Primary region for s3 buckets/client",
+        default: "",
       }),
-    });
-
-    this.documentTemplatesBucketArn = new cdk.CfnParameter(stack, "DocumentTemplatesBucketArn", {
-      type: "String",
-      description: "ARN of the document templates bucket",
-      default: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
-        AwsEnv: this.awsEnv.valueAsString,
+      value: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}", {
+        AwsEnv: AwsEnvParameter.valueAsString,
       }),
-    });
-
-    this.documentTemplatesS3KeyPrefix = new cdk.CfnParameter(stack, "DocumentTemplatesS3KeyPrefix", {
-      type: "String",
-      description: "S3 key prefix for document templates",
-      default: cdk.Fn.sub(
+    })
+    .set(ConfigKeys.DocumentTemplatesBucketArn, {
+      cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesBucketArn", {
+        type: "String",
+        description: "ARN of the document templates bucket",
+        default: "",
+      }),
+      value: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
+        AwsEnv: AwsEnvParameter.valueAsString,
+      }),
+    })
+    .set(ConfigKeys.DocumentTemplatesS3KeyPrefix, {
+      cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesS3KeyPrefix", {
+        type: "String",
+        description: "S3 key prefix for document templates",
+        default: "",
+      }),
+      value: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/document-templates}}",
         {
-          AwsEnv: this.awsEnv.valueAsString,
+          AwsEnv: AwsEnvParameter.valueAsString,
         },
       ),
-    });
-
-    this.documentTemplatesDynamodbTableArn = new cdk.CfnParameter(stack, "DocumentTemplatesDynamodbTableArn", {
-      type: "String",
-      description: "ARN of the document templates dynamodb table",
-      default: cdk.Fn.sub(
+    })
+    .set(ConfigKeys.DocumentTemplatesDynamodbTableArn, {
+      cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesDynamodbTableArn", {
+        type: "String",
+        description: "ARN of the document templates dynamodb table",
+        default: "",
+      }),
+      value: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
         {
-          AwsEnv: this.awsEnv.valueAsString,
+          AwsEnv: AwsEnvParameter.valueAsString,
         },
       ),
-    });
-
-    this.documentTemplatesDynamodbPartitionKeyPrefix = new cdk.CfnParameter(
-      stack,
-      "DocumentTemplatesDynamodbPartitionKeyPrefix",
-      {
+    })
+    .set(ConfigKeys.DocumentTemplatesDynamodbPartitionKeyPrefix, {
+      cfnParameter: new cdk.CfnParameter(stack, "DocumentTemplatesDynamodbPartitionKeyPrefix", {
         type: "String",
         description: "Partition key prefix for document templates dynamodb table",
-        default: StackConfig.DEFAULT_VALUES.DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX,
-      },
-    );
-
-    this.generatedDocumentsBucketArn = new cdk.CfnParameter(stack, "GeneratedDocumentsBucketArn", {
-      type: "String",
-      description: "ARN of the generated documents bucket",
-      default: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
-        AwsEnv: this.awsEnv.valueAsString,
+        default: "DOCUMENT_TEMPLATE",
       }),
-    });
-
-    this.generatedDocumentsS3KeyPrefix = new cdk.CfnParameter(stack, "GeneratedDocumentsS3KeyPrefix", {
-      type: "String",
-      description: "S3 key prefix for generated documents",
-      default: cdk.Fn.sub(
+    })
+    .set(ConfigKeys.GeneratedDocumentsBucketArn, {
+      cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsBucketArn", {
+        type: "String",
+        description: "ARN of the generated documents bucket",
+        default: "",
+      }),
+      value: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
+        AwsEnv: AwsEnvParameter.valueAsString,
+      }),
+    })
+    .set(ConfigKeys.GeneratedDocumentsS3KeyPrefix, {
+      cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsS3KeyPrefix", {
+        type: "String",
+        description: "S3 key prefix for generated documents",
+        default: "",
+      }),
+      value: cdk.Fn.sub(
         "{{resolve:ssm:/${AwsEnv}/processproof-s3-bucket/general-private-bucket/s3-key-prefixes/generated-documents}}",
         {
-          AwsEnv: this.awsEnv.valueAsString,
+          AwsEnv: AwsEnvParameter.valueAsString,
         },
       ),
-    });
-
-    this.generatedDocumentsDynamodbTableArn = new cdk.CfnParameter(stack, "GeneratedDocumentsDynamodbTableArn", {
-      type: "String",
-      description: "ARN of the generated documents dynamodb table",
-      default: cdk.Fn.sub("{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/general-private-bucket-arn}}", {
-        AwsEnv: this.awsEnv.valueAsString,
+    })
+    .set(ConfigKeys.GeneratedDocumentsDynamodbTableArn, {
+      cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsDynamodbTableArn", {
+        type: "String",
+        description: "ARN of the generated documents dynamodb table",
+        default: "",
+      }),
+      value: cdk.Fn.sub(
+        "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}",
+        {
+          AwsEnv: AwsEnvParameter.valueAsString,
+        },
+      ),
+    })
+    .set(ConfigKeys.GeneratedDocumentsDynamodbPartitionKeyPrefix, {
+      cfnParameter: new cdk.CfnParameter(stack, "GeneratedDocumentsDynamodbPartitionKeyPrefix", {
+        type: "String",
+        description: "Partition key prefix for generated documents dynamodb table",
+        default: "GENERATED_DOCUMENT",
       }),
     });
 
-    this.generatedDocumentsDynamodbPartitionKeyPrefix = new cdk.CfnParameter(stack, "GeneratedDocumentsS3KeyPrefix", {
-      type: "String",
-      description: "S3 key prefix for generated documents",
-      default: StackConfig.DEFAULT_VALUES.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX,
-    });
-  }
-}
+  return stackConfig;
+};
