@@ -1,12 +1,16 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-export type StackConfigOptions = {
+export type StackConfigItemOptions = {
   value?: string;
   cfnParameter?: cdk.CfnParameter;
+  query?: string;
 } & (
   | {
       value: string;
+    }
+  | {
+      query: string;
     }
   | {
       cfnParameter: cdk.CfnParameter;
@@ -17,26 +21,29 @@ export class StackConfigItem {
   key: string;
   value?: string;
   cfnParameter?: cdk.CfnParameter;
+  query?: string;
 
   parentScope: Construct;
-  cfnParameterNotNullCondition: cdk.CfnCondition;
+  isCfnParameterValueEmptyCondition: cdk.CfnCondition;
 
-  constructor(scope, key, stackConfigOptions: StackConfigOptions) {
+  constructor(scope, key, stackConfigItemOptions: StackConfigItemOptions) {
     this.parentScope = scope;
     this.key = key;
-    this.value = stackConfigOptions.value;
-    this.cfnParameter = stackConfigOptions.cfnParameter;
-    this.cfnParameter?.overrideLogicalId(this.key);
+    this.value = stackConfigItemOptions.value;
+    this.cfnParameter = stackConfigItemOptions.cfnParameter;
+    this.cfnParameter?.overrideLogicalId(`${this.key}Parameter`);
 
     if (this.cfnParameter) {
-      this.cfnParameterNotNullCondition = new cdk.CfnCondition(
+      this.isCfnParameterValueEmptyCondition = new cdk.CfnCondition(
         this.parentScope,
-        `${this.key}_ParameterNotNullCondition`,
+        `${this.key}_isParameterEmptyCondition`,
         {
           expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(this.cfnParameter, "")),
         },
       );
     }
+
+    this.query = stackConfigItemOptions.query;
   }
 
   /**
@@ -49,17 +56,21 @@ export class StackConfigItem {
 
    */
   get: () => string | cdk.ICfnRuleConditionExpression = () => {
-    if (this.cfnParameter && !this.value) {
+    if (this.value !== null && this.value !== undefined) {
+      return this.value;
+    }
+
+    if (this.cfnParameter && !this.query) {
       return this.cfnParameter.valueAsString;
     }
-    if (this.cfnParameter && this.value) {
-      return cdk.Fn.conditionIf(this.cfnParameterNotNullCondition.logicalId, this.cfnParameter, this.value);
+    if (this.cfnParameter && this.query) {
+      return cdk.Fn.conditionIf(this.isCfnParameterValueEmptyCondition.logicalId, this.cfnParameter, this.query);
     }
 
-    return this.value;
+    return this.query;
   };
 
-  static create(scope: Construct, key: string, stackConfigOptions: StackConfigOptions) {
-    return new StackConfigItem(scope, key, stackConfigOptions);
+  static create(scope: Construct, key: string, stackConfigItemOptions: StackConfigItemOptions) {
+    return new StackConfigItem(scope, key, stackConfigItemOptions);
   }
 }
