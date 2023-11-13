@@ -1,6 +1,7 @@
 import { DocumentTemplateRepository } from "src/data/dynamo/document-template-repository/document-template-repository";
 import {
   DOCUMENT_TEMPLATE_LATEST_SCHEMA_VERSION,
+  DOCUMENT_TEMPLATE_SCHEMA_TYPE,
   DocumentTemplate,
 } from "src/data/domain/document-template.type";
 import { Optional } from "utility-types";
@@ -9,10 +10,7 @@ import { mapDocumentTemplateDynamoRecord } from "src/data/dynamo/document-templa
 import { DocumentTemplateFileRepository } from "src/data/s3/document-template-file-repository/document-template-file-repository";
 
 export class CreateOrUpdateDocumentTemplateController {
-  static PUT = async (
-    id: string,
-    requestBody: Optional<DocumentTemplate, "id">,
-  ) => {
+  static PUT = async (id: string, requestBody: Optional<DocumentTemplate, "id">) => {
     const templateId = id || requestBody.id || null;
 
     const validationErrors = getValidationErrors(id, requestBody);
@@ -26,20 +24,13 @@ export class CreateOrUpdateDocumentTemplateController {
       };
     }
 
-    const [
-      documentTemplateByIdResponse,
-      documentTemplateByTemplateNameResponse,
-    ] = await Promise.all([
+    const [documentTemplateByIdResponse, documentTemplateByTemplateNameResponse] = await Promise.all([
       DocumentTemplateRepository.getDocumentTemplateRecordById(templateId),
-      DocumentTemplateRepository.getDocumentTemplateRecordByTemplateName(
-        requestBody.templateName,
-      ),
+      DocumentTemplateRepository.getDocumentTemplateRecordByTemplateName(requestBody.templateName),
     ]);
 
     const existingDocumentTemplate =
-      documentTemplateByIdResponse.Count === 1
-        ? documentTemplateByIdResponse.results[0]
-        : null;
+      documentTemplateByIdResponse.Count === 1 ? documentTemplateByIdResponse.results[0] : null;
 
     if (
       documentTemplateByTemplateNameResponse.Count > 0 &&
@@ -54,18 +45,15 @@ export class CreateOrUpdateDocumentTemplateController {
     }
 
     const presignedUploadUrlData =
-      await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(
-        templateId,
-      );
+      await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(templateId);
     const presignedUploadUrl = presignedUploadUrlData.presignedUrl;
 
     const newDocumentTemplate = {
       ...documentTemplateByIdResponse.results[0],
       ...requestBody,
       id: templateId,
-      type: "processproof:DocumentTemplate" as const,
-      schemaVersion:
-        requestBody.schemaVersion || DOCUMENT_TEMPLATE_LATEST_SCHEMA_VERSION,
+      _type: DOCUMENT_TEMPLATE_SCHEMA_TYPE,
+      schemaVersion: requestBody._schemaVersion || DOCUMENT_TEMPLATE_LATEST_SCHEMA_VERSION,
 
       sampleDocumentData: requestBody.sampleDocumentData,
       templateKeyDescriptions: requestBody.templateKeyDescriptions,
@@ -76,12 +64,9 @@ export class CreateOrUpdateDocumentTemplateController {
           : new Date().toISOString(),
     };
 
-    const dynamoResponse =
-      await DocumentTemplateRepository.putDocumentTemplateRecord(
-        mapDocumentTemplateDynamoRecord.fromDocumentTemplate(
-          newDocumentTemplate,
-        ),
-      );
+    const dynamoResponse = await DocumentTemplateRepository.putDocumentTemplateRecord(
+      mapDocumentTemplateDynamoRecord.fromDocumentTemplate(newDocumentTemplate),
+    );
 
     return { documentTemplate: newDocumentTemplate, presignedUploadUrl };
   };
