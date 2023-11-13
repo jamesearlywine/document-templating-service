@@ -31,7 +31,7 @@ export class StackConfigItem {
     this.key = key;
     this.value = stackConfigItemOptions.value;
     this.cfnParameter = stackConfigItemOptions.cfnParameter;
-    this.cfnParameter?.overrideLogicalId(`${this.key}Parameter`);
+    this.cfnParameter?.overrideLogicalId(key);
 
     if (this.cfnParameter) {
       this.isCfnParameterValueEmptyCondition = new cdk.CfnCondition(
