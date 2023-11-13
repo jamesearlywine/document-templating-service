@@ -4,7 +4,6 @@ import { NodeJsClient } from "@smithy/types";
 import { DocumentTemplate } from "src/data/domain/document-template.type";
 import { createPresignedUrl } from "src/data/s3/common/create-presigned-url";
 import { ONE_HOUR_SECONDS } from "src/utility/datetime";
-import { StorageTypes } from "src/utility/common/storage-types";
 import DocumentTemplateFileRepositoryConfig from "./document-template-file-repository.config";
 import { PresignedUrlData } from "../common/";
 import fs from "fs";

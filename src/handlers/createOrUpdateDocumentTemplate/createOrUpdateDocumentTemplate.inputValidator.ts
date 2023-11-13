@@ -9,7 +9,6 @@ const documentTemplateSchema = Joi.object({
   docType: Joi.string().required(),
   id: Joi.string(),
   description: Joi.string(),
-  storageType: Joi.string(),
   storageLocation: Joi.string(),
   filepath: Joi.string(),
   fileExtension: Joi.string(),
@@ -31,8 +30,7 @@ export const getValidationErrors = (id, requestBody) => {
     }
   }
 
-  const documentTemplateValidation =
-    documentTemplateSchema.validate(requestBody);
+  const documentTemplateValidation = documentTemplateSchema.validate(requestBody);
   if (documentTemplateValidation.error) {
     validationErrors.push(documentTemplateValidation.error);
   }
