@@ -20,6 +20,7 @@ export class StackConfig {
     return this;
   }
 
+  // @todo query from lambda for param store values, don't set them in cdk
   get(key: string) {
     const stackConfigItem = this.stackConfigItems[key];
     if (!stackConfigItem) {
