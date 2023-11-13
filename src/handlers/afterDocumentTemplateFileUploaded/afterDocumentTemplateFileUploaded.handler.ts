@@ -30,26 +30,17 @@ export const handler = async (event: {
   console.log("afterDocumentTemplateFileUploaded.handler, event: ", event);
 
   const templateId = event.detail.object.key.split("/")[1];
-  const storageType = event.source;
   const storageLocation = event.detail.bucket.name;
   const filepath = event.detail.object.key;
   const fileExtension = extractFileExtension(filepath);
 
-  const dynamoResponse =
-    await DocumentTemplateRepository.updateDocumentTemplateRecordById(
-      templateId,
-      {
-        storageType,
-        storageLocation,
-        filepath,
-        fileExtension,
-        documentTemplateFileUploadedAt: new Date().toISOString(),
-        documentTemplateFileHash: event.detail.object.etag,
-      },
-    );
+  const dynamoResponse = await DocumentTemplateRepository.updateDocumentTemplateRecordById(templateId, {
+    storageLocation,
+    filepath,
+    fileExtension,
+    documentTemplateFileUploadedAt: new Date().toISOString(),
+    documentTemplateFileHash: event.detail.object.etag,
+  });
 
-  console.log(
-    "afterDocumentTemplateFileUploaded.handler, dynamoResponse: ",
-    dynamoResponse,
-  );
+  console.log("afterDocumentTemplateFileUploaded.handler, dynamoResponse: ", dynamoResponse);
 };

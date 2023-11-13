@@ -1,12 +1,7 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { RequestPresigningArguments } from "@smithy/types/dist-types/signature";
 import GeneratedDocumentFileRepositoryConfig from "./generated-document-file-repository.config";
-import {
-  extractFileExtension,
-  FileExtension,
-  FileExtensions,
-} from "src/utility/file-management";
-import { StorageTypes } from "src/utility/common/storage-types";
+import { extractFileExtension, FileExtension, FileExtensions } from "src/utility/file-management";
 import { createPresignedUrl } from "src/data/s3/common";
 import { GeneratedDocumentFile } from "./generated-document-file.type";
 import { GeneratedDocument } from "src/data/domain/generated-document.type";
@@ -18,9 +13,7 @@ let initialized: Promise<unknown>;
 
 export const initialize = async () => {
   if (!initialized) {
-    initialized = Promise.all([
-      await GeneratedDocumentFileRepositoryConfig.initialize(),
-    ]);
+    initialized = Promise.all([await GeneratedDocumentFileRepositoryConfig.initialize()]);
   }
 
   return initialized;
@@ -39,14 +32,10 @@ export const uploadGeneratedDocumentFile = async ({
 }): Promise<GeneratedDocumentFile> => {
   await GeneratedDocumentFileRepositoryConfig.initialize();
 
-  const extractedFileExtension =
-    extractFileExtension(localFilepath).toLowerCase();
-  const filename = `${id}.${
-    fileExtension ?? extractedFileExtension ?? DEFAULT_FILE_EXTENSION
-  }`;
+  const extractedFileExtension = extractFileExtension(localFilepath).toLowerCase();
+  const filename = `${id}.${fileExtension ?? extractedFileExtension ?? DEFAULT_FILE_EXTENSION}`;
 
-  const s3BucketName =
-    GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_BUCKET_NAME;
+  const s3BucketName = GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_BUCKET_NAME;
   const s3Key = `${GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${filename}`;
 
   const client = new S3Client({
@@ -64,8 +53,6 @@ export const uploadGeneratedDocumentFile = async ({
     ContentLength: contentLength,
   });
   await client.send(command);
-
-  const storageType = StorageTypes.AWS_S3;
 
   return {
     documentId: id,
@@ -86,8 +73,7 @@ export const generatePresignedDownlaodUrlForGeneratedDocument = async ({
 }) => {
   return await createPresignedUrl({
     region: GeneratedDocumentFileRepositoryConfig.S3_BUCKETS_PRIMARY_REGION,
-    bucket:
-      GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_BUCKET_NAME,
+    bucket: GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_BUCKET_NAME,
     key: `${GeneratedDocumentFileRepositoryConfig.GENERATED_DOCUMENTS_S3_KEY_PREFIX}/${generatedDocument.filename}`,
     options,
   });
