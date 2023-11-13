@@ -10,17 +10,11 @@ import { PresignedUrlData } from "../common/";
 import fs from "fs";
 import { Readable } from "stream";
 
-export const ErrorMessages = {
-  UNSUPPORTED_STORAGE_TYPE: "Unsupported storage type",
-};
-
 let initialized: Promise<unknown>;
 
 export const initialize = async () => {
   if (!initialized) {
-    initialized = Promise.all([
-      await DocumentTemplateFileRepositoryConfig.initialize(),
-    ]);
+    initialized = Promise.all([await DocumentTemplateFileRepositoryConfig.initialize()]);
   }
 
   return initialized;
@@ -44,10 +38,7 @@ export const getDocumentTemplateFilePresignedUploadUrl = async (
   });
 };
 
-const getDocumentTemplateFileFromS3 = async (
-  documentTemplate: DocumentTemplate,
-  localFilepath: string,
-) => {
+const getDocumentTemplateFileFromS3 = async (documentTemplate: DocumentTemplate, localFilepath: string) => {
   const s3Client = new S3Client({
     region: DocumentTemplateFileRepositoryConfig.S3_BUCKETS_PRIMARY_REGION,
   }) as NodeJsClient<S3Client>;
@@ -56,8 +47,7 @@ const getDocumentTemplateFileFromS3 = async (
   const getObjectCommand = new GetObjectCommand({
     Bucket: documentTemplate.storageLocation,
     Key: documentTemplate.filepath,
-    ResponseContentType:
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ResponseContentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   });
 
   try {
@@ -87,19 +77,10 @@ const getDocumentTemplateFileFromS3 = async (
   return false;
 };
 
-export const getDocumentTemplateFile = async (
-  documentTemplate: DocumentTemplate,
-  localFilepath: string,
-) => {
+export const getDocumentTemplateFile = async (documentTemplate: DocumentTemplate, localFilepath: string) => {
   await DocumentTemplateFileRepository.initialize();
 
-  if (documentTemplate.storageType === StorageTypes.AWS_S3) {
-    return getDocumentTemplateFileFromS3(documentTemplate, localFilepath);
-  }
-
-  throw new Error(
-    `${ErrorMessages.UNSUPPORTED_STORAGE_TYPE}: ${documentTemplate.storageType}`,
-  );
+  return getDocumentTemplateFileFromS3(documentTemplate, localFilepath);
 };
 
 export const DocumentTemplateFileRepository = {
