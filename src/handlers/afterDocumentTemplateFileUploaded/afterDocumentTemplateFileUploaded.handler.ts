@@ -9,11 +9,11 @@ export const handler = async (event: {
   account: string; // '546515125053',
   time: string; // '2023-10-01T05:00:53Z',
   region: string; // 'us-east-2',
-  resources: string[]; // [ 'arn:aws:s3:::processproof-dev-general-private' ]
+  resources: string[]; // [ 'arn:aws:s3:::document-templating-service-filestore' ]
   detail: {
     version: string; // '0'
     bucket: {
-      name: string; // 'processproof-dev-general-private'
+      name: string; // 'document-templating-service-filestore'
     };
     object: {
       key: string; // 'document-templates/79a9a341-03a8-46a6-8c2c-cc34a4efe011/template-3fx6ism8gy6.docx',
