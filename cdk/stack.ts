@@ -242,11 +242,7 @@ export class Stack extends cdk.Stack {
         eventPattern: {
           source: ["aws.s3"],
           detailType: ["Object Created"],
-          resources: [
-            cdk.Fn.sub("{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}", {
-              AWS_ENV: AwsEnvParameter.valueAsString,
-            }),
-          ],
+          resources: [this.stackConfig.get(ConfigKeys.DocumentTemplatesBucketArn) as string],
           detail: {
             object: {
               key: [

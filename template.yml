@@ -151,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-13T05:04:47.348Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-13T05:38:43.624Z
       Environment:
         Variables:
           AWS_ENV:
@@ -782,10 +782,13 @@ Resources:
         detail-type:
           - Object Created
         resources:
-          - Fn::Sub:
-              - "{{resolve:ssm:/${AWS_ENV}/processproof-s3-buckets/general-private-bucket-arn}}"
-              - AWS_ENV:
-                  Ref: AwsEnv
+          - Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
         detail:
           object:
             key:
