@@ -151,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-13T05:38:43.624Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-13T05:48:42.193Z
       Environment:
         Variables:
           AWS_ENV:
@@ -793,7 +793,10 @@ Resources:
           object:
             key:
               - prefix:
-                  Ref: DocumentTemplatesS3KeyPrefix
+                  Fn::Join:
+                    - ""
+                    - - Ref: DocumentTemplatesS3KeyPrefix
+                      - /*
       State: ENABLED
       Targets:
         - Arn:

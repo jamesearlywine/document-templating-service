@@ -247,7 +247,7 @@ export class Stack extends cdk.Stack {
             object: {
               key: [
                 {
-                  prefix: this.stackConfig.get(ConfigKeys.DocumentTemplatesS3KeyPrefix),
+                  prefix: `${this.stackConfig.get(ConfigKeys.DocumentTemplatesS3KeyPrefix)}/*`,
                 },
               ],
             },
