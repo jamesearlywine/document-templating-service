@@ -151,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-12T23:57:37.011Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-13T01:06:27.984Z
       Environment:
         Variables:
           AWS_ENV:
@@ -169,7 +169,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
@@ -257,7 +257,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
@@ -347,7 +347,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
@@ -437,7 +437,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
@@ -527,7 +527,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
@@ -617,7 +617,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
@@ -707,7 +707,7 @@ Resources:
               - DocumentTemplatesBucketArnisParameterEmptyCondition
               - Ref: DocumentTemplatesBucketArn
               - Fn::Sub:
-                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
                   - AwsEnv:
                       Ref: AwsEnv
           DOCUMENT_TEMPLATES_S3_KEY_PREFIX:

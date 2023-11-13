@@ -66,7 +66,7 @@ export const initializeStackConfig = (stack: Stack) => {
         default: "",
       }),
       query: cdk.Fn.sub(
-        "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}",
+        "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}",
         {
           AwsEnv: AwsEnvParameter.valueAsString,
         },
