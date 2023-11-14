@@ -264,7 +264,8 @@ export class Stack extends cdk.Stack {
      * API Gateway
      */
     this.api = new HttpApi(this, "Api", {
-      apiName: cdk.Fn.sub("processproof-${AWS_ENV}-document-templating-service", {
+      // make this a template parameter?
+      apiName: cdk.Fn.sub("${AWS_ENV}-document-templating-service", {
         AWS_ENV: AwsEnvParameter.valueAsString,
       }),
     });
