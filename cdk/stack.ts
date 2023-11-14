@@ -9,8 +9,6 @@ import { ConfigKeys, initializeStackConfig, AwsEnvParameter } from "./stack-conf
 import { StackConfig } from "./stack-config-builder";
 
 export class Stack extends cdk.Stack {
-  // consider refactor to parameters passed in from pipeline
-
   vpc: cdk.aws_ec2.IVpc;
   privateSubnet: cdk.aws_ec2.ISubnet;
 
@@ -264,7 +262,6 @@ export class Stack extends cdk.Stack {
      * API Gateway
      */
     this.api = new HttpApi(this, "Api", {
-      // make this a template parameter?
       apiName: cdk.Fn.sub("${AWS_ENV}-document-templating-service", {
         AWS_ENV: AwsEnvParameter.valueAsString,
       }),
