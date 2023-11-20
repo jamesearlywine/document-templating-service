@@ -341,7 +341,7 @@ export class Stack extends cdk.Stack {
       documentTemplatingServiceApiKey: new StringParameter(this, "DocumentTemplatingServiceApiKeySsmRegistration", {
         description: "The API key for the Document Templating Service REST API",
         stringValue: this.api.url,
-        parameterName: "/document-templating-service/rest-api-base-url",
+        parameterName: "/document-templating-service/rest-api-key",
       }),
     };
 
