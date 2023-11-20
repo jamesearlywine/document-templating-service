@@ -349,8 +349,8 @@ export class Stack extends cdk.Stack {
      * Stack Outputs
      */
     this.outputs = {
-      apiUrl: new CfnOutput(this, "OutputsApiUrl", {
-        value: stackConfig.get(ConfigKeys.ApiKey),
+      apiUrl: new CfnOutput(this, "OutputsApiBaseUrl", {
+        value: this.api.url,
         description: "The base URL of the Document Templating Service REST API",
         exportName: "DocumentTemplatingServiceApiBaseUrl",
       }),
