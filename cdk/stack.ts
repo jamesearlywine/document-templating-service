@@ -1,12 +1,12 @@
 import * as cdk from "aws-cdk-lib";
-import { aws_ecr, aws_events_targets } from "aws-cdk-lib";
+import { aws_ecr, aws_events_targets, CfnOutput } from "aws-cdk-lib";
 import { IRole } from "aws-cdk-lib/aws-iam";
 import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
-import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { ConfigKeys, initializeStackConfig, AwsEnvParameter } from "./stack-config";
+import { ConfigKeys, initializeStackConfig, AwsEnvParameter, stackConfig } from "./stack-config";
 import { StackConfig } from "./stack-config-builder";
+import { ApiKey, LambdaIntegration, Resource, RestApi, UsagePlan } from "aws-cdk-lib/aws-apigateway";
+import { StringParameter } from "aws-cdk-lib/aws-ssm";
 
 export class Stack extends cdk.Stack {
   vpc: cdk.aws_ec2.IVpc;
@@ -25,7 +25,10 @@ export class Stack extends cdk.Stack {
   afterDocumentTemplateFileUploadedEventRule: cdk.aws_events.Rule;
   afterDocumentTemplateFileUploadedLambda: cdk.aws_lambda.Function;
 
-  api: HttpApi;
+  api: RestApi;
+  apiUsagePlan: UsagePlan;
+  restApiKey: ApiKey;
+  restApiResources: Record<string, Resource>;
 
   defaultAccountEventbus: cdk.aws_events.IEventBus;
 
@@ -33,6 +36,10 @@ export class Stack extends cdk.Stack {
 
   ephemeralPrefix: string;
   isEphemeralStack = () => !!this.ephemeralPrefix;
+
+  resourceRegistrations: Record<string, StringParameter>;
+
+  outputs: Record<string, cdk.CfnOutput> = {};
 
   constructor(app, id: string, props) {
     super(app, id, props); /**
@@ -83,12 +90,12 @@ export class Stack extends cdk.Stack {
         cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
           this,
           "LambdaPrivateSubnetExecutionRolePolicyReference",
-          "LambdaPrivateSubnetExecutionRolePolicy",
+          "LambdaPrivateSubnetExecutionRolePolicy", // @todo, make this a config item
         ),
         cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
           this,
           "LambdaGeneralExecutionRolePolicyReference",
-          "LambdaGeneralExecutionRolePolicy",
+          "LambdaGeneralExecutionRolePolicy", // @todo, make this a config item
         ),
       ],
     });
@@ -128,7 +135,7 @@ export class Stack extends cdk.Stack {
         aws_ecr.Repository.fromRepositoryName(
           this,
           "ECRRepositoryForCreateGeneratedDocumentLambdaExecution",
-          "create-generated-document-lambda-execution-environment",
+          "create-generated-document-lambda-execution-environment", // @todo, make this a config item
         ),
       ),
       vpc: this.vpc,
@@ -261,74 +268,97 @@ export class Stack extends cdk.Stack {
     /******************
      * API Gateway
      */
-    this.api = new HttpApi(this, "Api", {
-      apiName: cdk.Fn.sub("${AWS_ENV}-document-templating-service", {
+    this.api = new RestApi(this, "Api", {
+      restApiName: cdk.Fn.sub("${AWS_ENV}-document-templating-service-api", {
         AWS_ENV: AwsEnvParameter.valueAsString,
       }),
+      description: "Document Templating Service API",
+      defaultCorsPreflightOptions: {
+        allowOrigins: ["*"],
+        allowMethods: ["GET", "PUT", "POST", "DELETE"],
+        allowHeaders: ["*"],
+      },
     });
+    this.restApiKey = new ApiKey(this, "RestApiKey", {
+      value: stackConfig.get(ConfigKeys.ApiKey),
+      enabled: true,
+    });
+    this.apiUsagePlan = new UsagePlan(this, "DocumentTemplatingServiceUsagePlan", {
+      name: "GeneralDocumentTemplatingServiceUsagePlan",
+      description: "General Document Templating Service Usage Plan",
+    });
+    this.apiUsagePlan.addApiKey(this.restApiKey);
 
-    this.api.addRoutes({
-      path: "/generatedDocument/{id}",
-      methods: [HttpMethod.POST],
-      integration: new HttpLambdaIntegration(
-        "createdGeneratedDocumentLambdaHttpIntegration",
-        this.createGeneratedDocumentLambda,
-      ),
-    });
+    // REST Resources
+    this.restApiResources = {
+      documentTemplate: this.api.root.addResource("documentTemplate"),
+      documentTemplates: this.api.root.addResource("documentTemplates"),
+      documentTemplatePresignedUploadUrl: this.api.root.addResource("documentTemplatePresignedUploadUrl"),
+      generatedDocument: this.api.root.addResource("generatedDocument"),
+    };
 
-    // put without id in the path
-    this.api.addRoutes({
-      path: "/documentTemplate",
-      methods: [HttpMethod.PUT],
-      integration: new HttpLambdaIntegration(
-        "createOrUpdateDocumentTemplateLambdaHttpIntegration",
-        this.createOrUpdateDocumentTemplateLambda,
-      ),
-    });
-    // put with id in the path
-    this.api.addRoutes({
-      path: "/documentTemplate/{id}",
-      methods: [HttpMethod.PUT],
-      integration: new HttpLambdaIntegration(
-        "createOrUpdateDocumentTemplateLambdaHttpIntegration",
-        this.createOrUpdateDocumentTemplateLambda,
-      ),
-    });
+    // DocumentTemplate
+    this.restApiResources.documentTemplate.addMethod(
+      "PUT",
+      new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
+    );
+    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda));
+    this.restApiResources.documentTemplate.addMethod(
+      "DELETE",
+      new LambdaIntegration(this.deleteDocumentTemplateLambda),
+    );
+    this.restApiResources.documentTemplates.addMethod("GET", new LambdaIntegration(this.getDocumentTemplatesLambda));
+    this.restApiResources.documentTemplates.addMethod(
+      "POST",
+      new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
+    );
 
-    this.api.addRoutes({
-      path: "/documentTemplatePresignedUploadUrl/{id}",
-      methods: [HttpMethod.GET],
-      integration: new HttpLambdaIntegration(
-        "getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration",
-        this.getDocumentTemplatePresignedUploadUrlLambda,
-      ),
-    });
+    // DocumentTemplatePresignedUploadUrl
+    this.restApiResources.documentTemplatePresignedUploadUrl.addMethod(
+      "GET",
+      new LambdaIntegration(this.getDocumentTemplatePresignedUploadUrlLambda),
+    );
 
-    this.api.addRoutes({
-      path: "/documentTemplate",
-      methods: [HttpMethod.GET],
-      integration: new HttpLambdaIntegration(
-        "getDocumentTemplatesLambdaHttpIntegration",
-        this.getDocumentTemplatesLambda,
-      ),
-    });
+    // GeneratedDocument
+    this.restApiResources.generatedDocument.addMethod(
+      "POST",
+      new LambdaIntegration(this.createGeneratedDocumentLambda),
+    );
 
-    this.api.addRoutes({
-      path: "/documentTemplate/{id}",
-      methods: [HttpMethod.GET],
-      integration: new HttpLambdaIntegration(
-        "getDocumentTemplateLambdaHttpIntegration",
-        this.getDocumentTemplateLambda,
+    /******************
+     * Resource Registration
+     */
+    this.resourceRegistrations = {
+      documentTemplatingServiceApiBaseUrl: new StringParameter(
+        this,
+        "DocumentTemplatingServiceApiBaseUrlSsmRegistration",
+        {
+          description: "The base URL of the Document Templating Service REST API",
+          stringValue: this.api.url,
+          parameterName: "/document-templating-service/rest-api-base-url",
+        },
       ),
-    });
+      documentTemplatingServiceApiKey: new StringParameter(this, "DocumentTemplatingServiceApiKeySsmRegistration", {
+        description: "The API key for the Document Templating Service REST API",
+        stringValue: this.api.url,
+        parameterName: "/document-templating-service/rest-api-base-url",
+      }),
+    };
 
-    this.api.addRoutes({
-      path: "/documentTemplate/{id}",
-      methods: [HttpMethod.DELETE],
-      integration: new HttpLambdaIntegration(
-        "deleteDocumentTemplateLambdaHttpIntegration",
-        this.deleteDocumentTemplateLambda,
-      ),
-    });
+    /******************
+     * Stack Outputs
+     */
+    this.outputs = {
+      apiUrl: new CfnOutput(this, "OutputsApiUrl", {
+        value: stackConfig.get(ConfigKeys.ApiKey),
+        description: "The base URL of the Document Templating Service REST API",
+        exportName: "DocumentTemplatingServiceApiBaseUrl",
+      }),
+      apiKey: new CfnOutput(this, "OutputsApiKey", {
+        value: stackConfig.get(ConfigKeys.ApiKey),
+        description: "The API key for the Document Templating Service REST API",
+        exportName: "DocumentTemplatingServiceApiKey",
+      }),
+    };
   }
 }

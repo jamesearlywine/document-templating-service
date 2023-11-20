@@ -1,6 +1,7 @@
 import { StackConfig } from "./stack-config-builder/stack-config";
 import { Stack } from "./stack";
 import * as cdk from "aws-cdk-lib";
+import { v4 as uuid } from "uuid";
 
 export const ConfigKeys = {
   EphemeralPrefix: "EphemeralPrefix",
@@ -18,6 +19,7 @@ export const ConfigKeys = {
   GeneratedDocumentsS3KeyPrefix: "GeneratedDocumentsS3KeyPrefix",
   GeneratedDocumentsDynamodbTableArn: "GeneratedDocumentsDynamodbTableArn",
   GeneratedDocumentsDynamodbPartitionKeyPrefix: "GeneratedDocumentsDynamodbPartitionKeyPrefix",
+  ApiKey: "ApiKey",
 };
 
 export const DEFAULT_VALUES = {
@@ -137,6 +139,13 @@ export const initializeStackConfig = (stack: Stack) => {
         type: "String",
         description: "Partition key prefix for generated documents dynamodb table",
         default: DEFAULT_VALUES.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX,
+      }),
+    })
+    .set(ConfigKeys.ApiKey, {
+      cfnParameter: new cdk.CfnParameter(stack, "ApiKey", {
+        type: "String",
+        description: "API key for the document template service",
+        default: uuid(),
       }),
     });
 

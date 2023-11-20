@@ -20,7 +20,6 @@ export class StackConfig {
     return this;
   }
 
-  // @todo query from lambda for param store values at run-time, stop setting them at deploy-time
   get(key: string) {
     const stackConfigItem = this.stackConfigItems[key];
     if (!stackConfigItem) {
