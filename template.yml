@@ -45,6 +45,10 @@ Parameters:
     Type: String
     Default: GENERATED_DOCUMENT
     Description: Partition key prefix for generated documents dynamodb table
+  ApiKey:
+    Type: String
+    Default: 27076f42-4b97-4263-a3ea-8fafd3c615a7
+    Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -100,6 +104,11 @@ Conditions:
       - Fn::Equals:
           - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
           - ""
+  ApiKeyisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: ApiKey
+          - ""
 Resources:
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
@@ -151,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-14T05:57:33.555Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-20T02:19:11.656Z
       Environment:
         Variables:
           AWS_ENV:
@@ -819,85 +828,178 @@ Resources:
     Metadata:
       aws:cdk:path: DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/AllowEventRuleDocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaE4C1AB05
   ApiF70053CD:
-    Type: AWS::ApiGatewayV2::Api
+    Type: AWS::ApiGateway::RestApi
     Properties:
+      Description: Document Templating Service API
       Name:
         Fn::Sub:
-          - processproof-${AWS_ENV}-document-templating-service
+          - ${AWS_ENV}-document-templating-service-api
           - AWS_ENV:
               Ref: AwsEnv
-      ProtocolType: HTTP
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Resource
-  ApiDefaultStage189A7074:
-    Type: AWS::ApiGatewayV2::Stage
+  ApiCloudWatchRole73EC6FC4:
+    Type: AWS::IAM::Role
     Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AutoDeploy: true
-      StageName: $default
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/DefaultStage/Resource
-  ApiPOSTgeneratedDocumentidcreatedGeneratedDocumentLambdaHttpIntegrationE82DA7E4:
-    Type: AWS::ApiGatewayV2::Integration
+      aws:cdk:path: DocumentTemplatingService/Api/CloudWatchRole/Resource
+  ApiAccountA18C9B29:
+    Type: AWS::ApiGateway::Account
     Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
+      CloudWatchRoleArn:
         Fn::GetAtt:
-          - createGeneratedDocumentLambdaDA3D345E
+          - ApiCloudWatchRole73EC6FC4
           - Arn
-      PayloadFormatVersion: "2.0"
+    DependsOn:
+      - ApiF70053CD
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/POST--generatedDocument--{id}/createdGeneratedDocumentLambdaHttpIntegration/Resource
-  ApiPOSTgeneratedDocumentidcreatedGeneratedDocumentLambdaHttpIntegrationPermissionBB984DF9:
+      aws:cdk:path: DocumentTemplatingService/Api/Account
+  ApiDeploymentB17BE62D4c5864896d8f103848874e2fdbce9e0b:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: Document Templating Service API
+      RestApiId:
+        Ref: ApiF70053CD
+    DependsOn:
+      - ApidocumentTemplateDELETE168DC561
+      - ApidocumentTemplateGET61E7C41E
+      - ApidocumentTemplateOPTIONSD878723F
+      - ApidocumentTemplatePUTDF118921
+      - ApidocumentTemplate72333E5D
+      - ApidocumentTemplatePresignedUploadUrlGET4B8E33A5
+      - ApidocumentTemplatePresignedUploadUrlOPTIONS5F5E745C
+      - ApidocumentTemplatePresignedUploadUrl827C407F
+      - ApidocumentTemplatesGETF7C468C2
+      - ApidocumentTemplatesOPTIONS8BC73FDA
+      - ApidocumentTemplatesPOST2A66EB77
+      - ApidocumentTemplatesA0B72AA4
+      - ApigeneratedDocumentOPTIONSE8D5AD39
+      - ApigeneratedDocumentPOSTAA21C484
+      - ApigeneratedDocumentE8419AE1
+      - ApiOPTIONS5886EA5D
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Deployment/Resource
+  ApiDeploymentStageprod3EB9684E:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId:
+        Ref: ApiDeploymentB17BE62D4c5864896d8f103848874e2fdbce9e0b
+      RestApiId:
+        Ref: ApiF70053CD
+      StageName: prod
+    DependsOn:
+      - ApiAccountA18C9B29
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/DeploymentStage.prod/Resource
+  ApiOPTIONS5886EA5D:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/OPTIONS/Resource
+  ApidocumentTemplate72333E5D:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: documentTemplate
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/Resource
+  ApidocumentTemplateOPTIONSD878723F:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/OPTIONS/Resource
+  ApidocumentTemplatePUTApiPermissionDocumentTemplatingServiceApiEF9DFD04PUTdocumentTemplate8D6B23C2:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName:
-        Fn::GetAtt:
-          - createGeneratedDocumentLambdaDA3D345E
-          - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        Fn::Join:
-          - ""
-          - - "arn:"
-            - Ref: AWS::Partition
-            - ":execute-api:us-east-2:546515125053:"
-            - Ref: ApiF70053CD
-            - /*/*/generatedDocument/{id}
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/POST--generatedDocument--{id}/createdGeneratedDocumentLambdaHttpIntegration-Permission
-  ApiPOSTgeneratedDocumentidEDB84C77:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AuthorizationType: NONE
-      RouteKey: POST /generatedDocument/{id}
-      Target:
-        Fn::Join:
-          - ""
-          - - integrations/
-            - Ref: ApiPOSTgeneratedDocumentidcreatedGeneratedDocumentLambdaHttpIntegrationE82DA7E4
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/POST--generatedDocument--{id}/Resource
-  ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationA967DFFB:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
         Fn::GetAtt:
           - createOrUpdateDocumentTemplateLambda21DD51BC
           - Arn
-      PayloadFormatVersion: "2.0"
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /PUT/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
-  ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationPermissionD916E15F:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/PUT/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.PUT..documentTemplate
+  ApidocumentTemplatePUTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04PUTdocumentTemplateF5FD7349:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -913,175 +1015,34 @@ Resources:
             - Ref: AWS::Partition
             - ":execute-api:us-east-2:546515125053:"
             - Ref: ApiF70053CD
-            - /*/*/documentTemplate
+            - /test-invoke-stage/PUT/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/PUT--documentTemplate/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
-  ApiPUTdocumentTemplate63004375:
-    Type: AWS::ApiGatewayV2::Route
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/PUT/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.PUT..documentTemplate
+  ApidocumentTemplatePUTDF118921:
+    Type: AWS::ApiGateway::Method
     Properties:
-      ApiId:
-        Ref: ApiF70053CD
       AuthorizationType: NONE
-      RouteKey: PUT /documentTemplate
-      Target:
-        Fn::Join:
-          - ""
-          - - integrations/
-            - Ref: ApiPUTdocumentTemplatecreateOrUpdateDocumentTemplateLambdaHttpIntegrationA967DFFB
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/PUT--documentTemplate/Resource
-  ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegration0B383EAF:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId:
+      HttpMethod: PUT
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createOrUpdateDocumentTemplateLambda21DD51BC
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
         Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
-        Fn::GetAtt:
-          - createOrUpdateDocumentTemplateLambda21DD51BC
-          - Arn
-      PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration/Resource
-  ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegrationPermission1F513E89:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - createOrUpdateDocumentTemplateLambda21DD51BC
-          - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        Fn::Join:
-          - ""
-          - - "arn:"
-            - Ref: AWS::Partition
-            - ":execute-api:us-east-2:546515125053:"
-            - Ref: ApiF70053CD
-            - /*/*/documentTemplate/{id}
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/PUT--documentTemplate--{id}/createOrUpdateDocumentTemplateLambdaHttpIntegration-Permission
-  ApiPUTdocumentTemplateid268CFB20:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AuthorizationType: NONE
-      RouteKey: PUT /documentTemplate/{id}
-      Target:
-        Fn::Join:
-          - ""
-          - - integrations/
-            - Ref: ApiPUTdocumentTemplateidcreateOrUpdateDocumentTemplateLambdaHttpIntegration0B383EAF
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/PUT--documentTemplate--{id}/Resource
-  ApiGETdocumentTemplatePresignedUploadUrlidgetDocumentTemplatePresignedUploadUrlLambdaHttpIntegration6198949B:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
-        Fn::GetAtt:
-          - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
-          - Arn
-      PayloadFormatVersion: "2.0"
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration/Resource
-  ApiGETdocumentTemplatePresignedUploadUrlidgetDocumentTemplatePresignedUploadUrlLambdaHttpIntegrationPermissionB80A9151:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
-          - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        Fn::Join:
-          - ""
-          - - "arn:"
-            - Ref: AWS::Partition
-            - ":execute-api:us-east-2:546515125053:"
-            - Ref: ApiF70053CD
-            - /*/*/documentTemplatePresignedUploadUrl/{id}
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/getDocumentTemplatePresignedUploadUrlLambdaHttpIntegration-Permission
-  ApiGETdocumentTemplatePresignedUploadUrlidC881220E:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AuthorizationType: NONE
-      RouteKey: GET /documentTemplatePresignedUploadUrl/{id}
-      Target:
-        Fn::Join:
-          - ""
-          - - integrations/
-            - Ref: ApiGETdocumentTemplatePresignedUploadUrlidgetDocumentTemplatePresignedUploadUrlLambdaHttpIntegration6198949B
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplatePresignedUploadUrl--{id}/Resource
-  ApiGETdocumentTemplategetDocumentTemplatesLambdaHttpIntegration131B3208:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
-        Fn::GetAtt:
-          - getDocumentTemplatesLambda4A2C29FC
-          - Arn
-      PayloadFormatVersion: "2.0"
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplate/getDocumentTemplatesLambdaHttpIntegration/Resource
-  ApiGETdocumentTemplategetDocumentTemplatesLambdaHttpIntegrationPermission848B6C82:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - getDocumentTemplatesLambda4A2C29FC
-          - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        Fn::Join:
-          - ""
-          - - "arn:"
-            - Ref: AWS::Partition
-            - ":execute-api:us-east-2:546515125053:"
-            - Ref: ApiF70053CD
-            - /*/*/documentTemplate
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplate/getDocumentTemplatesLambdaHttpIntegration-Permission
-  ApiGETdocumentTemplate13D188B6:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AuthorizationType: NONE
-      RouteKey: GET /documentTemplate
-      Target:
-        Fn::Join:
-          - ""
-          - - integrations/
-            - Ref: ApiGETdocumentTemplategetDocumentTemplatesLambdaHttpIntegration131B3208
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplate/Resource
-  ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegration379C944C:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
-        Fn::GetAtt:
-          - getDocumentTemplateLambda91D77421
-          - Arn
-      PayloadFormatVersion: "2.0"
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplate--{id}/getDocumentTemplateLambdaHttpIntegration/Resource
-  ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegrationPermission047554B3:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/PUT/Resource
+  ApidocumentTemplateGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplateB913D978:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -1097,37 +1058,55 @@ Resources:
             - Ref: AWS::Partition
             - ":execute-api:us-east-2:546515125053:"
             - Ref: ApiF70053CD
-            - /*/*/documentTemplate/{id}
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /GET/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplate--{id}/getDocumentTemplateLambdaHttpIntegration-Permission
-  ApiGETdocumentTemplateid3BF14978:
-    Type: AWS::ApiGatewayV2::Route
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate
+  ApidocumentTemplateGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplate13C34D46:
+    Type: AWS::Lambda::Permission
     Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AuthorizationType: NONE
-      RouteKey: GET /documentTemplate/{id}
-      Target:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplateLambda91D77421
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
         Fn::Join:
           - ""
-          - - integrations/
-            - Ref: ApiGETdocumentTemplateidgetDocumentTemplateLambdaHttpIntegration379C944C
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/GET/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/GET--documentTemplate--{id}/Resource
-  ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegration3BA7B3FD:
-    Type: AWS::ApiGatewayV2::Integration
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate
+  ApidocumentTemplateGET61E7C41E:
+    Type: AWS::ApiGateway::Method
     Properties:
-      ApiId:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - getDocumentTemplateLambda91D77421
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
         Ref: ApiF70053CD
-      IntegrationType: AWS_PROXY
-      IntegrationUri:
-        Fn::GetAtt:
-          - deleteDocumentTemplateLambda4C9C9ABF
-          - Arn
-      PayloadFormatVersion: "2.0"
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration/Resource
-  ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegrationPermission3C406C44:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/Resource
+  ApidocumentTemplateDELETEApiPermissionDocumentTemplatingServiceApiEF9DFD04DELETEdocumentTemplate11E8DCD9:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -1143,29 +1122,521 @@ Resources:
             - Ref: AWS::Partition
             - ":execute-api:us-east-2:546515125053:"
             - Ref: ApiF70053CD
-            - /*/*/documentTemplate/{id}
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /DELETE/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/deleteDocumentTemplateLambdaHttpIntegration-Permission
-  ApiDELETEdocumentTemplateid9187F7AB:
-    Type: AWS::ApiGatewayV2::Route
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/DELETE/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.DELETE..documentTemplate
+  ApidocumentTemplateDELETEApiPermissionTestDocumentTemplatingServiceApiEF9DFD04DELETEdocumentTemplate0875FE8B:
+    Type: AWS::Lambda::Permission
     Properties:
-      ApiId:
-        Ref: ApiF70053CD
-      AuthorizationType: NONE
-      RouteKey: DELETE /documentTemplate/{id}
-      Target:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - deleteDocumentTemplateLambda4C9C9ABF
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
         Fn::Join:
           - ""
-          - - integrations/
-            - Ref: ApiDELETEdocumentTemplateiddeleteDocumentTemplateLambdaHttpIntegration3BA7B3FD
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/DELETE/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/DELETE--documentTemplate--{id}/Resource
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/DELETE/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.DELETE..documentTemplate
+  ApidocumentTemplateDELETE168DC561:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - deleteDocumentTemplateLambda4C9C9ABF
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/DELETE/Resource
+  ApidocumentTemplatesA0B72AA4:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: documentTemplates
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/Resource
+  ApidocumentTemplatesOPTIONS8BC73FDA:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApidocumentTemplatesA0B72AA4
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/OPTIONS/Resource
+  ApidocumentTemplatesGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplates4DF9B311:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatesLambda4A2C29FC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /GET/documentTemplates
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplates
+  ApidocumentTemplatesGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplatesA954E3B9:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatesLambda4A2C29FC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/GET/documentTemplates
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplates
+  ApidocumentTemplatesGETF7C468C2:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - getDocumentTemplatesLambda4A2C29FC
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplatesA0B72AA4
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/GET/Resource
+  ApidocumentTemplatesPOSTApiPermissionDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplatesF4165A36:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /POST/documentTemplates
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/POST/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplates
+  ApidocumentTemplatesPOSTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplatesF36D279A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/POST/documentTemplates
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/POST/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplates
+  ApidocumentTemplatesPOST2A66EB77:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createOrUpdateDocumentTemplateLambda21DD51BC
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplatesA0B72AA4
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/POST/Resource
+  ApidocumentTemplatePresignedUploadUrl827C407F:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: documentTemplatePresignedUploadUrl
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/Resource
+  ApidocumentTemplatePresignedUploadUrlOPTIONS5F5E745C:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApidocumentTemplatePresignedUploadUrl827C407F
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/OPTIONS/Resource
+  ApidocumentTemplatePresignedUploadUrlGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplatePresignedUploadUrl55CBE8D1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /GET/documentTemplatePresignedUploadUrl
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplatePresignedUploadUrl
+  ApidocumentTemplatePresignedUploadUrlGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplatePresignedUploadUrl722607C2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/GET/documentTemplatePresignedUploadUrl
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplatePresignedUploadUrl
+  ApidocumentTemplatePresignedUploadUrlGET4B8E33A5:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplatePresignedUploadUrl827C407F
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/GET/Resource
+  ApigeneratedDocumentE8419AE1:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: generatedDocument
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/Resource
+  ApigeneratedDocumentOPTIONSE8D5AD39:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApigeneratedDocumentE8419AE1
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/OPTIONS/Resource
+  ApigeneratedDocumentPOSTApiPermissionDocumentTemplatingServiceApiEF9DFD04POSTgeneratedDocument0A14EDCF:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createGeneratedDocumentLambdaDA3D345E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /POST/generatedDocument
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/POST/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.POST..generatedDocument
+  ApigeneratedDocumentPOSTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04POSTgeneratedDocument04AD15E6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createGeneratedDocumentLambdaDA3D345E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/POST/generatedDocument
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/POST/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.POST..generatedDocument
+  ApigeneratedDocumentPOSTAA21C484:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createGeneratedDocumentLambdaDA3D345E
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApigeneratedDocumentE8419AE1
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/POST/Resource
+  RestApiKey3F95E6F0:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Enabled: true
+      Value:
+        Ref: ApiKey
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/RestApiKey/Resource
+  DocumentTemplatingServiceUsagePlanA2B789D8:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      Description: General Document Templating Service Usage Plan
+      UsagePlanName: GeneralDocumentTemplatingServiceUsagePlan
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceUsagePlan/Resource
+  DocumentTemplatingServiceUsagePlanUsagePlanKeyResourceDocumentTemplatingServiceRestApiKey3FE8B5E5C86062E8:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId:
+        Ref: RestApiKey3F95E6F0
+      KeyType: API_KEY
+      UsagePlanId:
+        Ref: DocumentTemplatingServiceUsagePlanA2B789D8
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceUsagePlan/UsagePlanKeyResource:DocumentTemplatingServiceRestApiKey3FE8B5E5
+  DocumentTemplatingServiceApiBaseUrlSsmRegistration1AFD6A9D:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: The base URL of the Document Templating Service REST API
+      Name: /document-templating-service/rest-api-base-url
+      Type: String
+      Value:
+        Fn::Join:
+          - ""
+          - - https://
+            - Ref: ApiF70053CD
+            - .execute-api.us-east-2.
+            - Ref: AWS::URLSuffix
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceApiBaseUrlSsmRegistration/Resource
+  DocumentTemplatingServiceApiKeySsmRegistrationD627E7E6:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: The API key for the Document Templating Service REST API
+      Name: /document-templating-service/rest-api-base-url
+      Type: String
+      Value:
+        Fn::Join:
+          - ""
+          - - https://
+            - Ref: ApiF70053CD
+            - .execute-api.us-east-2.
+            - Ref: AWS::URLSuffix
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceApiKeySsmRegistration/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/1WQ3W7CMAyFn4X71Pzsgu1ugLSfO9Q9ADKp1xnapEocEIr67ktCJ7GrYzsn/o68gpc1xMUMr77Szbnq+AjxS1Cf1e7b7NFhT0IuNztrGha2RtXkbXCaVPp1iIw9xNp2lE1ZR0XaQU2D9SzW3bboSXXYHxuE+BaMLkuS+bHek+vZ+9Tl76sUgnRwLLd3Z8OQHf8Go/JPB/SexMMmS+phG/SZpODoQiY9xTpMuULOhQO3KHTF2yUR0ngzcFkt2BbbpxFqHf6Fqm0QGkdVCNnEpi3z6QCjWlTYDT8Ii9nrdMJ51kfQ5IgfIkPmZb0Dc1UQpXpgJ6SxDcHJzy/LZ1iuYTk7eebKBSPcE9R3/QVImXTuvgEAAA==
+      Analytics: v2:deflate64:H4sIAAAAAAAA/21RwW7CMAz9Fu4hG+zAdgSm7TBNqzrtjEJqmKFJqjgBVVX/fU7KWJF28nt5jp/zMpdPC3k/UWea6uo4rXEru8+g9FGsd7ZQXhkI4BNZO1thQGdFCeSi1yD41qZDZWRXuhpSU6q9AO1lCY0jDM63K0UgamW2lZLdS7Q6D+HmMS7AGyRilq7PeQnQ0WNoX72LTeq4OegFPWwUEQSSy1SYy1XURwjZDk5gWerKeNkrpr1Ug3sV4KxaVoDCssEs/sGl1i7aIJ6hqV1reEg6HTHOZp8nDuA3imz6DuHbVUm8oGtQg8mA2ekN2mw2oC/iSUWtcg7/E27jF5NJf+PR7m8+5kr6XuQs0mrclLSPGJoYxv69sK4CeaC70+xRzhZyNjkQ4tTzs9GALIf6A3PxdBMYAgAA
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
+Outputs:
+  ApiEndpoint4F160690:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: ApiF70053CD
+          - .execute-api.us-east-2.
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: ApiDeploymentStageprod3EB9684E
+          - /
+  OutputsApiUrl:
+    Description: The base URL of the Document Templating Service REST API
+    Value:
+      Ref: ApiKey
+    Export:
+      Name: DocumentTemplatingServiceApiBaseUrl
+  OutputsApiKey:
+    Description: The API key for the Document Templating Service REST API
+    Value:
+      Ref: ApiKey
+    Export:
+      Name: DocumentTemplatingServiceApiKey
 Rules:
   CheckBootstrapVersion:
     Assertions:
