@@ -291,10 +291,10 @@ export class Stack extends cdk.Stack {
 
     // REST Resources
     this.restApiResources = {
-      documentTemplate: this.api.root.addResource("documentTemplate"),
+      documentTemplate: this.api.root.addResource("documentTemplate").addResource("{id}"),
       documentTemplates: this.api.root.addResource("documentTemplates"),
       documentTemplatePresignedUploadUrl: this.api.root.addResource("documentTemplatePresignedUploadUrl"),
-      generatedDocument: this.api.root.addResource("generatedDocument"),
+      generatedDocument: this.api.root.addResource("generatedDocument").addResource("{templateId}"),
     };
 
     // DocumentTemplate
@@ -302,7 +302,9 @@ export class Stack extends cdk.Stack {
       "PUT",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
     );
-    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda));
+    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda), {
+      apiKeyRequired: true,
+    });
     this.restApiResources.documentTemplate.addMethod(
       "DELETE",
       new LambdaIntegration(this.deleteDocumentTemplateLambda),
