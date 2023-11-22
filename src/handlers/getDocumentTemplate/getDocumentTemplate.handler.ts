@@ -7,9 +7,9 @@ export const handler = async (event: Record<string, unknown>) => {
 
   const id = (event.pathParameters ?? {})["id"];
 
-  let responseBody;
+  let response;
   try {
-    responseBody = GetDocumentTemplateController.GET(id);
+    response = GetDocumentTemplateController.GET(id);
   } catch (error) {
     return {
       statusCode: 500,
@@ -17,11 +17,5 @@ export const handler = async (event: Record<string, unknown>) => {
     };
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(responseBody),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
+  return response;
 };
