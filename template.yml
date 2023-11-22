@@ -47,7 +47,7 @@ Parameters:
     Description: Partition key prefix for generated documents dynamodb table
   ApiKey:
     Type: String
-    Default: 15e2f816-5536-44c4-9169-723a17ca4b10
+    Default: 428a5e40-676e-4072-8950-d59bb60dc03a
     Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
@@ -160,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-22T05:31:19.086Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-22T05:41:46.922Z
       Environment:
         Variables:
           AWS_ENV:
@@ -518,7 +518,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 855a93d902c55137b2396a696b76cc0602ab6bdee41f0608af37d437a10dcf0a.zip
+        S3Key: 5de67296f33c23063f16d5aede03f56fa833d74af2814ce1ac59482d976b23fb.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -589,7 +589,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: DocumentTemplatingService/getDocumentTemplateLambda/Resource
-      aws:asset:path: asset.855a93d902c55137b2396a696b76cc0602ab6bdee41f0608af37d437a10dcf0a
+      aws:asset:path: asset.5de67296f33c23063f16d5aede03f56fa833d74af2814ce1ac59482d976b23fb
       aws:asset:is-bundled: false
       aws:asset:property: Code
   deleteDocumentTemplateLambdaSecurityGroup8FEF291E:

@@ -16,8 +16,7 @@ export class GetDocumentTemplateController {
       };
     }
 
-    const response =
-      await DocumentTemplateRepository.getDocumentTemplateRecordById(id);
+    const response = await DocumentTemplateRepository.getDocumentTemplateRecordById(id);
 
     if (!response || response.results.length === 0) {
       return {
@@ -28,6 +27,9 @@ export class GetDocumentTemplateController {
       };
     }
 
-    return { documentTemplate: response.results[0] };
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response.results[0]),
+    };
   };
 }
