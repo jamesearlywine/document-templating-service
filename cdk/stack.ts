@@ -5,7 +5,7 @@ import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { RuleProps } from "aws-cdk-lib/aws-events";
 import { ConfigKeys, initializeStackConfig, AwsEnvParameter, stackConfig } from "./stack-config";
 import { StackConfig } from "./stack-config-builder";
-import { ApiKey, LambdaIntegration, Resource, RestApi, UsagePlan } from "aws-cdk-lib/aws-apigateway";
+import { ApiKey, IApiKey, LambdaIntegration, Resource, RestApi, UsagePlan } from "aws-cdk-lib/aws-apigateway";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 
 export class Stack extends cdk.Stack {
@@ -27,7 +27,7 @@ export class Stack extends cdk.Stack {
 
   api: RestApi;
   apiUsagePlan: UsagePlan;
-  restApiKey: ApiKey;
+  restApiKey: IApiKey;
   restApiResources: Record<string, Resource>;
 
   defaultAccountEventbus: cdk.aws_events.IEventBus;
@@ -279,15 +279,9 @@ export class Stack extends cdk.Stack {
         allowHeaders: ["*"],
       },
     });
-    this.restApiKey = new ApiKey(this, "RestApiKey", {
+    this.restApiKey = this.api.addApiKey("ApiKey", {
       value: stackConfig.get(ConfigKeys.ApiKey),
-      enabled: true,
     });
-    this.apiUsagePlan = new UsagePlan(this, "DocumentTemplatingServiceUsagePlan", {
-      name: "GeneralDocumentTemplatingServiceUsagePlan",
-      description: "General Document Templating Service Usage Plan",
-    });
-    this.apiUsagePlan.addApiKey(this.restApiKey);
 
     // REST Resources
     this.restApiResources = {
