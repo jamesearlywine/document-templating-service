@@ -47,7 +47,7 @@ Parameters:
     Description: Partition key prefix for generated documents dynamodb table
   ApiKey:
     Type: String
-    Default: 428a5e40-676e-4072-8950-d59bb60dc03a
+    Default: a2cc3489-d5a9-4081-8661-8096b5d0e70f
     Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
@@ -160,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-22T05:41:46.922Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-23T05:55:32.400Z
       Environment:
         Variables:
           AWS_ENV:
@@ -871,7 +871,7 @@ Resources:
     DeletionPolicy: Retain
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Account
-  ApiDeploymentB17BE62Dd3da27afc25eafca1610bd9da9e71dcf:
+  ApiDeploymentB17BE62Db024c15517b26ba07db7c85482135958:
     Type: AWS::ApiGateway::Deployment
     Properties:
       Description: Document Templating Service API
@@ -883,15 +883,13 @@ Resources:
       - ApidocumentTemplateidOPTIONSBC1BAB7E
       - ApidocumentTemplateidPUT514F5268
       - ApidocumentTemplateid5D1C6CE7
+      - ApidocumentTemplateGET61E7C41E
       - ApidocumentTemplateOPTIONSD878723F
+      - ApidocumentTemplatePOST3A0C4E92
       - ApidocumentTemplate72333E5D
       - ApidocumentTemplatePresignedUploadUrlGET4B8E33A5
       - ApidocumentTemplatePresignedUploadUrlOPTIONS5F5E745C
       - ApidocumentTemplatePresignedUploadUrl827C407F
-      - ApidocumentTemplatesGETF7C468C2
-      - ApidocumentTemplatesOPTIONS8BC73FDA
-      - ApidocumentTemplatesPOST2A66EB77
-      - ApidocumentTemplatesA0B72AA4
       - ApigeneratedDocumenttemplateIdOPTIONSF15A479A
       - ApigeneratedDocumenttemplateIdPOST7BA8DDEC
       - ApigeneratedDocumenttemplateIdA46382E8
@@ -904,7 +902,7 @@ Resources:
     Type: AWS::ApiGateway::Stage
     Properties:
       DeploymentId:
-        Ref: ApiDeploymentB17BE62Dd3da27afc25eafca1610bd9da9e71dcf
+        Ref: ApiDeploymentB17BE62Db024c15517b26ba07db7c85482135958
       RestApiId:
         Ref: ApiF70053CD
       StageName: prod
@@ -1213,47 +1211,7 @@ Resources:
         Ref: ApiF70053CD
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/DELETE/Resource
-  ApidocumentTemplatesA0B72AA4:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Fn::GetAtt:
-          - ApiF70053CD
-          - RootResourceId
-      PathPart: documentTemplates
-      RestApiId:
-        Ref: ApiF70053CD
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/Resource
-  ApidocumentTemplatesOPTIONS8BC73FDA:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: OPTIONS
-      Integration:
-        IntegrationResponses:
-          - ResponseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'*'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
-            StatusCode: "204"
-        RequestTemplates:
-          application/json: "{ statusCode: 200 }"
-        Type: MOCK
-      MethodResponses:
-        - ResponseParameters:
-            method.response.header.Access-Control-Allow-Headers: true
-            method.response.header.Access-Control-Allow-Origin: true
-            method.response.header.Access-Control-Allow-Methods: true
-          StatusCode: "204"
-      ResourceId:
-        Ref: ApidocumentTemplatesA0B72AA4
-      RestApiId:
-        Ref: ApiF70053CD
-    Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/OPTIONS/Resource
-  ApidocumentTemplatesGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplates4DF9B311:
+  ApidocumentTemplateGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplateB913D978:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -1271,10 +1229,10 @@ Resources:
             - Ref: ApiF70053CD
             - /
             - Ref: ApiDeploymentStageprod3EB9684E
-            - /GET/documentTemplates
+            - /GET/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplates
-  ApidocumentTemplatesGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplatesA954E3B9:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate
+  ApidocumentTemplateGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplate13C34D46:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -1290,10 +1248,10 @@ Resources:
             - Ref: AWS::Partition
             - ":execute-api:us-east-2:546515125053:"
             - Ref: ApiF70053CD
-            - /test-invoke-stage/GET/documentTemplates
+            - /test-invoke-stage/GET/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplates
-  ApidocumentTemplatesGETF7C468C2:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate
+  ApidocumentTemplateGET61E7C41E:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -1312,12 +1270,12 @@ Resources:
                   - Arn
               - /invocations
       ResourceId:
-        Ref: ApidocumentTemplatesA0B72AA4
+        Ref: ApidocumentTemplate72333E5D
       RestApiId:
         Ref: ApiF70053CD
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/GET/Resource
-  ApidocumentTemplatesPOSTApiPermissionDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplatesF4165A36:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/Resource
+  ApidocumentTemplatePOSTApiPermissionDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplateB25F0E64:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -1335,10 +1293,10 @@ Resources:
             - Ref: ApiF70053CD
             - /
             - Ref: ApiDeploymentStageprod3EB9684E
-            - /POST/documentTemplates
+            - /POST/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/POST/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplates
-  ApidocumentTemplatesPOSTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplatesF36D279A:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/POST/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplate
+  ApidocumentTemplatePOSTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplateBF9A2BC7:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -1354,10 +1312,10 @@ Resources:
             - Ref: AWS::Partition
             - ":execute-api:us-east-2:546515125053:"
             - Ref: ApiF70053CD
-            - /test-invoke-stage/POST/documentTemplates
+            - /test-invoke-stage/POST/documentTemplate
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/POST/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplates
-  ApidocumentTemplatesPOST2A66EB77:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/POST/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplate
+  ApidocumentTemplatePOST3A0C4E92:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -1376,11 +1334,11 @@ Resources:
                   - Arn
               - /invocations
       ResourceId:
-        Ref: ApidocumentTemplatesA0B72AA4
+        Ref: ApidocumentTemplate72333E5D
       RestApiId:
         Ref: ApiF70053CD
     Metadata:
-      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplates/POST/Resource
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/POST/Resource
   ApidocumentTemplatePresignedUploadUrl827C407F:
     Type: AWS::ApiGateway::Resource
     Properties:
