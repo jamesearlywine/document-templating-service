@@ -291,26 +291,26 @@ export class Stack extends cdk.Stack {
 
     // REST Resources
     this.restApiResources = {
-      documentTemplate: this.api.root.addResource("documentTemplate").addResource("{id}"),
-      documentTemplates: this.api.root.addResource("documentTemplates"),
+      documentTemplate: this.api.root.addResource("documentTemplate"),
       documentTemplatePresignedUploadUrl: this.api.root.addResource("documentTemplatePresignedUploadUrl"),
       generatedDocument: this.api.root.addResource("generatedDocument").addResource("{templateId}"),
     };
+    this.restApiResources.documentTemplateById = this.restApiResources.documentTemplate.addResource("{id}");
 
     // DocumentTemplate
-    this.restApiResources.documentTemplate.addMethod(
+    this.restApiResources.documentTemplateById.addMethod(
       "PUT",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
     );
-    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda), {
+    this.restApiResources.documentTemplateById.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda), {
       apiKeyRequired: true,
     });
-    this.restApiResources.documentTemplate.addMethod(
+    this.restApiResources.documentTemplateById.addMethod(
       "DELETE",
       new LambdaIntegration(this.deleteDocumentTemplateLambda),
     );
-    this.restApiResources.documentTemplates.addMethod("GET", new LambdaIntegration(this.getDocumentTemplatesLambda));
-    this.restApiResources.documentTemplates.addMethod(
+    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplatesLambda));
+    this.restApiResources.documentTemplate.addMethod(
       "POST",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
     );
