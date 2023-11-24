@@ -47,7 +47,7 @@ Parameters:
     Description: Partition key prefix for generated documents dynamodb table
   ApiKey:
     Type: String
-    Default: 2fbb50a8-4fde-41cd-8c15-cddfa6685020
+    Default: a4b31f3c-03a6-456b-8916-c66180565a7e
     Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
@@ -160,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-23T06:35:43.851Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T03:05:16.874Z
       Environment:
         Variables:
           AWS_ENV:
@@ -1598,6 +1598,28 @@ Resources:
         Ref: ApiKey
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/ApiKey/Resource
+  ApiApiUsagePlanC7032EE6:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      Quota:
+        Limit: 10000
+        Period: DAY
+      Throttle:
+        BurstLimit: 100
+        RateLimit: 10
+      UsagePlanName: ApiUsagePlan
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/ApiUsagePlan/Resource
+  ApiApiUsagePlanUsagePlanKeyResourceDocumentTemplatingServiceApiApiKey431AEA7756F12E10:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId:
+        Ref: ApiApiKey8A01341B
+      KeyType: API_KEY
+      UsagePlanId:
+        Ref: ApiApiUsagePlanC7032EE6
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/ApiUsagePlan/UsagePlanKeyResource:DocumentTemplatingServiceApiApiKey431AEA77
   DocumentTemplatingServiceApiBaseUrlSsmRegistration1AFD6A9D:
     Type: AWS::SSM::Parameter
     Properties:
@@ -1637,7 +1659,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAA/1VQwVICMQz9Fu6lCh7QI+jowXFk1g9gSjdiYNvuNCnMzs7+u2kXEU55ry/NS95cPy30/cScaGrrw7TBre6/2NiDev72axONA4aYyXPwNTIGryqgkKIFJb82PRqn+yo0kJtyHRTYqCtoAyGH2K0MgWqM29ZG96/J2zJEmq/xGqJDImH5+1yWAJsicvcWQ2pzx83DoOhhY4iASS9zEa5XyR6Aix0cwYvUV+m8V8p7mRZ3huFkOlGAeNliEf/h0tqQPKsXaJvQORmSX6+YZLMrE0fwF0Ux/QD+CXUWz+gS1GgyYnF6h66YFSSnkMuhR/S7m8QvZBhUOTJ7SlPWPhO3ia8HD8qHGvSe7o6zRz1b6NlkT4jTKPegA12N9Rdv79Ex8QEAAA==
+      Analytics: v2:deflate64:H4sIAAAAAAAA/21RwW7CMAz9Fu4hG+zAdgSm7TBNqzrtjEJqmKFJqjgBVVX/fU7KWJF28nt5jp/zMpdPC3k/UWea6uo4rXEru8+g9FGsd7ZQXhkI4BNZO1thQGdFCeSi1yD41qZDZWRXuhpSU6q9AO1lCY0jDM63K0UgamW2lZLdS7Q6D+HmMS7AGyRilq7PeQnQ0WNoX72LTeq4OegFPWwUEQSSy1SYy1XURwjZDk5gWerKeNkrpr1Ug3sV4KxaVoDCssEs/sGl1i7aIJ6hqV1reEg6HTHOZp8nDuA3imz6DuHbVUm8oGtQg8mA2ekN2mw2oC/iSUWtcg7/E27jF5NJf+PR7m8+5kr6XuQs0mrclLSPGJoYxv69sK4CeaC70+xRzhZyNjkQ4tTzs9GALIf6A3PxdBMYAgAA
     Metadata:
       aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
 Outputs:
