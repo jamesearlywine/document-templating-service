@@ -15,15 +15,9 @@ export class GetDocumentTemplatePresignedUploadUrlController {
       };
     }
 
-    console.log(
-      "GetDocumentTemplatePresignedUploadUrlController.GET, templateId: ",
-      templateId,
-    );
+    console.log("GetDocumentTemplatePresignedUploadUrlController.GET, templateId: ", templateId);
 
-    const response =
-      await DocumentTemplateRepository.getDocumentTemplateRecordById(
-        templateId,
-      );
+    const response = await DocumentTemplateRepository.getDocumentTemplateRecordById(templateId);
 
     console.log("fetched template from dynamodb, response: ", response);
     const template = response.results[0];
@@ -37,12 +31,24 @@ export class GetDocumentTemplatePresignedUploadUrlController {
       };
     }
 
-    const presignedUploadUrlData =
-      await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(
-        templateId,
-      );
-    const presignedUploadUrl = presignedUploadUrlData.presignedUrl;
+    let presignedUploadUrl;
+    try {
+      const presignedUploadUrlData =
+        await DocumentTemplateFileRepository.getDocumentTemplateFilePresignedUploadUrl(templateId);
+      presignedUploadUrl = presignedUploadUrlData.presignedUrl;
+    } catch (err) {
+      console.log("Error getting presigned upload url: ", err);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: `Error getting presigned upload url for template with id ${templateId}`,
+        }),
+      };
+    }
 
-    return { presignedUploadUrl };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ presignedUploadUrl }),
+    };
   };
 }

@@ -64,10 +64,24 @@ export class CreateOrUpdateDocumentTemplateController {
           : new Date().toISOString(),
     };
 
-    const dynamoResponse = await DocumentTemplateRepository.putDocumentTemplateRecord(
-      mapDocumentTemplateDynamoRecord.fromDocumentTemplate(newDocumentTemplate),
-    );
+    let dynamoResponse;
+    try {
+      dynamoResponse = await DocumentTemplateRepository.putDocumentTemplateRecord(
+        mapDocumentTemplateDynamoRecord.fromDocumentTemplate(newDocumentTemplate),
+      );
+    } catch (error) {
+      console.error("Error putting document template record: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error putting document template record",
+        }),
+      };
+    }
 
-    return { documentTemplate: newDocumentTemplate, presignedUploadUrl };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ documentTemplate: newDocumentTemplate, presignedUploadUrl }),
+    };
   };
 }
