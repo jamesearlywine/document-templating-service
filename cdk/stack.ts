@@ -315,6 +315,9 @@ export class Stack extends cdk.Stack {
     this.restApiResources.documentTemplateById.addMethod(
       "PUT",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
+      {
+        apiKeyRequired: true,
+      },
     );
     this.restApiResources.documentTemplateById.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda), {
       apiKeyRequired: true,
@@ -322,23 +325,37 @@ export class Stack extends cdk.Stack {
     this.restApiResources.documentTemplateById.addMethod(
       "DELETE",
       new LambdaIntegration(this.deleteDocumentTemplateLambda),
+      {
+        apiKeyRequired: true,
+      },
     );
-    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplatesLambda));
+    this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplatesLambda), {
+      apiKeyRequired: true,
+    });
     this.restApiResources.documentTemplate.addMethod(
       "POST",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
+      {
+        apiKeyRequired: true,
+      },
     );
 
     // DocumentTemplatePresignedUploadUrl
     this.restApiResources.documentTemplatePresignedUploadUrl.addMethod(
       "GET",
       new LambdaIntegration(this.getDocumentTemplatePresignedUploadUrlLambda),
+      {
+        apiKeyRequired: true,
+      },
     );
 
     // GeneratedDocument
     this.restApiResources.generatedDocument.addMethod(
       "POST",
       new LambdaIntegration(this.createGeneratedDocumentLambda),
+      {
+        apiKeyRequired: true,
+      },
     );
 
     /******************
