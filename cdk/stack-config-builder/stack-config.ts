@@ -1,5 +1,6 @@
 import { StackConfigItem, StackConfigItemOptions } from "./stack-config-item";
 import { Construct } from "constructs";
+import { CfnParameter, ICfnRuleConditionExpression } from "aws-cdk-lib";
 
 export class StackConfig {
   parentScope: Construct;
@@ -27,6 +28,30 @@ export class StackConfig {
     }
 
     return stackConfigItem.get();
+  }
+
+  /**
+   * Typecasts the stack config item to a CfnParameter
+   * @param key
+   */
+  getCfnParameter(key: string) {
+    return this.get(key) as CfnParameter;
+  }
+
+  /**
+   * Typecasts the stack config item to a ICfnRuleConditionExpression
+   * @param key
+   */
+  getConditionalCfnParameter(key: string) {
+    return this.get(key) as ICfnRuleConditionExpression;
+  }
+
+  /**
+   * Typecasts the stack config item to a string
+   * @param key
+   */
+  getString(key: string) {
+    return this.get(key) as string;
   }
 
   static create(scope: Construct) {

@@ -55,7 +55,7 @@ export class StackConfigItem {
    *  - can be a {{resolve:ssm:}} query
 
    */
-  get: () => string | cdk.ICfnRuleConditionExpression = () => {
+  get: () => string | cdk.ICfnRuleConditionExpression | cdk.CfnParameter = () => {
     if (this.value !== null && this.value !== undefined) {
       return this.value;
     }
