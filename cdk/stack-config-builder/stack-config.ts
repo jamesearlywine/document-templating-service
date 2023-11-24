@@ -50,7 +50,7 @@ export class StackConfig {
    * Typecasts the stack config item to a string
    * @param key
    */
-  getString(key: string) {
+  getStringValue(key: string) {
     return this.get(key) as string;
   }
 

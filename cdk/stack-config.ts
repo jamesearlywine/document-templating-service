@@ -141,13 +141,7 @@ export const initializeStackConfig = (stack: Stack) => {
         default: DEFAULT_VALUES.GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX,
       }),
     })
-    .set(ConfigKeys.ApiKey, {
-      cfnParameter: new cdk.CfnParameter(stack, "ApiKey", {
-        type: "String",
-        description: "API key for the document template service",
-        default: uuid(),
-      }),
-    });
+    .set(ConfigKeys.ApiKey, uuid());
 
   return stackConfig;
 };

@@ -45,10 +45,6 @@ Parameters:
     Type: String
     Default: GENERATED_DOCUMENT
     Description: Partition key prefix for generated documents dynamodb table
-  ApiKey:
-    Type: String
-    Default: c3cc0139-1af7-4dda-af44-eaaf8e140a48
-    Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /cdk-bootstrap/hnb659fds/version
@@ -104,11 +100,6 @@ Conditions:
       - Fn::Equals:
           - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
           - ""
-  ApiKeyisParameterEmptyCondition:
-    Fn::Not:
-      - Fn::Equals:
-          - Ref: ApiKey
-          - ""
 Resources:
   LambdaExecutionRoleD5C26073:
     Type: AWS::IAM::Role
@@ -160,7 +151,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T17:50:44.331Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T18:21:43.404Z
       Environment:
         Variables:
           AWS_ENV:
@@ -1600,8 +1591,7 @@ Resources:
             Ref: ApiF70053CD
           StageName:
             Ref: ApiDeploymentStageprod3EB9684E
-      Value:
-        Ref: ApiKey
+      Value: 2463585f-c837-4c86-99d9-fe537a3be667
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/ApiKey/Resource
   ApiApiUsagePlanC7032EE6:
@@ -1656,16 +1646,7 @@ Resources:
       Description: The API key for the Document Templating Service REST API
       Name: /document-templating-service/rest-api-key
       Type: String
-      Value:
-        Fn::Join:
-          - ""
-          - - https://
-            - Ref: ApiF70053CD
-            - .execute-api.us-east-2.
-            - Ref: AWS::URLSuffix
-            - /
-            - Ref: ApiDeploymentStageprod3EB9684E
-            - /
+      Value: 2463585f-c837-4c86-99d9-fe537a3be667
     Metadata:
       aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceApiKeySsmRegistration/Resource
   CDKMetadata:
@@ -1702,8 +1683,7 @@ Outputs:
       Name: DocumentTemplatingServiceApiBaseUrl
   OutputsApiKey:
     Description: The API key for the Document Templating Service REST API
-    Value:
-      Ref: ApiKey
+    Value: 2463585f-c837-4c86-99d9-fe537a3be667
     Export:
       Name: DocumentTemplatingServiceApiKey
 Rules:

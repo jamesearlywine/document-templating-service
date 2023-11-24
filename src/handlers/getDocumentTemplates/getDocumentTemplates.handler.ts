@@ -4,7 +4,7 @@ import { GetDocumentTemplateController } from "./getDocumentTemplates.controller
 DocumentTemplateRepository.initialize();
 
 export const handler = async (event: Record<string, unknown>) => {
-  console.log("getDocumentTemplates.handler, event", event);
+  console.log("getDocumentTemplates.handler, *** event", event);
 
   const docType = (event.queryStringParameters ?? {})["docType"];
 
