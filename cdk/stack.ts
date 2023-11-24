@@ -303,7 +303,9 @@ export class Stack extends cdk.Stack {
       api: this.api,
     });
 
-    // REST Resources
+    /**
+     * REST API Resource Paths
+     */
     this.restApiResources = {
       documentTemplate: this.api.root.addResource("documentTemplate"),
       documentTemplatePresignedUploadUrl: this.api.root.addResource("documentTemplatePresignedUploadUrl"),
@@ -311,7 +313,11 @@ export class Stack extends cdk.Stack {
     };
     this.restApiResources.documentTemplateById = this.restApiResources.documentTemplate.addResource("{id}");
 
-    // DocumentTemplate
+    /**
+     * REST API Lambda Integrations
+     */
+
+    // createOrUpdateDocumentTemplateLambda
     this.restApiResources.documentTemplateById.addMethod(
       "PUT",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
@@ -319,9 +325,13 @@ export class Stack extends cdk.Stack {
         apiKeyRequired: true,
       },
     );
+
+    // getDocumentTemplateLambda
     this.restApiResources.documentTemplateById.addMethod("GET", new LambdaIntegration(this.getDocumentTemplateLambda), {
       apiKeyRequired: true,
     });
+
+    // deleteDocumentTemplateLambda
     this.restApiResources.documentTemplateById.addMethod(
       "DELETE",
       new LambdaIntegration(this.deleteDocumentTemplateLambda),
@@ -329,9 +339,13 @@ export class Stack extends cdk.Stack {
         apiKeyRequired: true,
       },
     );
+
+    // getDocumentTemplatesLambda
     this.restApiResources.documentTemplate.addMethod("GET", new LambdaIntegration(this.getDocumentTemplatesLambda), {
       apiKeyRequired: true,
     });
+
+    // createOrUpdateDocumentTemplateLambda
     this.restApiResources.documentTemplate.addMethod(
       "POST",
       new LambdaIntegration(this.createOrUpdateDocumentTemplateLambda),
@@ -340,7 +354,7 @@ export class Stack extends cdk.Stack {
       },
     );
 
-    // DocumentTemplatePresignedUploadUrl
+    // getDocumentTemplatePresignedUploadUrlLambda
     this.restApiResources.documentTemplatePresignedUploadUrl.addMethod(
       "GET",
       new LambdaIntegration(this.getDocumentTemplatePresignedUploadUrlLambda),
@@ -349,7 +363,7 @@ export class Stack extends cdk.Stack {
       },
     );
 
-    // GeneratedDocument
+    // postGeneratedDocumentLambda
     this.restApiResources.generatedDocument.addMethod(
       "POST",
       new LambdaIntegration(this.createGeneratedDocumentLambda),
