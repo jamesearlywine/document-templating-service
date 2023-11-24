@@ -11,19 +11,13 @@ import { FileExtensions } from "src/utility/file-management";
 import { GeneratedDocumentFileRepository } from "src/data/s3/generated-document-file-repository";
 import { GeneratedDocumentFile } from "../../data/s3/generated-document-file-repository/generated-document-file.type";
 import { HashAlgorithms } from "src/utility/common/hash-algorithms";
-import {
-  createGeneratedDocument,
-  GeneratedDocument,
-} from "src/data/domain/generated-document.type";
+import { createGeneratedDocument, GeneratedDocument } from "src/data/domain/generated-document.type";
 
 export class GeneratedDocumentController {
   static async POST(templateId: string, data: Record<string, string>) {
     console.info("GenerateDocumentController.POST: ", { templateId, data });
 
-    const response =
-      await DocumentTemplateRepository.getDocumentTemplateRecordById(
-        templateId,
-      );
+    const response = await DocumentTemplateRepository.getDocumentTemplateRecordById(templateId);
     const documentTemplate: DocumentTemplate = response.results[0];
     console.info("GenerateDocumentController.POST: ", { documentTemplate });
 
@@ -36,11 +30,7 @@ export class GeneratedDocumentController {
       throw new Error("Document template not found");
     }
 
-    const s3Response =
-      await DocumentTemplateFileRepository.getDocumentTemplateFile(
-        documentTemplate,
-        templateFilepath,
-      );
+    const s3Response = await DocumentTemplateFileRepository.getDocumentTemplateFile(documentTemplate, templateFilepath);
 
     await DocxTemplater.generateFromTemplateFile({
       templateFilepath,
@@ -48,55 +38,117 @@ export class GeneratedDocumentController {
       outputFilepath: outputDocxFilepath,
     });
 
-    await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
-      id: generatedDocumentUuid,
-      localFilepath: outputDocxFilepath,
-    });
-
-    await DocumentConversionService.docxToPdf({
-      inputLocation: outputDocxFilepath,
-      outputLocation: outputPdfFilepath,
-    });
-
-    const generatedDocumentPdfFile: GeneratedDocumentFile =
+    try {
       await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
+        id: generatedDocumentUuid,
+        localFilepath: outputDocxFilepath,
+      });
+    } catch (error) {
+      console.error("Error uploading generated document file to S3: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error uploading generated document file to S3",
+        }),
+      };
+    }
+
+    try {
+      await DocumentConversionService.docxToPdf({
+        inputLocation: outputDocxFilepath,
+        outputLocation: outputPdfFilepath,
+      });
+    } catch (error) {
+      console.error("Error converting docx to pdf: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error converting docx to pdf",
+        }),
+      };
+    }
+
+    let generatedDocumentPdfFile: GeneratedDocumentFile;
+    try {
+      generatedDocumentPdfFile = await GeneratedDocumentFileRepository.uploadGeneratedDocumentFile({
         id: generatedDocumentUuid,
         localFilepath: outputPdfFilepath,
       });
+    } catch (error) {
+      console.error("Error uploading generated document pdf file to S3: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error uploading generated document pdf file to S3",
+        }),
+      };
+    }
 
     const generatedDocumentFile = generatedDocumentPdfFile;
 
-    const documentSecuredHash = crypto
-      .createHash(HashAlgorithms.MD5)
-      .update(fs.readFileSync(outputDocxFilepath).toString())
-      .digest("hex");
+    let documentSecuredHash;
+    try {
+      documentSecuredHash = crypto
+        .createHash(HashAlgorithms.MD5)
+        .update(fs.readFileSync(outputDocxFilepath).toString())
+        .digest("hex");
+    } catch (error) {
+      console.error("Error generating document secured hash: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error generating document secured hash",
+        }),
+      };
+    }
 
-    const generatedDocument: GeneratedDocument = createGeneratedDocument({
-      id: generatedDocumentUuid,
-      fromTemplateId: documentTemplate.id,
-      docType: documentTemplate.docType,
-      documentData: data,
-      s3BucketName: generatedDocumentFile.s3BucketName,
-      s3Key: generatedDocumentFile.s3Key,
-      filename: generatedDocumentFile.filename,
-      fileExtension: generatedDocumentFile.fileExtension,
-    });
+    let generatedDocument: GeneratedDocument;
+    try {
+      generatedDocument = createGeneratedDocument({
+        id: generatedDocumentUuid,
+        fromTemplateId: documentTemplate.id,
+        docType: documentTemplate.docType,
+        documentData: data,
+        s3BucketName: generatedDocumentFile.s3BucketName,
+        s3Key: generatedDocumentFile.s3Key,
+        filename: generatedDocumentFile.filename,
+        fileExtension: generatedDocumentFile.fileExtension,
+      });
+    } catch (error) {
+      console.error("Error creating generated document: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error creating generated document",
+        }),
+      };
+    }
 
-    const presignedUrlData =
-      await GeneratedDocumentFileRepository.generatePresignedDownlaodUrlForGeneratedDocument(
-        {
-          generatedDocument,
-        },
-      );
+    let presignedUrlData;
+    try {
+      presignedUrlData = await GeneratedDocumentFileRepository.generatePresignedDownlaodUrlForGeneratedDocument({
+        generatedDocument,
+      });
+    } catch (error) {
+      console.error("Error generating presigned download url for generated document: ", error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Error generating presigned download url for generated document",
+        }),
+      };
+    }
 
     generatedDocument.presignedDownloadUrlIssuedAt = presignedUrlData.issuedAt;
-    generatedDocument.presignedDownloadUrlExpiresAt =
-      presignedUrlData.expiresAt;
+    generatedDocument.presignedDownloadUrlExpiresAt = presignedUrlData.expiresAt;
     generatedDocument.presignedDownloadUrl = presignedUrlData.presignedUrl;
 
     // store generated document in DynamoDB
 
     // return entry data store entry for generated document, with presigned download url good for 1 hour
-    return generatedDocument;
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ generatedDocument }),
+    };
   }
 }
