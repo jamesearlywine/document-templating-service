@@ -47,7 +47,7 @@ Parameters:
     Description: Partition key prefix for generated documents dynamodb table
   ApiKey:
     Type: String
-    Default: 1d351acd-2ade-46a6-a711-cd69825cb22e
+    Default: da48db26-8852-4e58-bc47-ba857345be91
     Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
@@ -160,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T03:17:54.228Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T04:54:48.605Z
       Environment:
         Variables:
           AWS_ENV:
@@ -871,7 +871,7 @@ Resources:
     DeletionPolicy: Retain
     Metadata:
       aws:cdk:path: DocumentTemplatingService/Api/Account
-  ApiDeploymentB17BE62Db024c15517b26ba07db7c85482135958:
+  ApiDeploymentB17BE62D628d592431e9a6c7fd79c3107a07fed4:
     Type: AWS::ApiGateway::Deployment
     Properties:
       Description: Document Templating Service API
@@ -902,7 +902,7 @@ Resources:
     Type: AWS::ApiGateway::Stage
     Properties:
       DeploymentId:
-        Ref: ApiDeploymentB17BE62Db024c15517b26ba07db7c85482135958
+        Ref: ApiDeploymentB17BE62D628d592431e9a6c7fd79c3107a07fed4
       RestApiId:
         Ref: ApiF70053CD
       StageName: prod
@@ -1061,6 +1061,7 @@ Resources:
   ApidocumentTemplateidPUT514F5268:
     Type: AWS::ApiGateway::Method
     Properties:
+      ApiKeyRequired: true
       AuthorizationType: NONE
       HttpMethod: PUT
       Integration:
@@ -1190,6 +1191,7 @@ Resources:
   ApidocumentTemplateidDELETEB0030028:
     Type: AWS::ApiGateway::Method
     Properties:
+      ApiKeyRequired: true
       AuthorizationType: NONE
       HttpMethod: DELETE
       Integration:
@@ -1254,6 +1256,7 @@ Resources:
   ApidocumentTemplateGET61E7C41E:
     Type: AWS::ApiGateway::Method
     Properties:
+      ApiKeyRequired: true
       AuthorizationType: NONE
       HttpMethod: GET
       Integration:
@@ -1318,6 +1321,7 @@ Resources:
   ApidocumentTemplatePOST3A0C4E92:
     Type: AWS::ApiGateway::Method
     Properties:
+      ApiKeyRequired: true
       AuthorizationType: NONE
       HttpMethod: POST
       Integration:
@@ -1422,6 +1426,7 @@ Resources:
   ApidocumentTemplatePresignedUploadUrlGET4B8E33A5:
     Type: AWS::ApiGateway::Method
     Properties:
+      ApiKeyRequired: true
       AuthorizationType: NONE
       HttpMethod: GET
       Integration:
@@ -1564,6 +1569,7 @@ Resources:
   ApigeneratedDocumenttemplateIdPOST7BA8DDEC:
     Type: AWS::ApiGateway::Method
     Properties:
+      ApiKeyRequired: true
       AuthorizationType: NONE
       HttpMethod: POST
       Integration:
