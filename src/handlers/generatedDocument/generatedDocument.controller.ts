@@ -149,6 +149,9 @@ export class GeneratedDocumentController {
     return {
       statusCode: 200,
       body: JSON.stringify({ generatedDocument }),
+      headers: {
+        "Content-Type": "application/json",
+      },
     };
   }
 }
