@@ -47,7 +47,7 @@ Parameters:
     Description: Partition key prefix for generated documents dynamodb table
   ApiKey:
     Type: String
-    Default: da48db26-8852-4e58-bc47-ba857345be91
+    Default: c8f8d9b9-3077-48ba-8b33-1a9d66c92a33
     Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
@@ -160,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T04:54:48.605Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T07:10:29.437Z
       Environment:
         Variables:
           AWS_ENV:
@@ -248,7 +248,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 710b2e160df7b8e0aef9c09bea72e942ad1fa1d225af123c10dd04395fe40e02.zip
+        S3Key: d37f569506959915e2c3e920a6676d5f867d77122567e6aaf7306e5457a533cc.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -319,7 +319,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
-      aws:asset:path: asset.710b2e160df7b8e0aef9c09bea72e942ad1fa1d225af123c10dd04395fe40e02
+      aws:asset:path: asset.d37f569506959915e2c3e920a6676d5f867d77122567e6aaf7306e5457a533cc
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatePresignedUploadUrlLambdaSecurityGroupD54378C0:
@@ -338,7 +338,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 8deacb67384b5bac70b9bc1692288db9a4f182f1bddd0759f8e45ec7889a7153.zip
+        S3Key: 16cfa5fdaf2c6e9eeec70291fcb337ed75dc924541891b57f2f0517e599e93b3.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -409,7 +409,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/Resource
-      aws:asset:path: asset.8deacb67384b5bac70b9bc1692288db9a4f182f1bddd0759f8e45ec7889a7153
+      aws:asset:path: asset.16cfa5fdaf2c6e9eeec70291fcb337ed75dc924541891b57f2f0517e599e93b3
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplatesLambdaSecurityGroup22C82DA5:
@@ -428,7 +428,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
-        S3Key: 0ecf71293b7cf46ad187bcd7157019a35dbf775fed0032a8e0c53f83086431c2.zip
+        S3Key: 7dbc9463dbe33da2eaba4c6d8baa10e735dd50e9ea45b8bad15b8c84997fc958.zip
       Environment:
         Variables:
           AWS_ENV:
@@ -499,7 +499,7 @@ Resources:
       - LambdaExecutionRoleD5C26073
     Metadata:
       aws:cdk:path: DocumentTemplatingService/getDocumentTemplatesLambda/Resource
-      aws:asset:path: asset.0ecf71293b7cf46ad187bcd7157019a35dbf775fed0032a8e0c53f83086431c2
+      aws:asset:path: asset.7dbc9463dbe33da2eaba4c6d8baa10e735dd50e9ea45b8bad15b8c84997fc958
       aws:asset:is-bundled: false
       aws:asset:property: Code
   getDocumentTemplateLambdaSecurityGroupA62B963E:
