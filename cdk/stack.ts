@@ -279,10 +279,13 @@ export class Stack extends cdk.Stack {
         allowHeaders: ["*"],
       },
     });
+
+    /**
+     * Simple security while in development, to prevent the API from being used by anyone who finds it.
+     */
     this.restApiKey = this.api.addApiKey("ApiKey", {
       value: stackConfig.get(ConfigKeys.ApiKey),
     });
-
     this.apiUsagePlan = this.api.addUsagePlan("ApiUsagePlan", {
       name: "ApiUsagePlan",
       throttle: {
@@ -294,8 +297,11 @@ export class Stack extends cdk.Stack {
         period: Period.DAY,
       },
     });
-
     this.apiUsagePlan.addApiKey(this.restApiKey);
+    this.apiUsagePlan.addApiStage({
+      stage: this.api.deploymentStage,
+      api: this.api,
+    });
 
     // REST Resources
     this.restApiResources = {
