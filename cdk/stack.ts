@@ -3,9 +3,9 @@ import { aws_ecr, aws_events_targets, CfnOutput } from "aws-cdk-lib";
 import { IRole } from "aws-cdk-lib/aws-iam";
 import { FunctionProps, Handler, IFunction } from "aws-cdk-lib/aws-lambda";
 import { RuleProps } from "aws-cdk-lib/aws-events";
-import { ConfigKeys, initializeStackConfig, AwsEnvParameter, stackConfig } from "./stack-config";
+import { AwsEnvParameter, ConfigKeys, initializeStackConfig, stackConfig } from "./stack-config";
 import { StackConfig } from "./stack-config-builder";
-import { ApiKey, IApiKey, LambdaIntegration, Resource, RestApi, UsagePlan } from "aws-cdk-lib/aws-apigateway";
+import { IApiKey, LambdaIntegration, Period, Resource, RestApi, UsagePlan } from "aws-cdk-lib/aws-apigateway";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 
 export class Stack extends cdk.Stack {
@@ -282,6 +282,20 @@ export class Stack extends cdk.Stack {
     this.restApiKey = this.api.addApiKey("ApiKey", {
       value: stackConfig.get(ConfigKeys.ApiKey),
     });
+
+    this.apiUsagePlan = this.api.addUsagePlan("ApiUsagePlan", {
+      name: "ApiUsagePlan",
+      throttle: {
+        rateLimit: 10,
+        burstLimit: 100,
+      },
+      quota: {
+        limit: 10000,
+        period: Period.DAY,
+      },
+    });
+
+    this.apiUsagePlan.addApiKey(this.restApiKey);
 
     // REST Resources
     this.restApiResources = {
