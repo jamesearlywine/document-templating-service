@@ -1,0 +1,1702 @@
+Parameters:
+  AwsEnv:
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - EPHEMERAL
+      - DEV
+      - TEST
+      - STAGING
+      - PROD
+    Description: The AWS environment deployed to
+  S3PrimaryRegion:
+    Type: String
+    Default: ""
+    Description: Primary region for s3 buckets/client
+  DocumentTemplatesBucketArn:
+    Type: String
+    Default: ""
+    Description: ARN of the document templates bucket
+  DocumentTemplatesS3KeyPrefix:
+    Type: String
+    Default: document_templates
+    Description: S3 key prefix for document templates
+  DocumentTemplatesDynamodbTableArn:
+    Type: String
+    Default: ""
+    Description: ARN of the document templates dynamodb table
+  DocumentTemplatesDynamodbPartitionKeyPrefix:
+    Type: String
+    Default: DOCUMENT_TEMPLATE
+    Description: Partition key prefix for document templates dynamodb table
+  GeneratedDocumentsBucketArn:
+    Type: String
+    Default: ""
+    Description: ARN of the generated documents bucket
+  GeneratedDocumentsS3KeyPrefix:
+    Type: String
+    Default: generated_documents
+    Description: S3 key prefix for generated documents
+  GeneratedDocumentsDynamodbTableArn:
+    Type: String
+    Default: ""
+    Description: ARN of the generated documents dynamodb table
+  GeneratedDocumentsDynamodbPartitionKeyPrefix:
+    Type: String
+    Default: GENERATED_DOCUMENT
+    Description: Partition key prefix for generated documents dynamodb table
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+Conditions:
+  AwsEnvisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: AwsEnv
+          - ""
+  S3PrimaryRegionisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: S3PrimaryRegion
+          - ""
+  DocumentTemplatesBucketArnisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: DocumentTemplatesBucketArn
+          - ""
+  DocumentTemplatesS3KeyPrefixisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: DocumentTemplatesS3KeyPrefix
+          - ""
+  DocumentTemplatesDynamodbTableArnisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: DocumentTemplatesDynamodbTableArn
+          - ""
+  DocumentTemplatesDynamodbPartitionKeyPrefixisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          - ""
+  GeneratedDocumentsBucketArnisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: GeneratedDocumentsBucketArn
+          - ""
+  GeneratedDocumentsS3KeyPrefixisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: GeneratedDocumentsS3KeyPrefix
+          - ""
+  GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: GeneratedDocumentsDynamodbTableArn
+          - ""
+  GeneratedDocumentsDynamodbPartitionKeyPrefixisParameterEmptyCondition:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+          - ""
+Resources:
+  LambdaExecutionRoleD5C26073:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      Description: Lambda Execution Role
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::546515125053:policy/LambdaPrivateSubnetExecutionRolePolicy
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::546515125053:policy/LambdaGeneralExecutionRolePolicy
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/LambdaExecutionRole/Resource
+  createGeneratedDocumentLambdaSecurityGroup0C7D215C:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicecreateGeneratedDocumentLambda79284DD8
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/createGeneratedDocumentLambda/SecurityGroup/Resource
+  createGeneratedDocumentLambdaDA3D345E:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ""
+            - - 546515125053.dkr.ecr.us-east-2.
+              - Ref: AWS::URLSuffix
+              - /create-generated-document-lambda-execution-environment:latest
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T18:21:43.404Z
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      MemorySize: 1600
+      PackageType: Image
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Timeout: 600
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - createGeneratedDocumentLambdaSecurityGroup0C7D215C
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/createGeneratedDocumentLambda/Resource
+  createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicecreateOrUpdateDocumentTemplateLambda43611BE6
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/SecurityGroup/Resource
+  createOrUpdateDocumentTemplateLambda21DD51BC:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: d37f569506959915e2c3e920a6676d5f867d77122567e6aaf7306e5457a533cc.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - createOrUpdateDocumentTemplateLambdaSecurityGroupD7AFD4DF
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/createOrUpdateDocumentTemplateLambda/Resource
+      aws:asset:path: asset.d37f569506959915e2c3e920a6676d5f867d77122567e6aaf7306e5457a533cc
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  getDocumentTemplatePresignedUploadUrlLambdaSecurityGroupD54378C0:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicegetDocumentTemplatePresignedUploadUrlLambda790C5342
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/SecurityGroup/Resource
+  getDocumentTemplatePresignedUploadUrlLambda3B9778CB:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: 16cfa5fdaf2c6e9eeec70291fcb337ed75dc924541891b57f2f0517e599e93b3.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - getDocumentTemplatePresignedUploadUrlLambdaSecurityGroupD54378C0
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/getDocumentTemplatePresignedUploadUrlLambda/Resource
+      aws:asset:path: asset.16cfa5fdaf2c6e9eeec70291fcb337ed75dc924541891b57f2f0517e599e93b3
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  getDocumentTemplatesLambdaSecurityGroup22C82DA5:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicegetDocumentTemplatesLambdaD5E63F23
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/getDocumentTemplatesLambda/SecurityGroup/Resource
+  getDocumentTemplatesLambda4A2C29FC:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: 7dbc9463dbe33da2eaba4c6d8baa10e735dd50e9ea45b8bad15b8c84997fc958.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - getDocumentTemplatesLambdaSecurityGroup22C82DA5
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/getDocumentTemplatesLambda/Resource
+      aws:asset:path: asset.7dbc9463dbe33da2eaba4c6d8baa10e735dd50e9ea45b8bad15b8c84997fc958
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  getDocumentTemplateLambdaSecurityGroupA62B963E:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicegetDocumentTemplateLambdaDA189D96
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/getDocumentTemplateLambda/SecurityGroup/Resource
+  getDocumentTemplateLambda91D77421:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: 5de67296f33c23063f16d5aede03f56fa833d74af2814ce1ac59482d976b23fb.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - getDocumentTemplateLambdaSecurityGroupA62B963E
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/getDocumentTemplateLambda/Resource
+      aws:asset:path: asset.5de67296f33c23063f16d5aede03f56fa833d74af2814ce1ac59482d976b23fb
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  deleteDocumentTemplateLambdaSecurityGroup8FEF291E:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServicedeleteDocumentTemplateLambda8CF40DF1
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/deleteDocumentTemplateLambda/SecurityGroup/Resource
+  deleteDocumentTemplateLambda4C9C9ABF:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: 66744b373135aa01fca9bb6f8e85a867d256ae3f0b450d71766a0cc405b65bac.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - deleteDocumentTemplateLambdaSecurityGroup8FEF291E
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/deleteDocumentTemplateLambda/Resource
+      aws:asset:path: asset.66744b373135aa01fca9bb6f8e85a867d256ae3f0b450d71766a0cc405b65bac
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function DocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaE4C1AB05
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: vpc-058c5ee1e09681197
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/SecurityGroup/Resource
+  afterDocumentTemplateFileUploadedLambdaE99BC85F:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-546515125053-us-east-2
+        S3Key: aa6858c2b6486092ea56fe400fc475398b8e07a3bfb3109e450216f6fa748415.zip
+      Environment:
+        Variables:
+          AWS_ENV:
+            Ref: AwsEnv
+          S3_PRIMARY_REGION:
+            Fn::If:
+              - S3PrimaryRegionisParameterEmptyCondition
+              - Ref: S3PrimaryRegion
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets-primary-region}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_BUCKET_ARN:
+            Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_S3_KEY_PREFIX:
+            Ref: DocumentTemplatesS3KeyPrefix
+          DOCUMENT_TEMPLATES_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - DocumentTemplatesDynamodbTableArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          DOCUMENT_TEMPLATES_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: DocumentTemplatesDynamodbPartitionKeyPrefix
+          GENERATED_DOCUMENTS_BUCKET_ARN:
+            Fn::If:
+              - GeneratedDocumentsBucketArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_S3_KEY_PREFIX:
+            Ref: GeneratedDocumentsS3KeyPrefix
+          GENERATED_DOCUMENTS_DYNAMODB_TABLE_ARN:
+            Fn::If:
+              - GeneratedDocumentsDynamodbTableArnisParameterEmptyCondition
+              - Ref: GeneratedDocumentsDynamodbTableArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-dynamodb-tables/document-template-service-datastore-table-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+          GENERATED_DOCUMENTS_DYNAMODB_PARTITION_KEY_PREFIX:
+            Ref: GeneratedDocumentsDynamodbPartitionKeyPrefix
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRoleD5C26073
+          - Arn
+      Runtime: nodejs18.x
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - afterDocumentTemplateFileUploadedLambdaSecurityGroup8A683C23
+              - GroupId
+        SubnetIds:
+          - subnet-036f5f2f9c607cf2a
+          - subnet-064e80ed435060622
+    DependsOn:
+      - LambdaExecutionRoleD5C26073
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/afterDocumentTemplateFileUploadedLambda/Resource
+      aws:asset:path: asset.aa6858c2b6486092ea56fe400fc475398b8e07a3bfb3109e450216f6fa748415
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  afterDocumentTemplateFileUploadedEventRule65782E4A:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName:
+        Fn::Select:
+          - 1
+          - Fn::Split:
+              - /
+              - Fn::Select:
+                  - 5
+                  - Fn::Split:
+                      - ":"
+                      - Fn::Sub: arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/default
+      EventPattern:
+        source:
+          - aws.s3
+        detail-type:
+          - Object Created
+        resources:
+          - Fn::If:
+              - DocumentTemplatesBucketArnisParameterEmptyCondition
+              - Ref: DocumentTemplatesBucketArn
+              - Fn::Sub:
+                  - "{{resolve:ssm:/${AwsEnv}/processproof-s3-buckets/document-template-service-filestore-bucket-arn}}"
+                  - AwsEnv:
+                      Ref: AwsEnv
+        detail:
+          object:
+            key:
+              - prefix:
+                  Ref: DocumentTemplatesS3KeyPrefix
+      State: ENABLED
+      Targets:
+        - Arn:
+            Fn::GetAtt:
+              - afterDocumentTemplateFileUploadedLambdaE99BC85F
+              - Arn
+          Id: Target0
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/Resource
+  afterDocumentTemplateFileUploadedEventRuleAllowEventRuleDocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaE4C1AB0548A8A0CC:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - afterDocumentTemplateFileUploadedLambdaE99BC85F
+          - Arn
+      Principal: events.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - afterDocumentTemplateFileUploadedEventRule65782E4A
+          - Arn
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/afterDocumentTemplateFileUploadedEventRule/AllowEventRuleDocumentTemplatingServiceafterDocumentTemplateFileUploadedLambdaE4C1AB05
+  ApiF70053CD:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Description: Document Templating Service API
+      Name:
+        Fn::Sub:
+          - ${AWS_ENV}-document-templating-service-api
+          - AWS_ENV:
+              Ref: AwsEnv
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Resource
+  ApiCloudWatchRole73EC6FC4:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/CloudWatchRole/Resource
+  ApiAccountA18C9B29:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn:
+        Fn::GetAtt:
+          - ApiCloudWatchRole73EC6FC4
+          - Arn
+    DependsOn:
+      - ApiF70053CD
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Account
+  ApiDeploymentB17BE62D628d592431e9a6c7fd79c3107a07fed4:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      Description: Document Templating Service API
+      RestApiId:
+        Ref: ApiF70053CD
+    DependsOn:
+      - ApidocumentTemplateidDELETEB0030028
+      - ApidocumentTemplateidGET46D1CF3D
+      - ApidocumentTemplateidOPTIONSBC1BAB7E
+      - ApidocumentTemplateidPUT514F5268
+      - ApidocumentTemplateid5D1C6CE7
+      - ApidocumentTemplateGET61E7C41E
+      - ApidocumentTemplateOPTIONSD878723F
+      - ApidocumentTemplatePOST3A0C4E92
+      - ApidocumentTemplate72333E5D
+      - ApidocumentTemplatePresignedUploadUrlGET4B8E33A5
+      - ApidocumentTemplatePresignedUploadUrlOPTIONS5F5E745C
+      - ApidocumentTemplatePresignedUploadUrl827C407F
+      - ApigeneratedDocumenttemplateIdOPTIONSF15A479A
+      - ApigeneratedDocumenttemplateIdPOST7BA8DDEC
+      - ApigeneratedDocumenttemplateIdA46382E8
+      - ApigeneratedDocumentOPTIONSE8D5AD39
+      - ApigeneratedDocumentE8419AE1
+      - ApiOPTIONS5886EA5D
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Deployment/Resource
+  ApiDeploymentStageprod3EB9684E:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId:
+        Ref: ApiDeploymentB17BE62D628d592431e9a6c7fd79c3107a07fed4
+      RestApiId:
+        Ref: ApiF70053CD
+      StageName: prod
+    DependsOn:
+      - ApiAccountA18C9B29
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/DeploymentStage.prod/Resource
+  ApiOPTIONS5886EA5D:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/OPTIONS/Resource
+  ApidocumentTemplate72333E5D:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: documentTemplate
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/Resource
+  ApidocumentTemplateOPTIONSD878723F:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/OPTIONS/Resource
+  ApidocumentTemplateid5D1C6CE7:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApidocumentTemplate72333E5D
+      PathPart: "{id}"
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/Resource
+  ApidocumentTemplateidOPTIONSBC1BAB7E:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApidocumentTemplateid5D1C6CE7
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/OPTIONS/Resource
+  ApidocumentTemplateidPUTApiPermissionDocumentTemplatingServiceApiEF9DFD04PUTdocumentTemplateidB9FB0E44:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /PUT/documentTemplate/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/PUT/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.PUT..documentTemplate.{id}
+  ApidocumentTemplateidPUTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04PUTdocumentTemplateid5C9FA1A4:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/PUT/documentTemplate/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/PUT/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.PUT..documentTemplate.{id}
+  ApidocumentTemplateidPUT514F5268:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createOrUpdateDocumentTemplateLambda21DD51BC
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplateid5D1C6CE7
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/PUT/Resource
+  ApidocumentTemplateidGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplateid2F340EE4:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplateLambda91D77421
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /GET/documentTemplate/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate.{id}
+  ApidocumentTemplateidGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplateidB638FFDD:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplateLambda91D77421
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/GET/documentTemplate/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate.{id}
+  ApidocumentTemplateidGET46D1CF3D:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - getDocumentTemplateLambda91D77421
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplateid5D1C6CE7
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/GET/Resource
+  ApidocumentTemplateidDELETEApiPermissionDocumentTemplatingServiceApiEF9DFD04DELETEdocumentTemplateidCC336022:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - deleteDocumentTemplateLambda4C9C9ABF
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /DELETE/documentTemplate/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/DELETE/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.DELETE..documentTemplate.{id}
+  ApidocumentTemplateidDELETEApiPermissionTestDocumentTemplatingServiceApiEF9DFD04DELETEdocumentTemplateidAFAA1BA4:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - deleteDocumentTemplateLambda4C9C9ABF
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/DELETE/documentTemplate/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/DELETE/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.DELETE..documentTemplate.{id}
+  ApidocumentTemplateidDELETEB0030028:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: DELETE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - deleteDocumentTemplateLambda4C9C9ABF
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplateid5D1C6CE7
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/{id}/DELETE/Resource
+  ApidocumentTemplateGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplateB913D978:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatesLambda4A2C29FC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /GET/documentTemplate
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate
+  ApidocumentTemplateGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplate13C34D46:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatesLambda4A2C29FC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/GET/documentTemplate
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplate
+  ApidocumentTemplateGET61E7C41E:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - getDocumentTemplatesLambda4A2C29FC
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/GET/Resource
+  ApidocumentTemplatePOSTApiPermissionDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplateB25F0E64:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /POST/documentTemplate
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/POST/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplate
+  ApidocumentTemplatePOSTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04POSTdocumentTemplateBF9A2BC7:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createOrUpdateDocumentTemplateLambda21DD51BC
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/POST/documentTemplate
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/POST/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.POST..documentTemplate
+  ApidocumentTemplatePOST3A0C4E92:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createOrUpdateDocumentTemplateLambda21DD51BC
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplate72333E5D
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplate/POST/Resource
+  ApidocumentTemplatePresignedUploadUrl827C407F:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: documentTemplatePresignedUploadUrl
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/Resource
+  ApidocumentTemplatePresignedUploadUrlOPTIONS5F5E745C:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApidocumentTemplatePresignedUploadUrl827C407F
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/OPTIONS/Resource
+  ApidocumentTemplatePresignedUploadUrlGETApiPermissionDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplatePresignedUploadUrl55CBE8D1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /GET/documentTemplatePresignedUploadUrl
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/GET/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplatePresignedUploadUrl
+  ApidocumentTemplatePresignedUploadUrlGETApiPermissionTestDocumentTemplatingServiceApiEF9DFD04GETdocumentTemplatePresignedUploadUrl722607C2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/GET/documentTemplatePresignedUploadUrl
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/GET/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.GET..documentTemplatePresignedUploadUrl
+  ApidocumentTemplatePresignedUploadUrlGET4B8E33A5:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - getDocumentTemplatePresignedUploadUrlLambda3B9778CB
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApidocumentTemplatePresignedUploadUrl827C407F
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/documentTemplatePresignedUploadUrl/GET/Resource
+  ApigeneratedDocumentE8419AE1:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiF70053CD
+          - RootResourceId
+      PathPart: generatedDocument
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/Resource
+  ApigeneratedDocumentOPTIONSE8D5AD39:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApigeneratedDocumentE8419AE1
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/OPTIONS/Resource
+  ApigeneratedDocumenttemplateIdA46382E8:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApigeneratedDocumentE8419AE1
+      PathPart: "{templateId}"
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/{templateId}/Resource
+  ApigeneratedDocumenttemplateIdOPTIONSF15A479A:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,POST,DELETE'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+      ResourceId:
+        Ref: ApigeneratedDocumenttemplateIdA46382E8
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/{templateId}/OPTIONS/Resource
+  ApigeneratedDocumenttemplateIdPOSTApiPermissionDocumentTemplatingServiceApiEF9DFD04POSTgeneratedDocumenttemplateId8FDADEF9:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createGeneratedDocumentLambdaDA3D345E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /POST/generatedDocument/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/{templateId}/POST/ApiPermission.DocumentTemplatingServiceApiEF9DFD04.POST..generatedDocument.{templateId}
+  ApigeneratedDocumenttemplateIdPOSTApiPermissionTestDocumentTemplatingServiceApiEF9DFD04POSTgeneratedDocumenttemplateId08567AE5:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - createGeneratedDocumentLambdaDA3D345E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:us-east-2:546515125053:"
+            - Ref: ApiF70053CD
+            - /test-invoke-stage/POST/generatedDocument/*
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/{templateId}/POST/ApiPermission.Test.DocumentTemplatingServiceApiEF9DFD04.POST..generatedDocument.{templateId}
+  ApigeneratedDocumenttemplateIdPOST7BA8DDEC:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :apigateway:us-east-2:lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - createGeneratedDocumentLambdaDA3D345E
+                  - Arn
+              - /invocations
+      ResourceId:
+        Ref: ApigeneratedDocumenttemplateIdA46382E8
+      RestApiId:
+        Ref: ApiF70053CD
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/Default/generatedDocument/{templateId}/POST/Resource
+  ApiApiKey8A01341B:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Enabled: true
+      StageKeys:
+        - RestApiId:
+            Ref: ApiF70053CD
+          StageName:
+            Ref: ApiDeploymentStageprod3EB9684E
+      Value: 2463585f-c837-4c86-99d9-fe537a3be667
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/ApiKey/Resource
+  ApiApiUsagePlanC7032EE6:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      ApiStages:
+        - ApiId:
+            Ref: ApiF70053CD
+          Stage:
+            Ref: ApiDeploymentStageprod3EB9684E
+          Throttle: {}
+      Quota:
+        Limit: 10000
+        Period: DAY
+      Throttle:
+        BurstLimit: 100
+        RateLimit: 10
+      UsagePlanName: ApiUsagePlan
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/ApiUsagePlan/Resource
+  ApiApiUsagePlanUsagePlanKeyResourceDocumentTemplatingServiceApiApiKey431AEA7756F12E10:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId:
+        Ref: ApiApiKey8A01341B
+      KeyType: API_KEY
+      UsagePlanId:
+        Ref: ApiApiUsagePlanC7032EE6
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/Api/ApiUsagePlan/UsagePlanKeyResource:DocumentTemplatingServiceApiApiKey431AEA77
+  DocumentTemplatingServiceApiBaseUrlSsmRegistration1AFD6A9D:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: The base URL of the Document Templating Service REST API
+      Name: /document-templating-service/rest-api-base-url
+      Type: String
+      Value:
+        Fn::Join:
+          - ""
+          - - https://
+            - Ref: ApiF70053CD
+            - .execute-api.us-east-2.
+            - Ref: AWS::URLSuffix
+            - /
+            - Ref: ApiDeploymentStageprod3EB9684E
+            - /
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceApiBaseUrlSsmRegistration/Resource
+  DocumentTemplatingServiceApiKeySsmRegistrationD627E7E6:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: The API key for the Document Templating Service REST API
+      Name: /document-templating-service/rest-api-key
+      Type: String
+      Value: 2463585f-c837-4c86-99d9-fe537a3be667
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/DocumentTemplatingServiceApiKeySsmRegistration/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/21RwW7CMAz9Fu4hG+zAdgSm7TBNqzrtjEJqmKFJqjgBVVX/fU7KWJF28nt5jp/zMpdPC3k/UWea6uo4rXEru8+g9FGsd7ZQXhkI4BNZO1thQGdFCeSi1yD41qZDZWRXuhpSU6q9AO1lCY0jDM63K0UgamW2lZLdS7Q6D+HmMS7AGyRilq7PeQnQ0WNoX72LTeq4OegFPWwUEQSSy1SYy1XURwjZDk5gWerKeNkrpr1Ug3sV4KxaVoDCssEs/sGl1i7aIJ6hqV1reEg6HTHOZp8nDuA3imz6DuHbVUm8oGtQg8mA2ekN2mw2oC/iSUWtcg7/E27jF5NJf+PR7m8+5kr6XuQs0mrclLSPGJoYxv69sK4CeaC70+xRzhZyNjkQ4tTzs9GALIf6A3PxdBMYAgAA
+    Metadata:
+      aws:cdk:path: DocumentTemplatingService/CDKMetadata/Default
+Outputs:
+  ApiEndpoint4F160690:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: ApiF70053CD
+          - .execute-api.us-east-2.
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: ApiDeploymentStageprod3EB9684E
+          - /
+  OutputsApiBaseUrl:
+    Description: The base URL of the Document Templating Service REST API
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: ApiF70053CD
+          - .execute-api.us-east-2.
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: ApiDeploymentStageprod3EB9684E
+          - /
+    Export:
+      Name: DocumentTemplatingServiceApiBaseUrl
+  OutputsApiKey:
+    Description: The API key for the Document Templating Service REST API
+    Value: 2463585f-c837-4c86-99d9-fe537a3be667
+    Export:
+      Name: DocumentTemplatingServiceApiKey
+Rules:
+  CheckBootstrapVersion:
+    Assertions:
+      - Assert:
+          Fn::Not:
+            - Fn::Contains:
+                - - "1"
+                  - "2"
+                  - "3"
+                  - "4"
+                  - "5"
+                - Ref: BootstrapVersion
+        AssertDescription: CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.
+
