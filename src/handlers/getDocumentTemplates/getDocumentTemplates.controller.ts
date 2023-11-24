@@ -17,9 +17,7 @@ export class GetDocumentTemplateController {
     }
 
     const response = docType
-      ? await DocumentTemplateRepository.getDocumentTemplateRecordsByDocType(
-          docType,
-        )
+      ? await DocumentTemplateRepository.getDocumentTemplateRecordsByDocType(docType)
       : await DocumentTemplateRepository.getAllDocumentTemplateRecords();
 
     const documentTemplates = response.results;
@@ -33,6 +31,11 @@ export class GetDocumentTemplateController {
       };
     }
 
-    return { documentTemplates };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        documentTemplates,
+      }),
+    };
   };
 }
