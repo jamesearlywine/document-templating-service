@@ -47,7 +47,7 @@ Parameters:
     Description: Partition key prefix for generated documents dynamodb table
   ApiKey:
     Type: String
-    Default: c162bd65-1943-47f1-bfb5-dfb0e739e865
+    Default: c3cc0139-1af7-4dda-af44-eaaf8e140a48
     Description: API key for the document template service
   BootstrapVersion:
     Type: AWS::SSM::Parameter::Value<String>
@@ -160,7 +160,7 @@ Resources:
             - - 546515125053.dkr.ecr.us-east-2.
               - Ref: AWS::URLSuffix
               - /create-generated-document-lambda-execution-environment:latest
-      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T07:31:01.455Z
+      Description: createGeneratedDocumentLambda--containerCacheBuster-2023-11-24T17:50:44.331Z
       Environment:
         Variables:
           AWS_ENV:
