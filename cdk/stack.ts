@@ -298,6 +298,10 @@ export class Stack extends cdk.Stack {
       },
     });
     this.apiUsagePlan.addApiKey(this.restApiKey);
+    this.apiUsagePlan.addApiStage({
+      stage: this.api.deploymentStage,
+      api: this.api,
+    });
 
     // REST Resources
     this.restApiResources = {
