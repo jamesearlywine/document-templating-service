@@ -7,5 +7,8 @@ export const handler = async (event: Record<string, unknown>) => {
   const templateId = (event.pathParameters ?? {})["templateId"];
   const data = JSON.parse(event.body as string) as Record<string, string>;
 
-  return GeneratedDocumentController.POST(templateId, data);
+  const response = GeneratedDocumentController.POST(templateId, data);
+  console.log("createGeneratedDocument.handler, response: ", response);
+
+  return response;
 };
