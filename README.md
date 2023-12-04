@@ -34,8 +34,9 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
         - this can be overriden:
           - when deploying from the command line
             - overrides specified in a config file
+              - template.config.{env}.json
             - overrides specifies  in cli args
-            - `cdk.json`
+            - overrides specified in `cdk.json`
           - when deploying from pipeline 
             - overrides specified in pipeline
             - overrides specified in a template.config.{env}.json file (must enable this in pipeline)
@@ -45,8 +46,8 @@ https://jamesearlywine.atlassian.net/wiki/spaces/ProcessPro/pages/1822556161/Doc
       - If a `value` is set, that value is returned (resolved at compile-time)
       - If a `cfnParameter` is set
         - If that value is a non-empty value, that value is returned (resolved at deploy-time)
-        - If that value is an empty value, the `query` result is returned (resolved at deploy-time)
-      - If neither `value` nor `cfnParameter` is set, the `query` result is returned (resolved at deploy-time)
+        - If that value is an empty value, the `query` is returned (resolved at deploy-time)
+      - If neither `value` nor `cfnParameter` is set, the `query` is returned (resolved at deploy-time)
         - example: `{{resolve:ssm:parameter-name}}`
         
 ## How to deploy
