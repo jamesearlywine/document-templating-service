@@ -41,7 +41,7 @@ phases:
         fi
 
 reports:
-  arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-processproof-document-templating-service:
+  arn:aws:codebuild:us-east-2:546515125053:report-group/codebuild-document-templating-service:
     files:
       - "junit.xml"
     base-directory: "build"
