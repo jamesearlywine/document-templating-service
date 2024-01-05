@@ -1,7 +1,7 @@
 {
-  "name": "processproof-document-templating-service",
+  "name": "document-templating-service",
   "version": "0.0.1",
-  "description": "pdf templating service",
+  "description": "document templating service",
   "watch": {
     "build": {
       "patterns": [
